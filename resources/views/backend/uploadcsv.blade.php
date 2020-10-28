@@ -17,37 +17,31 @@
             <tr>
               <th scope="col">Matric Number</th>
               <th scope="col">Name</th>
-              <th scope="col">Graduate Field ID</th>
-              <th scope="col">University ID</th>
-              <th scope="col">Rector ID</th>
-              <th scope="col">Faculty ID</th>
-              <th scope="col">Dean ID</th>
-              <th scope="col">Department ID</th>
-              <th scope="col">Template ID</th>
+              <th scope="col">Faculty</th>
+              <th scope="col">Programme</th>
+              <th scope="col">Citizenship</th>
+              <th scope="col">Setial Number</th>
+              <th scope="col">Endorsed Date (mm/dd/YYYY)</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <th scope="row">113213</th>
               <td>Mark Otto</td>
-              <td>13</td>
-              <td>2</td>
-              <td>8</td>
-              <td>5</td>
-              <td>13</td>
-              <td>1</td>
-              <td>132</td>
+              <td>Engineering</td>
+              <td>Bachelor of Engineering</td>
+              <td>Malaysia</td>
+              <td>123456</td>
+              <td>3/13/2020</td>
             </tr>
             <tr>
-              <th scope="row">223124</th>
-              <td>Jacob</td>
-              <td>19</td>
-              <td>8</td>
-              <td>31</td>
-              <td>2</td>
-              <td>89</td>
-              <td>9</td>
-              <td>132</td>
+              <th scope="row">113214</th>
+              <td>Adam Lamberg</td>
+              <td>Health Science</td>
+              <td>Bachelor of Health Science</td>
+              <td>Indonesia</td>
+              <td>123457</td>
+              <td>12/14/2020</td>
             </tr>
           </tbody>
         </table>
@@ -82,7 +76,7 @@
       </div>
       <!--card-body-->
 
-      <div class="card-body">
+      {{-- <div class="card-body">
         <div className="container-fluid mt-5">
           <div className="row">
             <main role="main" className="col-lg-12 d-flex text-center">
@@ -101,7 +95,7 @@
             </main>
           </div>
         </div>
-      </div>
+      </div> --}}
 
 
 

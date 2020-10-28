@@ -35,7 +35,7 @@
                                     @if(!count($rectors))
                                     @else
                                     <tr>
-                                      <th>{{$rector->id}}</th>
+                                      <th>{{$loop->iteration}}</th>
                                       <th>{{$rector->name}}</th>
                                       <td>
                                         <img src="{{ asset("storage/$rector->signature") }}" height="50" width="100">

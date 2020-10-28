@@ -7,6 +7,7 @@ use App\Http\Controllers\Backend\DeanController;
 use App\Http\Controllers\Backend\DepartmentController;
 use App\Http\Controllers\Backend\BachelorController;
 use App\Http\Controllers\Backend\TemplateController;
+use App\Http\Controllers\Backend\ExcelTypoController;
 use App\Http\Controllers\Backend\DigitalCertificateController;
 use App\Http\Controllers\Backend\CsvController;
 use App\Http\Controllers\Backend\UniversityController;
@@ -18,6 +19,12 @@ Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard'
 Route::get('dashboard/sign-pdf', [DashboardController::class, 'sign_pdf'])->name('sign-pdf');
 Route::get('dashboard/test', [DashboardController::class, 'test']);
 // Route::get('dashboard/test/activate', [FacultyController::class, 'sign_pdf']);
+
+Route::get('check', [ExcelTypoController::class, 'index'])->name('check.index');
+Route::get('check/faculty/{faculty}', [ExcelTypoController::class, 'faculty'])->name('check.faculty');
+Route::get('check/programme/{programme}', [ExcelTypoController::class, 'programme'])->name('check.programme');
+Route::get('check/citizenship/{citizenship}', [ExcelTypoController::class, 'citizenship'])->name('check.citizenship');
+Route::post('check/update/{id}', [ExcelTypoController::class, 'update'])->name('check.update');
 
 Route::get('rector', [RectorController::class, 'view_rector'])->name('view-rector');
 Route::get('rector/add', [RectorController::class, 'add_rector'])->name('add-rector');
