@@ -84,6 +84,7 @@
     <!-- <script type="module" src="https://unpkg.com/ipfs/dist/index.min.js"></script> -->
     <script type="module" src="{{ asset('js/blockchain.js') }}" defer></script>
     <script type="module" src="{{ asset('js/ipfs.js') }}" defer></script>
+    <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
     @stack('after-scripts')
 </body>
 </html>

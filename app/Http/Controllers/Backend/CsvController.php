@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers\Backend;
 
+use Carbon\Carbon;
+use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\WithBatchInserts;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Export\CsvImport;
@@ -23,14 +27,8 @@ class CsvController extends Controller
 
     public function store_csv(){
  		
- 		Excel::import(new StudentsImport, request()->file('file'));
-        $students = Student::whereNull('uuid')->get();
-
-        foreach ($students as $student) {
-            $uuid = Uuid::uuid4();
-            $uuid = $uuid->toString();
-            $student->update(['uuid' => $uuid]);
-        }
-    	return redirect('/admin/faculty');
+         Excel::import(new StudentsImport, request()->file('file'));
+         
+    	return redirect('/admin/check');
     }
 }

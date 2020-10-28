@@ -192,6 +192,7 @@ return [
         Maatwebsite\Excel\ExcelServiceProvider::class,
         SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
         Elibyy\TCPDF\ServiceProvider::class,
+        Yajra\DataTables\DataTablesServiceProvider::class,
     
 
         // Package Service Providers that aren't auto-discover...
