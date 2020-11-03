@@ -38,6 +38,12 @@ class UserTableSeeder extends Seeder
             'confirmed' => true,
         ]);
 
+        University::create([
+            'name'      => 'International Islamic University Malaysia',
+            'acronym'   => 'IIUM',
+            'user_id'   => 2,
+        ]);
+
         User::create([
             'first_name' => 'USM',
             'last_name' => 'University',
@@ -47,6 +53,12 @@ class UserTableSeeder extends Seeder
             'confirmed' => true,
         ]);
 
+        University::create([
+            'name'      => 'University Science Malaysia',
+            'acronym'   => 'USM',
+            'user_id'   => 3,
+        ]);
+
         User::create([
             'first_name' => 'UM',
             'last_name' => 'University',
@@ -54,6 +66,12 @@ class UserTableSeeder extends Seeder
             'password' => 'secret',
             'confirmation_code' => md5(uniqid(mt_rand(), true)),
             'confirmed' => true,
+        ]);
+
+        University::create([
+            'name'      => 'University Malaya',
+            'acronym'   => 'UM',
+            'user_id'   => 4,
         ]);
 
         User::create([

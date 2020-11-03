@@ -12,4 +12,9 @@ class Faculty extends Model
      	'user_id',
         'name',
     ];
+
+    public function student()
+    {
+        return $this->hasMany('App\Models\Student');
+    }
 }

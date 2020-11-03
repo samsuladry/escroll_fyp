@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Faculty;
 use App\Models\Dean;
+use App\Models\Student;
 
 class DeanController extends Controller
 {
@@ -32,6 +33,16 @@ class DeanController extends Controller
 
         $dean = Dean::create($request->all());
         $dean->update(['signature'=> $request->file('signature')->store('dean', 'public')]);
+        
+        $students = Student::where('faculty_id', $faculty->id)
+                           ->where('university_id', auth()->user()->university->id)
+                           ->get();
+
+        foreach($students as $student){
+            $student->dean_id = $dean->id;
+            $student->save();
+        }
+
         return redirect()->route('admin.view-dean', [$faculty]);
     }
 
@@ -48,5 +59,20 @@ class DeanController extends Controller
         }
         
         return redirect()->route('admin.view-dean', [$faculty]);
+    }
+
+    public function activate_dean(Faculty $faculty, Dean $dean){
+        $deans = Dean::where('id', '!=', $dean->id)
+                     ->where('faculty_id', $faculty->id)
+                     ->get();
+
+        foreach($deans as $data){
+            $data->active = 0;
+            $data->save();
+        }
+
+        $dean->active = !$dean->active;
+        $dean->save();
+        return redirect()->back();
     }
 }

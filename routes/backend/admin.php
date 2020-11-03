@@ -25,6 +25,9 @@ Route::get('check/faculty/{faculty}', [ExcelTypoController::class, 'faculty'])->
 Route::get('check/programme/{programme}', [ExcelTypoController::class, 'programme'])->name('check.programme');
 Route::get('check/citizenship/{citizenship}', [ExcelTypoController::class, 'citizenship'])->name('check.citizenship');
 Route::post('check/update/{id}', [ExcelTypoController::class, 'update'])->name('check.update');
+Route::post('check/import/faculty/{faculty}', [ExcelTypoController::class, 'importFaculty'])->name('check.faculty.import');
+Route::post('check/import/programme/{programme}', [ExcelTypoController::class, 'importProgramme'])->name('check.programme.import');
+Route::post('check/import/citizenship/{citizenship}', [ExcelTypoController::class, 'importCitizenship'])->name('check.citizenship.import');
 
 Route::get('rector', [RectorController::class, 'view_rector'])->name('view-rector');
 Route::get('rector/add', [RectorController::class, 'add_rector'])->name('add-rector');
@@ -45,6 +48,7 @@ Route::get('faculty/{faculty}/dean/add', [DeanController::class, 'add_dean'])->n
 Route::post('faculty/{faculty}/dean/store', [DeanController::class, 'store_dean'])->name('store-dean');
 Route::get('faculty/{faculty}/dean/{dean}/edit', [DeanController::class, 'edit_dean'])->name('edit-dean');
 Route::put('faculty/{faculty}/dean/{dean}', [DeanController::class, 'update_dean'])->name('update-dean');
+Route::post('faculty/{faculty}/dean/{dean}/activate', [DeanController::class, 'activate_dean'])->name('activate-dean');
 
 Route::get('faculty/{faculty}/department', [DepartmentController::class, 'index'])->name('view-department');
 Route::get('faculty/{faculty}/department/add', [DepartmentController::class, 'add_department'])->name('add-department');

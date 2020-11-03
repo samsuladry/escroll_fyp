@@ -11,6 +11,10 @@
             <div class="card text-center">
                 <div class="card-header">
                     <strong>Students for Faculty {{ucwords(str_replace('-', ' ', $faculty)) }}</strong>
+                    <form action="{{ route('admin.check.faculty.import', $faculty) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn btn-sm btn-success">Import & generate QR</button>
+                    </form>
                 </div>
                 <div class="card-body">
                     <div class="col-lg-12">

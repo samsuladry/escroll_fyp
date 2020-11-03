@@ -41,7 +41,7 @@
                                         </a>
 
                                         <a href="{{url('admin/faculty/'.$faculty->id.'/department')}}">
-                                          <button class="btn btn-primary">List Department</button>
+                                          <button class="btn btn-primary">List Bachelor</button>
                                         </a>
 
 

@@ -7,10 +7,10 @@
         <div class="col">
             <div class="card text-center">
                 <div class="card-header">
-                    <strong>Department</strong>
+                    <strong>Bachelors</strong>
 
                     <a style="float: right;" href="{{url('admin/faculty/'.$faculty->id.'/department/add')}}">
-                        <button class="btn btn-sm btn-success">Add Department</button>
+                        <button class="btn btn-sm btn-success">Add Bachelor</button>
                     </a>
 
                 </div>
@@ -40,9 +40,9 @@
                                           <button class="btn btn-info">Edit</button>
                                         </a>
 
-                                         <a href="{{url('admin/faculty/'.$faculty->id.'/department/'.$department->id.'/bachelor')}}">
+                                         {{-- <a href="{{url('admin/faculty/'.$faculty->id.'/department/'.$department->id.'/bachelor')}}">
                                           <button class="btn btn-primary">View Bachelor</button>
-                                        </a>
+                                        </a> --}}
 
                                         <a href="{{url('admin/faculty/'.$faculty->id.'/department/'.$department->id.'/graduate')}}">
                                           <button class="btn btn-success">Graduate Student

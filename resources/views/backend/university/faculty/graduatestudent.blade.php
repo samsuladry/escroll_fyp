@@ -59,7 +59,7 @@
               <tr>
                 <th scope="col">Matric Number</th>
                 <th scope="col">Name</th>
-                <th scope="col">Field</th>
+                <th scope="col">Bachelor</th>
                 <th scope="col">QR Code</th>
                 <th scope="col">Action</th>
               </tr>
@@ -69,11 +69,11 @@
               <tr>
                 <th>{{$student->matric_number}}</th>
                 <td>{{$student->name}}</td>
-                <td>{{$student->graduate_field->title}}</td>
+                <td>{{$student->department->name}}</td>
                 <td>
                   @if($student->qr_code_path == NULL)
                   @else
-                  <img height="80" width="80" src="{{ asset("storage/$student->qr_code_path") }}">
+                  <img width="100px" height="100px"src="/{{ $student->qr_code_path }}">
                   @endif
                 </td>
 

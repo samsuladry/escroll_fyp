@@ -16,4 +16,9 @@ class User extends BaseUser
         UserMethod,
         UserRelationship,
         UserScope;
+
+    public function university()
+    {
+        return $this->hasOne('App\Models\University');
+    }
 }

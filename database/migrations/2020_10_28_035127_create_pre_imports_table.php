@@ -23,6 +23,7 @@ class CreatePreImportsTable extends Migration
             $table->string('serial_no');
             $table->string('date_endorse');
             $table->unsignedBigInteger('user_id');
+            $table->tinyInteger('is_import')->default(0);
             $table->timestamps();
 
             $table->foreign('user_id')

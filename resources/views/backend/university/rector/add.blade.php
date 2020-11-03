@@ -14,6 +14,8 @@
                     <form action="{{url('admin/rector/store')}}" method="POST" enctype="multipart/form-data">
                         @csrf
 
+                        <input type="hidden" name="university_id" value="{{auth()->user()->university->id }}">
+                        <input type="hidden" name="active" value="1">
                          <input type="text" name="user_id" style="display: none;" value="{{$logged_in_user->id}}">
                       <div class="form-group">
                         <label>Full Name</label>

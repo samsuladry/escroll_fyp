@@ -15,6 +15,7 @@
                         @csrf
 
                       <input type="text" name="faculty_id" style="display: none;" value="{{$faculty->id}}">
+                      <input type="hidden" name="active" value="1">
                       
                       <div class="form-group">
                         <label>Dean Name</label>
