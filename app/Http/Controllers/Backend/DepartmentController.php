@@ -48,7 +48,7 @@ class DepartmentController extends Controller
     public function view_department_graduate(Faculty $faculty, Department $department){
 
         $user_id = Auth::id();
-        $students = Student::where('university_id', $user_id)->where('faculty_id', $faculty->id)->where('department_id', $department->id)->get();
+        $students = Student::where('university_id', auth()->user()->university->id)->where('faculty_id', $faculty->id)->where('department_id', $department->id)->get();
 
         return view('backend.university.department.graduatestudent', compact('students','faculty','department'));
     }

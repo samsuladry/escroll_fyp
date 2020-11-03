@@ -54,8 +54,8 @@ class FacultyController extends Controller
     public function view_faculty_graduate(Faculty $faculty){
 
         $user_id = Auth::id();
-        $students = Student::where('university_id', $user_id)->where('faculty_id', $faculty->id)->get();
-        
+        $students = Student::where('university_id', auth()->user()->university->id)->where('faculty_id', $faculty->id)->get();
+
         return view('backend.university.faculty.graduatestudent', compact('students','faculty'));
     }
 

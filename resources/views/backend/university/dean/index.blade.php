@@ -33,17 +33,23 @@
                                     @if(!count($deans))
                                     @else
                                     <tr>
-                                      <th>{{$dean->id}}</th>
+                                      <th>{{$loop->iteration}}</th>
                                       <th>{{$dean->name}}</th>
                                       <td>
                                         <img src="{{ asset("storage/$dean->signature") }}" height="50" width="100">
                                       </td>
                                       <td>
-
-                                        <a href="{{url('admin/faculty/'.$faculty->id.'/dean/'.$dean->id.'/edit')}}">
-                                          <button class="btn btn-info">Edit</button>
-                                        </a>
-
+                                        <div class="row">
+                                          <a href="{{url('admin/faculty/'.$faculty->id.'/dean/'.$dean->id.'/edit')}}">
+                                            <button class="btn btn-info">Edit</button>
+                                          </a>
+  
+                                          <form action="{{ route('admin.activate-dean', [$faculty->id, $dean->id]) }}" method="post">
+                                            @csrf
+                                            <button type="submit" class="btn {{ ($dean->active)? 'btn-success' : 'btn-warning' }}">{{ ($dean->active)? 'Activated' : 'Deactivated' }}</button>
+                                          </form>
+                                        </div>
+                                        
                                       </td>
                         
                                     </tr>

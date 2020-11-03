@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CreateDeanTable extends Migration
 {
@@ -17,7 +18,9 @@ class CreateDeanTable extends Migration
             $table->bigIncrements('id');
             $table->string('faculty_id');
             $table->string('name');
-            $table->string('signature');
+            $table->string('signature')->nullable();
+            $table->tinyInteger('active')->default(0);
+            $table->softDeletes();
             $table->timestamps();
         });
     }

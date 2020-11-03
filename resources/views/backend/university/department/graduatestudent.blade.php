@@ -31,11 +31,11 @@
                                     <tr>
                                       <th>{{$student->matric_number}}</th>
                                       <td>{{$student->name}}</td>
-                                      <td>{{$student->graduate_field->title}}</td>
+                                      <td>{{$student->department->name}}</td>
                                       <td>
                                           @if($student->qr_code_path == NULL)
                                           @else
-                                          <img height="80" width="80" src="{{ asset("storage/$student->qr_code_path") }}">
+                                          <img height="80" width="80" src="/{{ $student->qr_code_path }}">
                                           @endif
                                       </td>
                                       
