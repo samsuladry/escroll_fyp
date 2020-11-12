@@ -66,7 +66,7 @@
 
           <form action="{{url('admin/import-csv/store')}}" method="POST" enctype="multipart/form-data" style="margin-top: 1em;">
             @csrf
-            <input type="file" name="file" accept=".csv">
+            <input type="file" name="file" accept=".xlsx, .xls">
             <br>
             <button class=" btn btn-success" style="margin-top: 1em;">Upload</button>
           </form>

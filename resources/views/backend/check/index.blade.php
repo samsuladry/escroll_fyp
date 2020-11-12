@@ -3,9 +3,6 @@
 @section('title', app_name() . ' | ' . __('Check Typo'))
 
 @section('content')
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <div class="row">
         <div class="col">
             <div class="card text-center">
@@ -17,13 +14,13 @@
                 </div>
                 <div class="card-body">
                     <ul class="nav nav-tabs">
-                        <li class="active"><a data-toggle="tab" href="#faculty">Faculty</a></li>
-                        <li><a data-toggle="tab" href="#programme">Programme</a></li>
-                        <li><a data-toggle="tab" href="#citizenship">Citizenship</a></li>
+                        <li class="active nav-item"><a data-toggle="tab" href="#faculty" class="btn btn-outline-info active">Faculty</a></li>
+                        <li class="nav-item"><a data-toggle="tab" href="#programme" class="btn btn-outline-info">Programme</a></li>
+                        <li class="nav-item"><a data-toggle="tab" href="#citizenship" class="btn btn-outline-info">Citizenship</a></li>
                     </ul>
                     <div class="tab-content">
                         <div id="faculty" class="tab-pane fade in active show">
-							<table class="table table-striped table-bordered">
+							<table class="table table-striped table-bordered" id="faculty-table">
 								<thead>
 									<tr>
 										<th scope="col">No</th>
@@ -42,10 +39,10 @@
 									</tr>
 								@endforeach
 								</tbody>
-							</table>
+                            </table>
                         </div>
                         <div id="programme" class="tab-pane fade in">
-							<table class="table table-striped table-bordered">
+							<table class="table table-striped table-bordered" id="programme-table">
 								<thead>
 									<tr>
 										<th scope="col">No</th>
@@ -64,10 +61,10 @@
 									</tr>
 								@endforeach
 								</tbody>
-							</table>
+                            </table>
                         </div>
                         <div id="citizenship" class="tab-pane fade in">
-							<table class="table table-striped table-bordered">
+							<table class="table table-striped table-bordered" id="citizenship-table">
 								<thead>
 									<tr>
 										<th scope="col">No</th>
@@ -88,11 +85,19 @@
 
 								@endforeach
 								</tbody>
-							</table>
+                            </table>
                         </div>
                     </div>
                 </div><!--card-body-->
             </div><!--card-->
         </div><!--col-->
     </div><!--row-->
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#faculty-table').DataTable();
+            $('#programme-table').DataTable();
+            $('#citizenship-table').DataTable();
+        });
+    </script>
 @endsection

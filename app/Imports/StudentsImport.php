@@ -10,9 +10,10 @@ use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithStartRow;
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 
-class StudentsImport implements ToModel, WithBatchInserts, WithChunkReading, WithStartRow
+class StudentsImport implements ToModel, WithBatchInserts, WithChunkReading, WithStartRow, WithHeadingRow
 {
     /**
     * @param array $row
@@ -21,15 +22,27 @@ class StudentsImport implements ToModel, WithBatchInserts, WithChunkReading, Wit
     */
     public function model(array $row)
     {
-        $date = Date::excelToDateTimeObject($row[6]);
+        if(!isset($row['matric_no'])) return null;
+        if(!isset($row['name'])) return null;
+        if(!isset($row['faculty'])){
+            if(!isset($row['kulliyyah'])){
+                return null;
+            }
+        }
+        if(!isset($row['programme'])) return null;
+        if(!isset($row['citizenship'])) return null;
+        if(!isset($row['serial_no'])) return null;
+        if(!isset($row['date_endorse'])) return null;
+
+        $date = Date::excelToDateTimeObject($row['date_endorse']);
 
         return new PreImport([
-            'matric_no'     => $row[0],
-            'name'          => $row[1],
-            'faculty'       => $row[2],
-            'programme'     => $row[3],
-            'citizenship'   => $row[4],
-            'serial_no'     => $row[5],
+            'matric_no'     => $row['matric_no'] ?? $row['matrik_no'] ?? $row['matric_number'] ?? $row['nombor_matrik'] ?? $row['matric_num'],
+            'name'          => $row['name'] ?? $row['nama'],
+            'faculty'       => $row['faculty'] ?? $row['faculti'] ?? $row['fakulty'] ?? $row['fakulti'] ?? $row['kulliyyah'] ?? $row['kuliyyah'] ?? $row['kuliyah'] ?? $row['kulliyah'] ,
+            'programme'     => $row['programme'] ?? $row['program'] ?? $row['bachelor'] ?? $row['major'],
+            'citizenship'   => $row['citizenship'] ?? $row['nationality'],
+            'serial_no'     => $row['serial_no'],
             'date_endorse'  => Carbon::parse($date),
             'user_id'       => Auth::id(),
         ]);

@@ -17,15 +17,28 @@ use App\Http\Controllers\Backend\DashboardController;
 
 class FacultyController extends Controller
 {
-    public function view_faculty(){
-
+    public function view_faculty(Request $request)
+    {
         $user_id = Auth::id();
-        $faculties = Faculty::where('user_id', $user_id)->get();
-        return view('backend.university.faculty.index')->with(compact('faculties'));
+        $search = '';
+
+        if(isset($request->search)){
+            $search = $request->search;
+            $faculties = Faculty::where('user_id', $user_id)
+                                ->where(function ($query) use ($search) {
+                                    $query->where('name', 'like', '%'.$search.'%');
+                                })
+                                ->paginate(15);
+        }
+        else{
+            $faculties = Faculty::where('user_id', $user_id)->paginate(15);
+        }
+
+        return view('backend.university.faculty.index')->with(compact('faculties', 'search'));
     }
 
-    public function add_faculty(){
-
+    public function add_faculty()
+    {
         return view('backend.university.faculty.add');
     }
 
@@ -40,27 +53,53 @@ class FacultyController extends Controller
         return redirect('admin/faculty');
     }
 
-      public function edit_faculty(Faculty $faculty){
-
+      public function edit_faculty(Faculty $faculty)
+      {
         return view('backend.university.faculty.edit')->with(compact('faculty'));
     }
 
-      public function update_faculty(Request $request,Faculty $faculty){
-
+      public function update_faculty(Request $request,Faculty $faculty)
+      {
         $faculty->update($request->all());
+
         return redirect('admin/faculty');
     }
 
-    public function view_faculty_graduate(Faculty $faculty){
-
+    public function view_faculty_graduate(Request $request, Faculty $faculty)
+    {
         $user_id = Auth::id();
-        $students = Student::where('university_id', auth()->user()->university->id)->where('faculty_id', $faculty->id)->get();
 
-        return view('backend.university.faculty.graduatestudent', compact('students','faculty'));
+        $search = '';
+
+        if(isset($request->search)){
+            $search = $request->search;
+            $students = Student::where('university_id', auth()->user()->university->id)
+                               ->where('students.faculty_id', $faculty->id)
+                               ->leftJoin('department', 'department.id', '=', 'students.department_id')
+                               ->where(function ($query) use ($search) {
+                                    $query->where('students.name', 'like', '%'.$search.'%')
+                                          ->orWhere('students.matric_number', 'like', '%'.$search.'%')
+                                          ->orWhere('department.name', 'like', '%'.$search.'%');
+                               })
+                               ->select('students.id', 'students.name', 'students.matric_number', 'students.qr_code_path', 'students.department_id')
+                               ->orderBy('pdf_doc_path')
+                               ->orderBy('students.name')
+                               ->paginate(15);
+        }
+        else{
+            $students = Student::where('university_id', auth()->user()->university->id)
+                               ->where('faculty_id', $faculty->id)
+                               ->orderBy('pdf_doc_path')
+                               ->orderBy('students.name')
+                               ->paginate(15);
+        }
+        
+
+        return view('backend.university.faculty.graduatestudent', compact('students','faculty', 'search'));
     }
 
-    public function activate_faculty_graduate(Request $request){      
-
+    public function activate_faculty_graduate(Request $request)
+    {      
         // $extension = $request->file('certificate')->getClientOriginalExtension();
 
         // $filename = uniqid().'.'.$extension; 
@@ -95,27 +134,27 @@ class FacultyController extends Controller
 
         if(count($students)){
         
-        foreach ($students as $student) {
+        foreach ($students->chunk(500) as $student) {
 
-        $qr_code_key = $student->uuid;
-        $id = $student->id;
+            $qr_code_key = $student->uuid;
+            $id = $student->id;
 
-        $image = QrCode::format('png')
-                 ->size(200)->errorCorrection('H')
-                 ->generate($qr_code_key);
+            $image = QrCode::format('png')
+                    ->size(200)->errorCorrection('H')
+                    ->generate($qr_code_key);
 
 
-        $image_name = 'img-'.$qr_code_key.'-' . time() . '.png';
-        $directory = "qr-code";
-        $path = "/public/$directory/$image_name";
+            $image_name = 'img-'.$qr_code_key.'-' . time() . '.png';
+            $directory = "qr-code";
+            $path = "/public/$directory/$image_name";
 
-        $image_storage_path = "qr-code/$image_name";
+            $image_storage_path = "qr-code/$image_name";
 
-        $qrcode = Storage::disk('local')->put($path, $image);
+            $qrcode = Storage::disk('local')->put($path, $image);
 
-        DB::table('students')->where('id', $id)
-        ->update(['qr_code_path' => $image_storage_path]);
-        }
+            DB::table('students')->where('id', $id)
+            ->update(['qr_code_path' => $image_storage_path]);
+            }
         }
 
     }

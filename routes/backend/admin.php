@@ -34,6 +34,7 @@ Route::get('rector/add', [RectorController::class, 'add_rector'])->name('add-rec
 Route::post('rector/store', [RectorController::class, 'store_rector'])->name('store-rector');
 Route::get('rector/{rector}/edit', [RectorController::class, 'edit_rector'])->name('edit-rector');
 Route::put('rector/{rector}', [RectorController::class, 'update_rector'])->name('update-rector');
+Route::post('rector/{rector}/activate', [RectorController::class, 'activate_rector'])->name('activate-rector');
 
 Route::get('faculty', [FacultyController::class, 'view_faculty'])->name('view-faculty');
 Route::get('faculty/add', [FacultyController::class, 'add_faculty'])->name('add-faculty');
@@ -71,9 +72,8 @@ Route::post('template/store', [TemplateController::class, 'store_template'])->na
 Route::get('template/{template}/edit', [TemplateController::class, 'edit_template'])->name('edit-template');
 Route::put('template/{template}', [TemplateController::class, 'update_template'])->name('update-template');
 
-
-Route::get('import-csv', [CsvController::class, 'import_csv'])->name('import-csv');
 Route::post('import-csv/store', [CsvController::class, 'store_csv']);
+Route::get('import-csv', [CsvController::class, 'import_csv'])->name('import-csv');
 
 Route::get('gradute-student', [DashboardController::class, 'graduate_student'])->name('graduate-student');
 Route::get('gradute-student/{student}/view-cert', [DashboardController::class, 'view_cert'])->name('view-cert');

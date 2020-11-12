@@ -21,4 +21,9 @@ class Rector extends Model
     {
         return $this->hasMany('App\Models\Student');
     }
+
+    public function university()
+    {
+        return $this->hasOne('App\Models\University');
+    }
 }

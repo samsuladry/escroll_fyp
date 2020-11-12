@@ -43,14 +43,14 @@ class ExcelTypoController extends Controller
     public function update(Request $request, $student){
 
         $student = PreImport::find($student);
-
+        
         $student->matric_no     = $request->matric_no;
         $student->name          = $request->name;
         $student->faculty       = $request->faculty;
         $student->programme     = $request->programme;
         $student->citizenship   = $request->citizenship;
         $student->serial_no     = $request->serial_no;
-        $student->date_endorse  = $request->date_endorse;
+        $student->date_endorse  = Carbon::parse($request->date_endorse);
         $student->save();
 
         return redirect()->back()->with('flash_success', 'Successfully updated');
@@ -73,6 +73,7 @@ class ExcelTypoController extends Controller
 
         $importData = PreImport::where('faculty', ucwords(str_replace('-', ' ', $filter)))
                                ->where('user_id', Auth::id())
+                               ->where('is_import', 0)
                                ->get();
 
         $insert_data = collect();
@@ -119,125 +120,222 @@ class ExcelTypoController extends Controller
             \DB::table('students')->insert($chunk->toArray());
         }
 
-        return redirect()->route('admin.dashboard')->with('flash_success', 'Success import');
+        return redirect()->route('admin.check.index')->with('flash_success', 'Success import');
     }
 
-    public function importProgramme(Request $request, $filter){
+    public function importProgramme(Request $request, $filter)
+    {
+        $university_id = auth()->user()->university->id;
+
+        $importData = PreImport::where('programme', str_replace('-', ' ', $filter))
+                               ->where('user_id', Auth::id())
+                               ->where('is_import', 0)
+                               ->get();
+
+        $insert_data = collect();
+
+        foreach($importData as $data){
+            $faculty = Faculty::where('name', $data->faculty)
+                              ->where('user_id', Auth::id())
+                              ->first();
+            
+            if(is_null($faculty)){
+                $faculty = Faculty::create([
+                    'user_id'       => Auth::id(),
+                    'name'          => $data->faculty,
+                ]);
+            }
+
+            $dean = Dean::where('faculty_id', $faculty->id)
+                        ->where('active', 1)
+                        ->first();
+
+            $programme = Department::where('faculty_id', $faculty->id)
+                                   ->where('name', str_replace('-', ' ', $filter))
+                                   ->first();
+            
+            if(is_null($programme)){
+                $programme = Department::create([
+                    'faculty_id'    => $faculty->id,
+                    'name'          => $data->programme,
+                ]);
+            }
+
+            $path = public_path('qrcode\\'.auth()->user()->university->name.'\\'.$faculty->name);
+
+            if(!File::exists($path)){
+                File::makeDirectory($path, 0777, true, true);
+            }
+
+            QrCode::size(100)->format('png')->generate(auth()->user()->uuid.'/'.$data->matric_no, $path.'\\'.$data->matric_no.'.png');
+
+            $insert_data->push([
+                'matric_number'     => $data->matric_no,
+                'name'              => $data->name,
+                'university_id'     => $university_id,
+                'faculty_id'        => $faculty->id,
+                'department_id'     => $programme->id,
+                'dean_id'           => (is_null($dean))? null : $dean->id,
+                'qr_code_path'      => 'qrcode\\'.auth()->user()->university->name.'\\'.$faculty->name.'\\'.$data->matric_no.'.png',
+            ]);  
+
+            $data->is_import = 1;
+            $data->save();
+        }
+
+        foreach($insert_data->chunk(500) as $chunk){
+            \DB::table('students')->insert($chunk->toArray());
+        }
+
+        return redirect()->route('admin.check.index')->with('flash_success', 'Success import');
 
     }
 
-    public function importCitizenship(Request $request, $filter){
+    public function importCitizenship(Request $request, $filter)
+    {
+        $university_id = auth()->user()->university->id;
 
+        $importData = PreImport::where('citizenship', str_replace('-', ' ', $filter))
+                               ->where('user_id', Auth::id())
+                               ->where('is_import', 0)
+                               ->get();
+
+        $insert_data = collect();
+
+        foreach($importData as $data){
+            $faculty = Faculty::where('name', $data->faculty)
+                              ->where('user_id', Auth::id())
+                              ->first();
+            
+            if(is_null($faculty)){
+                $faculty = Faculty::create([
+                    'user_id'       => Auth::id(),
+                    'name'          => $data->faculty,
+                ]);
+            }
+
+            $dean = Dean::where('faculty_id', $faculty->id)
+                        ->where('active', 1)
+                        ->first();
+
+            $programme = Department::where('faculty_id', $faculty->id)
+                                   ->where('name', str_replace('-', ' ', $filter))
+                                   ->first();
+            
+            if(is_null($programme)){
+                $programme = Department::create([
+                    'faculty_id'    => $faculty->id,
+                    'name'          => $data->programme,
+                ]);
+            }
+
+            $path = public_path('qrcode\\'.auth()->user()->university->name.'\\'.$faculty->name);
+
+            if(!File::exists($path)){
+                File::makeDirectory($path, 0777, true, true);
+            }
+
+            QrCode::size(100)->format('png')->generate(auth()->user()->uuid.'/'.$data->matric_no, $path.'\\'.$data->matric_no.'.png');
+
+            $insert_data->push([
+                'matric_number'     => $data->matric_no,
+                'name'              => $data->name,
+                'university_id'     => $university_id,
+                'faculty_id'        => $faculty->id,
+                'department_id'     => $programme->id,
+                'dean_id'           => (is_null($dean))? null : $dean->id,
+                'qr_code_path'      => 'qrcode\\'.auth()->user()->university->name.'\\'.$faculty->name.'\\'.$data->matric_no.'.png',
+            ]);  
+
+            $data->is_import = 1;
+            $data->save();
+        }
+
+        foreach($insert_data->chunk(500) as $chunk){
+            \DB::table('students')->insert($chunk->toArray());
+        }
+
+        return redirect()->route('admin.check.index')->with('flash_success', 'Success import');
     }
 
     public function faculty(Request $request, $faculty)
     {
-        $students = PreImport::where('faculty', ucwords(str_replace('-', ' ', $faculty)))
-                             ->where('user_id', Auth::id())
-                             ->get();
-        
-        if ($request->ajax()) {
-            return Datatables::of($students)
-            ->addColumn('matric_no', function($students) {
-                return $students->matric_no;
-            })
-            ->addColumn('name', function($students) {
-                return $students->name;
-            })
-            ->addColumn('programme', function($students) {
-                return $students->programme;
-            })
-            ->addColumn('citizenship', function($students) {
-                return $students->citizenship;
-            })
-            ->addColumn('serial_no', function($students) {
-                return $students->serial_no;
-            })
-            ->addColumn('date_endorse', function($students) {
-                return Carbon::parse($students->date_endorse)->format('d-m-Y');
-            })
-            ->addColumn('actions', function($students) {
-                 return view('backend.check.partials.action', compact('students'));
-            })
-            // ->rawColumns(['actions', 'section_head', 'is_active', 'description'])
-            ->addIndexColumn()
-            ->make(true);
+        $search = '';
+        if(isset($request->search)){
+            $search = $request->search;
+            $students = PreImport::where('faculty', ucwords(str_replace('-', ' ', $faculty)))
+                                 ->where('user_id', Auth::id())
+                                 ->where('is_import', 0)
+                                 ->where(function ($query) use ($search) {
+                                    $query->where('name', 'like', '%'.$search.'%')
+                                          ->orWhere('programme', 'like', '%'.$search.'%')
+                                          ->orWhere('citizenship', 'like', '%'.$search.'%')
+                                          ->orWhere('serial_no', 'like', '%'.$search.'%')
+                                          ->orWhere('date_endorse', 'like', '%'.$search.'%');
+                                 })
+                                 ->paginate(15);
         }
+        else{
+            $students = PreImport::where('faculty', ucwords(str_replace('-', ' ', $faculty)))
+                                 ->where('user_id', Auth::id())
+                                 ->where('is_import', 0)
+                                 ->paginate(15);
+        }
+        
 
-        return view('backend.check.faculty', compact('students', 'faculty'));
+        return view('backend.check.faculty', compact('students', 'faculty', 'search'));
     }
 
     public function programme(Request $request, $programme)
     {
-        $students = PreImport::where('programme', strtoupper(str_replace('-', ' ', $programme)))
-                             ->where('user_id', Auth::id())
-                             ->get();
-
-        if ($request->ajax()) {
-            return Datatables::of($students)
-            ->addColumn('matric_no', function($students) {
-                return $students->matric_no;
-            })
-            ->addColumn('name', function($students) {
-                return $students->name;
-            })
-            ->addColumn('faculty', function($students) {
-                return $students->faculty;
-            })
-            ->addColumn('citizenship', function($students) {
-                return $students->citizenship;
-            })
-            ->addColumn('serial_no', function($students) {
-                return $students->serial_no;
-            })
-            ->addColumn('date_endorse', function($students) {
-                return Carbon::parse($students->date_endorse)->format('d-m-Y');
-            })
-            ->addColumn('actions', function($students) {
-                 return view('backend.check.partials.action', compact('students'));
-            })
-            // ->rawColumns(['actions', 'section_head', 'is_active', 'description'])
-            ->addIndexColumn()
-            ->make(true);
+        $search = '';
+        if(isset($request->search)){
+            $search = $request->search;
+            $students = PreImport::where('programme', strtoupper(str_replace('-', ' ', $programme)))
+                                 ->where('user_id', Auth::id())
+                                 ->where('is_import', 0)
+                                 ->where(function ($query) use ($search) {
+                                    $query->where('name', 'like', '%'.$search.'%')
+                                          ->orWhere('faculty', 'like', '%'.$search.'%')
+                                          ->orWhere('citizenship', 'like', '%'.$search.'%')
+                                          ->orWhere('serial_no', 'like', '%'.$search.'%')
+                                          ->orWhere('date_endorse', 'like', '%'.$search.'%');
+                                 })
+                                 ->paginate(15);
+        }
+        else{
+            $students = PreImport::where('programme', strtoupper(str_replace('-', ' ', $programme)))
+                                 ->where('user_id', Auth::id())
+                                 ->where('is_import', 0)
+                                 ->paginate(15);
         }
 
-        return view('backend.check.programme', compact('students', 'programme'));
+        return view('backend.check.programme', compact('students', 'programme', 'search'));
     }
 
     public function citizenship(Request $request, $citizenship)
     {
-        $students = PreImport::where('citizenship', ucwords(str_replace('-', ' ', $citizenship)))
-                             ->where('user_id', Auth::id())
-                             ->get();
-        
-        if ($request->ajax()) {
-            return Datatables::of($students)
-            ->addColumn('matric_no', function($students) {
-                return $students->matric_no;
-            })
-            ->addColumn('name', function($students) {
-                return $students->name;
-            })
-            ->addColumn('faculty', function($students) {
-                return $students->faculty;
-            })
-            ->addColumn('programme', function($students) {
-                return $students->programme;
-            })
-            ->addColumn('serial_no', function($students) {
-                return $students->serial_no;
-            })
-            ->addColumn('date_endorse', function($students) {
-                return Carbon::parse($students->date_endorse)->format('d-m-Y');
-            })
-            ->addColumn('actions', function($students) {
-                 return view('backend.check.partials.action', compact('students'));
-            })
-            // ->rawColumns(['actions', 'section_head', 'is_active', 'description'])
-            ->addIndexColumn()
-            ->make(true);
+        $search = '';
+        if(isset($request->search)){
+            $search = $request->search;
+            $students = PreImport::where('citizenship', ucwords(str_replace('-', ' ', $citizenship)))
+                                 ->where('user_id', Auth::id())
+                                 ->where('is_import', 0)
+                                 ->where(function ($query) use ($search) {
+                                    $query->where('name', 'like', '%'.$search.'%')
+                                          ->orWhere('faculty', 'like', '%'.$search.'%')
+                                          ->orWhere('programme', 'like', '%'.$search.'%')
+                                          ->orWhere('serial_no', 'like', '%'.$search.'%')
+                                          ->orWhere('date_endorse', 'like', '%'.$search.'%');
+                                 })
+                                 ->paginate(15);
         }
-
-        return view('backend.check.citizenship', compact('students', 'citizenship'));
+        else{
+            $students = PreImport::where('citizenship', ucwords(str_replace('-', ' ', $citizenship)))
+                                 ->where('user_id', Auth::id())
+                                 ->where('is_import', 0)
+                                 ->paginate(15);
+        }
+        return view('backend.check.citizenship', compact('students', 'citizenship', 'search'));
     }
 }
