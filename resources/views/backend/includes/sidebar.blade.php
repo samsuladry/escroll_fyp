@@ -19,24 +19,6 @@
 
             <li class="nav-item">
                 <a class="nav-link {{
-                    active_class(Route::is('admin/rector*'))
-                }}" href="{{ route('admin.view-rector') }}">
-                    <i class="nav-icon fas fa-list"></i>
-                    List Rector
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link {{
-                    active_class(Route::is('admin/faculty'))
-                }}" href="{{ route('admin.view-faculty') }}">
-                    <i class="nav-icon fas fa-list"></i>
-                    List Faculty
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link {{
                     active_class(Route::is('admin/import-csv'))
                 }}" href="{{ route('admin.import-csv') }}">
                     <i class="nav-icon fas fa-upload"></i>
@@ -50,6 +32,24 @@
                 }}" href="{{ route('admin.check.index') }}">
                     <i class="nav-icon fas fa-upload"></i>
                     Check Imported Data
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link {{
+                    active_class(Route::is('admin/rector*'))
+                }}" href="{{ route('admin.view-rector') }}">
+                    <i class="nav-icon fas fa-list"></i>
+                    List Rector
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link {{
+                    active_class(Route::is('admin/faculty'))
+                }}" href="{{ route('admin.view-faculty') }}">
+                    <i class="nav-icon fas fa-list"></i>
+                    List Faculty
                 </a>
             </li>
 

@@ -26,8 +26,12 @@ class CsvController extends Controller
     }
 
     public function store_csv(){
- 		
-         Excel::import(new StudentsImport, request()->file('file'));
+
+        request()->validate([
+            'file'  =>  'required|mimes:csv,xls,xlsx'
+        ]);
+
+        if(!Excel::import(new StudentsImport, request()->file('file'))) return redirect()->back()->with('flash-danger', 'Invalid import format!');
          
     	return redirect('/admin/check');
     }

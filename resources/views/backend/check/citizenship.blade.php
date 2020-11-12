@@ -10,25 +10,72 @@
         <div class="col">
             <div class="card text-center">
                 <div class="card-header">
-                    <strong>Students for Citizenship {{ucwords(str_replace('-', ' ', $citizenship)) }}</strong>
+                    <h3><strong>Students for Citizenship {{ucwords(str_replace('-', ' ', $citizenship)) }}</strong></h3>
+                    <form action="{{ route('admin.check.citizenship.import', $citizenship) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn btn-sm btn-success">Import & generate QR</button>
+                    </form>
                 </div>
                 <div class="card-body">
                     <div class="col-lg-12">
+                        <form action="{{ route('admin.check.citizenship', $citizenship) }}" method="get">
+                            <input type="text" name="search" id="search" value="{{ $search }}">
+                            <a href="{{ route('admin.check.citizenship', $citizenship) }}" class="btn btn-sm btn-info">Reset</a>
+                            <button type="submit" class="btn btn-sm btn-info">Search</button>
+                        </form>
+                        <br>
+                        <div class="row row-cols-3">
+                            <div class="col text-left">
+                                Showing {{(is_null($students->firstItem()))? 0 : $students->firstItem()}} to {{(is_null($students->lastItem()))? 0 : $students->lastItem()}} of {{$students->total()}} students
+                            </div>
+                            <div class="col">
+                                Page {{$students->currentPage()}}
+                            </div>
+                            <div class="col justify-content-center">
+                                {{$students->appends(['search' => $search])->links()}}
+                            </div>
+                        </div>
+                        <br>
                         <div class="table-responsive-lg">
                             <table class="table table-striped table-bordered" id="students">
                                 <thead>
-                                <tr>
-                                    <th scope="col">ID</th>
-                                    <th scope="col">Matric Number</th>
-                                    <th scope="col">Name</th>
-                                    <th scope="col">Faculty</th>
-                                    <th scope="col">Programme</th>
-                                    <th scope="col">Serial_no</th>
-                                    <th scope="col">Date_endorse</th>
-                                    <th scope="col">Actions</th>
-                                </tr>
+                                    <tr>
+                                        <th scope="col">ID</th>
+                                        <th scope="col">Matric Number</th>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Faculty</th>
+                                        <th scope="col">Programme</th>
+                                        <th scope="col">Serial_no</th>
+                                        <th scope="col">Date_endorse</th>
+                                        <th scope="col">Actions</th>
+                                    </tr>
                                 </thead>
+                                <tbody>
+                                    @foreach ($students as $student)
+                                        <tr>
+                                            <th>{{$students->firstItem() + $loop->iteration - 1}}</th>
+                                            <td>{{$student->matric_no}}</td>
+                                            <td>{{$student->name}}</td>
+                                            <td>{{$student->faculty}}</td>
+                                            <td>{{$student->programme}}</td>
+                                            <td>{{$student->serial_no}}</td>
+                                            <td>{{$student->date_endorse}}</td>
+                                            <td>@include('backend.check.partials.action')</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
                             </table>
+                        </div>
+                        <div class="row row-cols-3">
+                            <div class="col text-left">
+                                Showing {{(is_null($students->firstItem()))? 0 : $students->firstItem()}} to {{(is_null($students->lastItem()))? 0 : $students->lastItem()}} of {{$students->total()}} students
+                            </div>
+                            <div class="col">
+                                Page {{$students->currentPage()}}
+                            </div>
+                            <div class="col justify-content-center">
+                                {{$students->appends(['search' => $search])->links()}}
+                            </div>
                         </div>
                     </div>
                 </div><!--card-body-->
@@ -36,28 +83,3 @@
         </div><!--col-->
     </div><!--row-->
 @endsection
-
-@push('after-scripts')
-<script>
-    $(document).ready(() => {
-        $('#students').DataTable({
-                processing: true,
-                serverSide: true,
-                pagingType: "full_numbers",
-                ajax: '{!! route('admin.check.citizenship', $citizenship) !!}',
-                columns: [
-                    { data: 'DT_RowIndex', name: 'DT_RowIndex' },
-                    { data: 'matric_no', name: 'matric_no' },
-                    { data: 'name', name: 'name' },
-                    { data: 'faculty', name: 'faculty' },
-                    { data: 'programme', name: 'programme' },
-                    { data: 'serial_no', name: 'serial_no' },
-                    { data: 'date_endorse', name: 'date_endorse' },
-                    { data: 'actions', name: 'actions' },
-                ],
-                aLengthMenu: [ [10, 20, 30, 40, 50,  -1], [10, 20, 30, 40, 50,  "All"] ],
-                iDisplayLength: 10,
-            });
-    });
-</script>
-@endpush

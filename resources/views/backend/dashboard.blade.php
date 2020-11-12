@@ -12,12 +12,12 @@
                   <!--card-header-->
                 <div class="card-body">
                     <div class="col-lg-12" style="margin-top: 1em;margin-bottom: 4em;">
-                        <form action="{{url('admin/import-csv/store')}}" method="POST" enctype="multipart/form-data" style="margin-top: 1em;">
-                        @csrf
-                        <input type="file" name="file" accept=".csv">
+                        {{-- <form action="{{url('admin/import-csv/store')}}" method="POST" enctype="multipart/form-data" style="margin-top: 1em;"> --}}
+                        {{-- @csrf --}}
+                        {{-- <input type="file" name="file" accept=".csv"> --}}
                         <br>
-                        <button class=" btn btn-success" style="margin-top: 1em;">Upload</button>
-                        </form>
+                        <a class=" btn btn-success" style="margin-top: 1em;" href="{{route('admin.import-csv') }}">Go to Upload</a>
+                        {{-- </form> --}}
             
             
                     </div>
