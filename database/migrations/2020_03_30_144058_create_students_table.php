@@ -25,7 +25,7 @@ class CreateStudentsTable extends Migration
             $table->string('template_id')->nullable();
             $table->string('qr_code_path')->nullable();
             $table->string('pdf_doc_path')->nullable();
-            $table->string('blockchain_path')->nullable();
+            $table->tinyInteger('is_import')->default(0);
             $table->timestamps();
         });
     }
