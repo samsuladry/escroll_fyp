@@ -16,20 +16,38 @@ function reqListener() {
 }
 
 var oReq = new XMLHttpRequest(); // New request object
+
+// current change: cant access var student_json without passing the data through function
 oReq.onload = function () {
 	// student data
 	// console.log(this.responseText);
-	var student_json = JSON.parse(this.responseText);
-	// init(student_json);
+	var xhttp = new XMLHttpRequest();
+	var student_json = '';
+	
+	console.log('before send');
+	xhttp.open('get', 'student', true); //admin/student -> admin.php
+	xhttp.send();
+	xhttp.onload = () => {
+        if(xhttp.status == 200 && xhttp.readyState == 4){
+			console.log('after send');
+			this.student_json = JSON.parse(xhttp.responseText);
+
+			console.log(this.student_json[0]);
+			init(this.student_json)
+        }
+    };
 };
+
+// current change: can't access this route through php artisan serve
 var url = "/e-scroll-lookup/app/Http/Controllers/Backend/Blockchain.php";
+
 oReq.open("get", url, true);
 
 oReq.send();
 
 
 
-
+// change: to new server
 // const web3 = new Web3(Web3.givenProvider || 'https://ropsten.infura.io/v3/6abc6ef995814f84950059729182f065');
 const web3 = new Web3(Web3.givenProvider || 'HTTP://127.0.0.1:7545')
 
@@ -67,12 +85,16 @@ getAllStudentMatricNumberInTheUniversity().then(function (result) {
 });
 
 
-// change display in table here
+// change: get no. iteration, get data bachelor, display qrcode, not qrcode's path
 async function displayStudent(input_matric, uniAddress) {
 	var printresult = "";
 	for (var i = 0; i < input_matric.length; i++) {
 		getStudentDetail(input_matric[i], uniAddress).then(function (result) {
-			printresult += "<tr><th>" + result[3] + "</th><td>" + result[2] + "</td><td>" + result[5] + "</td><td>" + "" + "</td><td>" + "" + "</td><td></tr>";
+			// console.log(result)
+			result[4] = JSON.parse(result[4])
+			// console.log(result[4].matric_number)
+
+			printresult += "<tr><th>" + i + "</th><td>" + result[2] + "</td><td>" + result[4].name + "</td><td>" + result[3] + "</td><td>" + result[4].qr_code_path + "</td><td></tr>";
 			document.getElementById("tablestudent").innerHTML = printresult;
 		});
 	}
@@ -80,16 +102,81 @@ async function displayStudent(input_matric, uniAddress) {
 
 
 //-------------- MAIN PART----------------
-const init = async () => {
-	// insertStudent("1", "Test 11", "hash", "jsondata");
-	let pelajar = await getStudentDetail("Test 11", uni_address)
+const init = async (student_json) => {
+
+
+	// insertUniversity("0", "0xc767f4D79FF02cD087219524524B925943DC924b", "IIUM")
+
+	// console.log(student_json[0].matric_number)
+	// send(student_json);
+
+	console.log(getAllStudentMatricNumberInTheUniversity())
+
+	insertAllStudent(student_json);
+
+	let pelajar = await getStudentDetail("1515680", uni_address)
 
 	console.log(pelajar)
 
 }
 
 setDefaultAccount();
-init();
+
+function send(student_json) {
+
+	//Insert university
+	// insertUniversity(count, '0x5078887dAb3E447891dAF39eE0043632EA3e2F9A', 'Samsul Adry') 
+
+	//Delete University
+	//deleteUniversity(count, "0x5078887dAb3E447891dAF39eE0043632EA3e2F9A")
+
+	//To update student details
+	// let matricNumber = "Test_10"
+	// let dataHash = "Updated data hash"
+	// let details = "Name: Muhammad Samsul Adry, Kulliyah: Kulliyah Of Information Technology, Major: Honour Bachelor in Computer Science, Specialized in Software Engineering"
+	// updateStudent(count, matricNumber, dataHash, details)
+
+
+}
+
+// current change: activate button on click
+function insertAllStudent(student_json) {
+	web3.eth.getTransactionCount(uni_address)
+		.then(count => {
+			let i = 0
+
+			// insertStudent
+			while (i < 1) {
+				// var test = JSON.stringify(student_json[0])
+				console.log(student_json[i])
+				// console.log(test)
+				var xhttp = new XMLHttpRequest();
+				var formData = new FormData();
+				var studentjson = JSON.stringify(student_json[i]);
+
+				formData.append('student_json', studentjson);
+				// xhttp.setRequestHeader('_token', xhttp.getResponseHeader('csrf-token'));
+				xhttp.open('post', 'student/'+student_json[i].matric_number, true);
+				xhttp.withCredentials = true;
+				xhttp.setRequestHeader('X-CSRF-TOKEN', document.getElementsByTagName('meta')['csrf-token'].getAttribute('content'));
+				xhttp.send(formData);
+
+				xhttp.onreadystatechange = function()
+				{
+					if(xhttp.readyState == 4 && xhttp.status == 200)
+					{
+						// insertStudent(count, student_json[i].matric_number, "hash", JSON.stringify(student_json[i]));
+						console.log('Insert Student');
+					}
+				}
+
+				// insertStudent(count, student_json[i].matric_number, "hash", JSON.stringify(student_json[i]));
+				// 	insertStudent(count, students[i].matricNumber, students[i].dataHash, students[i].jsonData)
+				count++
+				i++
+			}
+		})
+}
 
 
 
@@ -102,11 +189,11 @@ async function setDefaultAccount() {
 };
 
 // get one student's detail
-async function getStudentDetail(input_matric, uniAddress) {
-	const result = await contractEscroll.methods.getStudent(input_matric, uniAddress).call({
+async function getStudentDetail(matricNumber, uniAddress) {
+	const result = await contractEscroll.methods.getStudent(matricNumber, uniAddress).call({
 		from: web3.eth.defaultAccount
 	});
-	// 10 is the time in the student detail
+	// 6 is the time in the student detail
 	result[6] = unixToDate(result[6])
 	return result;
 }
@@ -211,7 +298,7 @@ async function insertStudent(txCount, matNo, dataHash, jsonData) {
 	// //Broadcast the transaction
 	web3.eth.sendSignedTransaction(raw)
 		.then(res => {
-			console.log(res)
+			// console.log(res)
 			console.log("Student with matric number ", matNo, " has been added")
 		})
 

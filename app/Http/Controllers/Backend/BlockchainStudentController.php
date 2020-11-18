@@ -95,4 +95,34 @@ class BlockchainStudentController extends Controller
     {
         //
     }
+
+    public function getStudents()
+    {
+        $students = Student::where('university_id', auth()->user()->university->id)
+                           ->where('matric_number', '1515680')
+                           ->select('matric_number', 'name' )
+                        //    ->where('is_import', 0)
+                           ->get()->toArray();
+
+        return response()->json($students);
+    }
+
+    public function setStudentImport($matric_no)
+    {
+        // dd('set student import');
+        dd($_POST['student_json']);
+        $student = Student::where('matric_number', $matric_no)
+                          ->where('university_id', auth()->user()->university->id)
+                          ->first();
+        if(!is_null($student))
+        {
+            $student->update([
+                        'is_import'  => 1,
+                    ]);
+
+            return response()->json(['success' => true]);
+        }
+        else return response()->json(['success' => false]);
+    }
+
 }

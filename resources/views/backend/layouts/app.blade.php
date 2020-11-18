@@ -77,6 +77,7 @@
     {!! script(asset('js/manifest.js')) !!}
     {!! script(asset('js/vendor.js')) !!}
     {!! script(asset('js/backend.js')) !!}
+    <!-- change: put in specific page that use blockchain only -->
     <script type="module" src="https://cdn.jsdelivr.net/npm/web3@1.3.0/dist/web3.min.js" defer></script>
     <script type="module" src="https://cdn.jsdelivr.net/gh/ethereumjs/browser-builds/dist/ethereumjs-tx/ethereumjs-tx-1.3.3.min.js"></script>
     <script type="module" src="https://cdn.jsdelivr.net/npm/ipfs-http-client@44.1.1/dist/index.min.js"></script>
