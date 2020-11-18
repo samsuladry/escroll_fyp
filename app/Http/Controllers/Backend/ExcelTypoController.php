@@ -109,6 +109,9 @@ class ExcelTypoController extends Controller
                 'faculty_id'        => $faculty->id,
                 'department_id'     => $department->id,
                 'dean_id'           => (is_null($dean))? null : $dean->id,
+                'serial_no'         => $data->serial_no,
+                'date_endorse'      => $data->date_endorse,
+                'citizenship'       => $data->citizenship,
                 'qr_code_path'      => 'qrcode\\'.auth()->user()->university->name.'\\'.$faculty->name.'\\'.$data->matric_no.'.png',
             ]);  
 
@@ -176,6 +179,9 @@ class ExcelTypoController extends Controller
                 'faculty_id'        => $faculty->id,
                 'department_id'     => $programme->id,
                 'dean_id'           => (is_null($dean))? null : $dean->id,
+                'serial_no'         => $data->serial_no,
+                'date_endorse'      => $data->date_endorse,
+                'citizenship'       => $data->citizenship,
                 'qr_code_path'      => 'qrcode\\'.auth()->user()->university->name.'\\'.$faculty->name.'\\'.$data->matric_no.'.png',
             ]);  
 
@@ -244,6 +250,9 @@ class ExcelTypoController extends Controller
                 'faculty_id'        => $faculty->id,
                 'department_id'     => $programme->id,
                 'dean_id'           => (is_null($dean))? null : $dean->id,
+                'serial_no'         => $data->serial_no,
+                'date_endorse'      => $data->date_endorse,
+                'citizenship'       => $data->citizenship,
                 'qr_code_path'      => 'qrcode\\'.auth()->user()->university->name.'\\'.$faculty->name.'\\'.$data->matric_no.'.png',
             ]);  
 
