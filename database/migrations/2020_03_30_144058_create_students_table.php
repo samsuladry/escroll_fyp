@@ -23,6 +23,9 @@ class CreateStudentsTable extends Migration
             $table->string('dean_id')->nullable();
             $table->string('department_id');
             $table->string('template_id')->nullable();
+            $table->string('serial_no')->nullable();
+            $table->string('date_endorse')->nullable();
+            $table->string('citizenship')->nullable();
             $table->string('qr_code_path')->nullable();
             $table->string('pdf_doc_path')->nullable();
             $table->tinyInteger('is_import')->default(0);
