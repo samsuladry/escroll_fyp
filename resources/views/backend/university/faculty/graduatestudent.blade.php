@@ -54,77 +54,82 @@
       <!--card-header-->
       <div class="card-body">
         <div class="col-lg-12">
-            <form action="{{ route('admin.view-faculty-graduate', $faculty) }}" method="get">
-                <input type="text" name="search" id="search" value="{{ $search }}">
-                <a href="{{ route('admin.view-faculty-graduate', $faculty) }}" class="btn btn-sm btn-info">Reset</a>
-                <button type="submit" class="btn btn-sm btn-info">Search</button>
-            </form>
-            <br>
-            <div class="row row-cols-3">
-                <div class="col text-left">
-                    Showing {{$students->firstItem()}} to {{$students->lastItem()}} of {{$students->total()}} Students
-                </div>
-                <div class="col">
-                    Page {{$students->currentPage()}}
-                </div>
-                <div class="col justify-content-center">
-                    {{$students->appends(['search' => $search])->links()}}
-                </div>
+          <form action="{{ route('admin.view-faculty-graduate', $faculty) }}" method="get">
+            <input type="text" name="search" id="search" value="{{ $search }}">
+            <a href="{{ route('admin.view-faculty-graduate', $faculty) }}" class="btn btn-sm btn-info">Reset</a>
+            <button type="submit" class="btn btn-sm btn-info">Search</button>
+          </form>
+          <br>
+          <div class="row row-cols-3">
+            <div class="col text-left">
+              Showing {{$students->firstItem()}} to {{$students->lastItem()}} of {{$students->total()}} Students
             </div>
-            <br>
-            <table class="table table-striped">
-                <thead>
-                <tr>
-                    <th scope="col">No.</th>
-                    <th scope="col">Matric Number</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Bachelor</th>
-                    <th scope="col">QR Code</th>
-                    <th scope="col">Action</th>
-                </tr>
-                </thead>
-                <tbody>
-                @foreach($students as $student)
-                <tr>
-                    <th>{{$students->firstItem()+$loop->iteration -1}}</th>
-                    <th>{{$student->matric_number}}</th>
-                    <td>{{$student->name}}</td>
-                    <td>{{$student->department->name}}</td>
-                    <td>
-                        @if($student->qr_code_path == NULL)
-                        @else
-                        <img width="100px" height="100px"src="/{{ $student->qr_code_path }}">
-                        @endif
-                    </td>
+            <div class="col"></div>
+            Page {{$students->currentPage()}}
+          </div>
+          <div class="col justify-content-center">
+            {{$students->appends(['search' => $search])->links()}}
+          </div>
+        </div>
+        <br>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">No.</th>
+              <th scope="col">Matric Number</th>
+              <th scope="col">Name</th>
+              <th scope="col">Bachelor</th>
+              <th scope="col">QR Code</th>
+              <th scope="col">Verified</th>
+              <th scope="col">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            @foreach($students as $student)
+            <tr>
+              <th>{{$students->firstItem()+$loop->iteration -1}}</th>
+              <th>{{$student->matric_number}}</th>
+              <td>{{$student->name}}</td>
+              <td>{{$student->department->name}}</td>
+              <td>
+                @if($student->qr_code_path == NULL)
+                @else
+                <img width="100px" height="100px" src="/{{ $student->qr_code_path }}">
+                @endif
+              </td>
 
-                    <td>
-                    <a href="{{url('admin/gradute-student/'.$student->id.'/view-cert')}}">
-                        <button class="btn btn-primary">View</button>
-                    </a>
-                    </td>
-                </tr>
+              <td>
+                <img src="{{ asset("img/backend/close.png") }}" alt="" height="24px" width="24px">
+              </td>
 
-                @endforeach
-                </tbody>
-            </table>
-            <div class="row row-cols-3">
-                <div class="col text-left">
-                    Showing {{$students->firstItem()}} to {{$students->lastItem()}} of {{$students->total()}} Students
-                </div>
-                <div class="col">
-                    Page {{$students->currentPage()}}
-                </div>
-                <div class="col justify-content-center">
-                    {{$students->appends(['search' => $search])->links()}}
-                </div>
-            </div>
+              <td>
+                <a href="{{url('admin/gradute-student/'.$student->id.'/view-cert')}}">
+                  <button class="btn btn-primary">View</button>
+                </a>
+              </td>
+            </tr>
+
+            @endforeach
+          </tbody>
+        </table>
+        <div class="row row-cols-3">
+          <div class="col text-left">
+            Showing {{$students->firstItem()}} to {{$students->lastItem()}} of {{$students->total()}} Students
+          </div>
+          <div class="col">
+            Page {{$students->currentPage()}}
+          </div>
+          <div class="col justify-content-center">
+            {{$students->appends(['search' => $search])->links()}}
+          </div>
         </div>
       </div>
-      <!--card-body-->
     </div>
-    <!--card-->
+    <!--card-body-->
   </div>
-  <!--col-->
+  <!--card-->
+</div>
+<!--col-->
 </div>
 <!--row-->
 @endsection
