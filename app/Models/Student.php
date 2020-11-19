@@ -26,6 +26,8 @@ class Student extends Model
         'template_id',
         'qr_code_path',
         'is_import',
+        'updated_at',
+        'created_at',
     ];
 
     public function graduate_field()

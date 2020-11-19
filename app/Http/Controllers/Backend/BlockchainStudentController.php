@@ -43,6 +43,7 @@ class BlockchainStudentController extends Controller
 
     public function setStudentImport()
     {
+
         $student = Student::where('university_id', auth()->user()->university->id)
                           ->whereIn('matric_number', json_decode($_POST['imported_students']))
                           ->update([
@@ -50,7 +51,7 @@ class BlockchainStudentController extends Controller
                                 'updated_at'    => Carbon::now(),
                             ]);
 
-        return response()->json(['success' => false]);
+        return response()->json(['success' => true]);
     }
 
 }

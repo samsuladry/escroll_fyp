@@ -94,4 +94,4 @@ Route::get('blockchainstudent', [BlockchainStudentController::class, 'index'])->
 Route::post('blockchainstudent/store', [BlockchainStudentController::class, 'store'])->name('store');
 
 Route::get('student', [BlockchainStudentController::class, 'getStudents']);
-Route::post('student/{matric_no}', [BlockchainStudentController::class, 'setStudentImport']);
+Route::post('student', [BlockchainStudentController::class, 'setStudentImport']);

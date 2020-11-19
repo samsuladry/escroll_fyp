@@ -4,6 +4,7 @@ import { contractAbi, contractAddress } from './blockchain/contract.js'
 import { privateKey as PK, walletAddress as account } from './blockchain/getPrivateKey.js'
 // import IPFS from './ipfs';
 
+
 const contract_abi = contractAbi;
 const contract_address = contractAddress;
 
@@ -15,7 +16,7 @@ function reqListener() {
 	console.log(this.responseText);
 }
 
-function startBlockchain(){
+function startBlockchain() {
 	// var oReq = new XMLHttpRequest(); // New request object
 
 	// current change: cant access var student_json without passing the data through function
@@ -24,26 +25,22 @@ function startBlockchain(){
 	// console.log(this.responseText);
 	var xhttp = new XMLHttpRequest();
 	var student_json = '';
-	
-	console.log('before send');
+
 	xhttp.open('get', 'student', true); //admin/student -> admin.php
 	xhttp.send();
 	xhttp.onload = (student_json) => {
-		if(xhttp.status == 200 && xhttp.readyState == 4){
-			console.log('after send');
+		if (xhttp.status == 200 && xhttp.readyState == 4) {
 			student_json = JSON.parse(xhttp.responseText);
-
-			console.log(student_json[0]);
 			init(student_json)
 		}
 	};
 	// };
-	
+
 	// // current change: can't access this route through php artisan serve
 	// var url = "/e-scroll-lookup/app/Http/Controllers/Backend/Blockchain.php";
-	
+
 	// oReq.open("get", url, true);
-	
+
 	// oReq.send();
 }
 
@@ -53,6 +50,7 @@ function startBlockchain(){
 // change: to new server
 // const web3 = new Web3(Web3.givenProvider || 'https://ropsten.infura.io/v3/6abc6ef995814f84950059729182f065');
 const web3 = new Web3(Web3.givenProvider || 'HTTP://127.0.0.1:7545')
+
 
 try {
 	setDefaultAccount(); ``
@@ -70,40 +68,36 @@ const contractEscroll = new web3.eth.Contract(
 
 // insert new student
 $('#activateGraduateStudent').click(function (e) {
-    e.preventDefault();
+	e.preventDefault();
 
 	if (web3.eth.defaultAccount === undefined) {
 		return error("No accounts found. If you're using MetaMask, " +
 			"please unlock it first and reload the page.");
 	}
-	console.log("Transaction On its Way...");
-	// send().then(function (result) {
-	// 	window.location.href = "../../../admin/blockchainstudent";
-	// });
 
 	startBlockchain();
 });
 
 // display all student's details in table
 getAllStudentMatricNumberInTheUniversity().then(function (result) {
-	displayStudent(result, uni_address);
+	// displayStudent(result, uni_address);
 });
 
 
 // change: get no. iteration, get data bachelor, display qrcode, not qrcode's path
-async function displayStudent(input_matric, uniAddress) {
-	var printresult = "";
-	for (var i = 0; i < input_matric.length; i++) {
-		getStudentDetail(input_matric[i], uniAddress).then(function (result) {
-			// console.log(result)
-			result[4] = JSON.parse(result[4])
-			// console.log(result[4].matric_number)
+// async function displayStudent(input_matric, uniAddress) {
+// 	var printresult = "";
+// 	for (var i = 0; i < input_matric.length; i++) {
+// 		getStudentDetail(input_matric[i], uniAddress).then(function (result) {
+// 			// console.log(result)
+// 			result[4] = JSON.parse(result[4])
+// 			// console.log(result[4].matric_number)
 
-			printresult += "<tr><th>" + i + "</th><td>" + result[2] + "</td><td>" + result[4].name + "</td><td>" + result[3] + "</td><td>" + result[4].qr_code_path + "</td><td></tr>";
-			document.getElementById("tablestudent").innerHTML = printresult;
-		});
-	}
-}
+// 			printresult += "<tr><th>" + i + "</th><td>" + result[2] + "</td><td>" + result[4].name + "</td><td>" + result[3] + "</td><td>" + result[4].qr_code_path + "</td><td></tr>";
+// 			document.getElementById("tablestudent").innerHTML = printresult;
+// 		});
+// 	}
+// }
 
 
 //-------------- MAIN PART----------------
@@ -115,7 +109,7 @@ const init = async (student_json) => {
 	// console.log(student_json[0].matric_number)
 	// send(student_json);
 
-	console.log(getAllStudentMatricNumberInTheUniversity())
+	// console.log(getAllStudentMatricNumberInTheUniversity())
 
 	insertAllStudent(student_json);
 
@@ -145,42 +139,42 @@ function send(student_json) {
 }
 
 // current change: activate button on click
-function insertAllStudent(student_json)
-{
+function insertAllStudent(student_json) {
 	var imported_students = new Array();
-	console.log(student_json.length);
 	web3.eth.getTransactionCount(uni_address)
 		.then(count => {
 			let i = 0
-			
+
 			// insertStudent
-			while (i < student_json.length)
-			{
+			while (i < student_json.length) {
 				insertStudent(count, student_json[i].matric_number, "hash", JSON.stringify(student_json[i]));
-                imported_students.push(student_json[i].matric_number);
+				imported_students.push(student_json[i].matric_number);
 				count++
 				i++
 			}
-        });
 
+			updateStudentDatabase(imported_students);
+		});
+}
+
+function updateStudentDatabase(imported_students) {
 	var xhttp = new XMLHttpRequest();
 	var formData = new FormData();
-	
+
 	formData.append('imported_students', JSON.stringify(imported_students));
-	
-	xhttp.open('post', 'student/'+student_json[i].matric_number, true);
+	// console.log(imported_students);
+	// console.log(JSON.stringify(imported_students))
+	xhttp.open('post', 'student', true);
 	xhttp.withCredentials = true;
 	xhttp.setRequestHeader('X-CSRF-TOKEN', document.getElementsByTagName('meta')['csrf-token'].getAttribute('content'));
 	xhttp.send(formData)
-	xhttp.onreadystatechange = function()
-	{
-		if(xhttp.readyState == 4 && xhttp.status == 200)
-		{
-			insertStudent(count, student_json[i].matric_number, "hash", JSON.stringify(student_json[i]));
+	xhttp.onreadystatechange = function () {
+		if (xhttp.readyState == 4 && xhttp.status == 200) {
+			// insertStudent(count, student_json[i].matric_number, "hash", JSON.stringify(student_json[i]));
+			console.log('imported students to db');
 		}
 	}
 }
-
 
 
 //set default blockchain address
@@ -296,15 +290,22 @@ async function insertStudent(txCount, matNo, dataHash, jsonData) {
 	const raw = '0x' + serializedTx.toString('hex')
 
 
-
+	var result = '';
 
 	// //Broadcast the transaction
 	web3.eth.sendSignedTransaction(raw)
+		.on('error', (e) => {
+			// console.log(JSON.parse(e))
+			console.log('error');
+			console.log(e['message']);
+			// console.log(e->message);
+		})
 		.then(res => {
+
 			// console.log(res)
 			console.log("Student with matric number ", matNo, " has been added")
 		})
-
+	// return await result;
 }
 
 async function updateStudent(txCount, matNo, dataHash, jsonData) {

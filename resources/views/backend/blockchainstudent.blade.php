@@ -34,10 +34,8 @@
               </tr>
             </thead>
             <tbody>
-              <thead id="tablestudent"></thead>
-              <!-- <a href="{{}}">
-                <button class="btn btn-primary">View</button>
-              </a> -->
+              <!-- <thead id="tablestudent"></thead> -->
+            
 
             </tbody>
           </table>

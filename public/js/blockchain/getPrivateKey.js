@@ -1,3 +1,4 @@
+// change: prompt user mnemonic or PK
 
 //Boleh minta mnemonic user
 let mnemonic;
@@ -6,7 +7,24 @@ let mnemonic;
 // ask private key from user
 let PK = "0x7cc1f2fa4ed33cbd2b193bf48aaac1aaf03df8f660dd47e4e38ee4cf439e0710"
 
+// change: function on click push data to blockchain.
+// let key;
+// while (key == null) {
+// 	key = prompt("Enter your Blockchain Account's Mnemonics (12 words) or Private Key (start with 0x) here:");
+// }
+
 let account;
+
+// if (key.startsWith("0x")) {// user input Privatekey
+// 	let privateKeyWallet = new ethers.Wallet(PK);
+// 	account = privateKeyWallet.address
+// 	console.log("private key was entered")
+// }
+// else if (key != null) { // user input mnemonic
+// 	let privateKeyWallet = new ethers.Wallet(PK);
+// 	account = privateKeyWallet.address
+// }
+
 
 //TO DO: prompt user mnemonic OR private key of blockchain account
 

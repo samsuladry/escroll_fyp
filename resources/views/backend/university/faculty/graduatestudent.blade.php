@@ -99,7 +99,12 @@
               </td>
 
               <td>
-                <img src="{{ asset("img/backend/close.png") }}" alt="" height="24px" width="24px">
+                @if($student->is_import == 1)
+                  <img src="{{ asset("img/backend/correct.png") }}" alt="" height="24px" width="24px">
+                @else
+                  <img src="{{ asset("img/backend/close.png") }}" alt="" height="24px" width="24px">
+                @endif
+                
               </td>
 
               <td>
