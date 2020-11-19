@@ -15,10 +15,11 @@ function reqListener() {
 	console.log(this.responseText);
 }
 
-var oReq = new XMLHttpRequest(); // New request object
+function startBlockchain(){
+	// var oReq = new XMLHttpRequest(); // New request object
 
-// current change: cant access var student_json without passing the data through function
-oReq.onload = function () {
+	// current change: cant access var student_json without passing the data through function
+	// oReq.onload = function () {
 	// student data
 	// console.log(this.responseText);
 	var xhttp = new XMLHttpRequest();
@@ -27,23 +28,25 @@ oReq.onload = function () {
 	console.log('before send');
 	xhttp.open('get', 'student', true); //admin/student -> admin.php
 	xhttp.send();
-	xhttp.onload = () => {
-        if(xhttp.status == 200 && xhttp.readyState == 4){
+	xhttp.onload = (student_json) => {
+		if(xhttp.status == 200 && xhttp.readyState == 4){
 			console.log('after send');
-			this.student_json = JSON.parse(xhttp.responseText);
+			student_json = JSON.parse(xhttp.responseText);
 
-			console.log(this.student_json[0]);
-			init(this.student_json)
-        }
-    };
-};
+			console.log(student_json[0]);
+			init(student_json)
+		}
+	};
+	// };
+	
+	// // current change: can't access this route through php artisan serve
+	// var url = "/e-scroll-lookup/app/Http/Controllers/Backend/Blockchain.php";
+	
+	// oReq.open("get", url, true);
+	
+	// oReq.send();
+}
 
-// current change: can't access this route through php artisan serve
-var url = "/e-scroll-lookup/app/Http/Controllers/Backend/Blockchain.php";
-
-oReq.open("get", url, true);
-
-oReq.send();
 
 
 
@@ -67,16 +70,18 @@ const contractEscroll = new web3.eth.Contract(
 
 // insert new student
 $('#activateGraduateStudent').click(function (e) {
-	e.preventDefault();
+    e.preventDefault();
+
 	if (web3.eth.defaultAccount === undefined) {
 		return error("No accounts found. If you're using MetaMask, " +
 			"please unlock it first and reload the page.");
 	}
 	console.log("Transaction On its Way...");
-	send().then(function (result) {
-		window.location.href = "../../../admin/blockchainstudent";
-	});
+	// send().then(function (result) {
+	// 	window.location.href = "../../../admin/blockchainstudent";
+	// });
 
+	startBlockchain();
 });
 
 // display all student's details in table
@@ -114,9 +119,9 @@ const init = async (student_json) => {
 
 	insertAllStudent(student_json);
 
-	let pelajar = await getStudentDetail("1515680", uni_address)
+	// let pelajar = await getStudentDetail("1515680", uni_address)
 
-	console.log(pelajar)
+	// console.log(pelajar)
 
 }
 
@@ -140,42 +145,40 @@ function send(student_json) {
 }
 
 // current change: activate button on click
-function insertAllStudent(student_json) {
+function insertAllStudent(student_json)
+{
+	var imported_students = new Array();
+	console.log(student_json.length);
 	web3.eth.getTransactionCount(uni_address)
 		.then(count => {
 			let i = 0
-
+			
 			// insertStudent
-			while (i < 1) {
-				// var test = JSON.stringify(student_json[0])
-				console.log(student_json[i])
-				// console.log(test)
-				var xhttp = new XMLHttpRequest();
-				var formData = new FormData();
-				var studentjson = JSON.stringify(student_json[i]);
-
-				formData.append('student_json', studentjson);
-				// xhttp.setRequestHeader('_token', xhttp.getResponseHeader('csrf-token'));
-				xhttp.open('post', 'student/'+student_json[i].matric_number, true);
-				xhttp.withCredentials = true;
-				xhttp.setRequestHeader('X-CSRF-TOKEN', document.getElementsByTagName('meta')['csrf-token'].getAttribute('content'));
-				xhttp.send(formData);
-
-				xhttp.onreadystatechange = function()
-				{
-					if(xhttp.readyState == 4 && xhttp.status == 200)
-					{
-						// insertStudent(count, student_json[i].matric_number, "hash", JSON.stringify(student_json[i]));
-						console.log('Insert Student');
-					}
-				}
-
-				// insertStudent(count, student_json[i].matric_number, "hash", JSON.stringify(student_json[i]));
-				// 	insertStudent(count, students[i].matricNumber, students[i].dataHash, students[i].jsonData)
+			while (i < student_json.length)
+			{
+				insertStudent(count, student_json[i].matric_number, "hash", JSON.stringify(student_json[i]));
+                imported_students.push(student_json[i].matric_number);
 				count++
 				i++
 			}
-		})
+        });
+
+	var xhttp = new XMLHttpRequest();
+	var formData = new FormData();
+	
+	formData.append('imported_students', JSON.stringify(imported_students));
+	
+	xhttp.open('post', 'student/'+student_json[i].matric_number, true);
+	xhttp.withCredentials = true;
+	xhttp.setRequestHeader('X-CSRF-TOKEN', document.getElementsByTagName('meta')['csrf-token'].getAttribute('content'));
+	xhttp.send(formData)
+	xhttp.onreadystatechange = function()
+	{
+		if(xhttp.readyState == 4 && xhttp.status == 200)
+		{
+			insertStudent(count, student_json[i].matric_number, "hash", JSON.stringify(student_json[i]));
+		}
+	}
 }
 
 
