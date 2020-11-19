@@ -18,7 +18,8 @@
                       </div> -->
           <div class="float-right mb-3 form-inline mr-auto">
             <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-            <button id="searchStudent" class="btn btn-unique btn-rounded btn-sm my-0 btn-success" type="submit">Search</button>
+            {{-- <button id="searchStudent" class="btn btn-unique btn-rounded btn-sm my-0 btn-success" type="submit">Search</button> --}}
+            <button id="activateGraduateStudent" class="btn btn-unique btn-rounded btn-sm my-0 btn-success" type="submit">Active</button>
           </div>
           <table class="table table-striped">
 

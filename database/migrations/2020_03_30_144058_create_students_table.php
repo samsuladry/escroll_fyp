@@ -15,12 +15,13 @@ class CreateStudentsTable extends Migration
     {
         Schema::create('students', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->uuid('uuid')->nullable();
+            $table->string('hash')->nullable();
             $table->string('matric_number');
             $table->string('name');
             $table->string('university_id');
             $table->string('faculty_id');
             $table->string('dean_id')->nullable();
+            $table->string('rector_id')->nullable();
             $table->string('department_id');
             $table->string('template_id')->nullable();
             $table->string('serial_no')->nullable();

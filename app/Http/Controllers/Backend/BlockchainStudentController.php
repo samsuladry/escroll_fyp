@@ -12,15 +12,12 @@ use App\Models\Certificate;
 use Illuminate\Support\Facades\DB;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use PDF;
+use Carbon\Carbon;
 
 
 class BlockchainStudentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index(Request $request, Faculty $faculty)
     {
         $user_id = Auth::id();
@@ -31,98 +28,29 @@ class BlockchainStudentController extends Controller
         return view('backend.blockchainstudent', compact('students','faculty'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
 
     public function getStudents()
     {
-        $students = Student::where('university_id', auth()->user()->university->id)
-                           ->where('matric_number', '1515680')
-                           ->select('matric_number', 'name' )
-                        //    ->where('is_import', 0)
+        $students = Student::where('students.university_id', auth()->user()->university->id)
+                           ->leftJoin('faculty', 'faculty.id', '=', 'students.faculty_id')
+                           ->leftJoin('department', 'department.id', '=', 'students.department_id')
+                           ->select('matric_number', 'students.name', 'faculty.name as faculty', 'department.name as bachelor', 'students.dean_id', 'students.rector_id', 'students.serial_no', 'students.date_endorse', 'students.citizenship')
+                           ->where('is_import', 0)
                            ->get()->toArray();
 
         return response()->json($students);
     }
 
-    public function setStudentImport($matric_no)
+    public function setStudentImport()
     {
-        // dd('set student import');
-        dd($_POST['student_json']);
-        $student = Student::where('matric_number', $matric_no)
-                          ->where('university_id', auth()->user()->university->id)
-                          ->first();
-        if(!is_null($student))
-        {
-            $student->update([
-                        'is_import'  => 1,
-                    ]);
+        $student = Student::where('university_id', auth()->user()->university->id)
+                          ->whereIn('matric_number', json_decode($_POST['imported_students']))
+                          ->update([
+                                'is_import'     => 1,
+                                'updated_at'    => Carbon::now(),
+                            ]);
 
-            return response()->json(['success' => true]);
-        }
-        else return response()->json(['success' => false]);
+        return response()->json(['success' => false]);
     }
 
 }
