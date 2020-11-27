@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\LanguageController;
+use App\Http\Controllers\ScannerController;
 
 /*
  * Global Routes
@@ -33,3 +34,6 @@ Route::group(['namespace' => 'Backend', 'prefix' => 'admin', 'as' => 'admin.', '
      */
     include_route_files(__DIR__.'/backend/');
 });
+
+Route::get('/scanQr', [ScannerController::class, 'scan'])->name('scanQr');
+Route::get('/display', [ScannerController::class, 'display'])->name('display');

@@ -110,12 +110,11 @@ const init = async (student_json) => {
 	// send(student_json);
 
 	// console.log(getAllStudentMatricNumberInTheUniversity())
-
 	insertAllStudent(student_json);
 
-	// let pelajar = await getStudentDetail("1515680", uni_address)
+	let pelajar = await getStudentDetail("1420242", uni_address)
 
-	// console.log(pelajar)
+	console.log(pelajar)
 
 }
 
@@ -144,9 +143,10 @@ function insertAllStudent(student_json) {
 	web3.eth.getTransactionCount(uni_address)
 		.then(count => {
 			let i = 0
-
+			console.log(student_json[i])
+			
 			// insertStudent
-			while (i < student_json.length) {
+			while (i < 1) {
 				insertStudent(count, student_json[i].matric_number, "hash", JSON.stringify(student_json[i]));
 				imported_students.push(student_json[i].matric_number);
 				count++
@@ -186,7 +186,7 @@ async function setDefaultAccount() {
 };
 
 // get one student's detail
-async function getStudentDetail(matricNumber, uniAddress) {
+export async function getStudentDetail(matricNumber, uniAddress) {
 	const result = await contractEscroll.methods.getStudent(matricNumber, uniAddress).call({
 		from: web3.eth.defaultAccount
 	});
