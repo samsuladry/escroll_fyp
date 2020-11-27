@@ -3,27 +3,32 @@
 @section('title', app_name() . ' | ' . __('navs.general.home'))
 
 @section('content')
-    <div class="row mb-4">
-        <div class="col">
-            <div class="card">
-                <div class="card-header">
-                    <i class="fas fa-home"></i> @lang('navs.general.home')
-                </div>
-                <div class="card-body">
-                    @lang('strings.frontend.welcome_to', ['place' => app_name()])
-                </div>
-            </div><!--card-->
-        </div><!--col-->
-    </div><!--row-->
+<div class="row mb-4">
+  <div class="col">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-home"></i> @lang('navs.general.home')
+      </div>
+      <div class="card-body">
+        @lang('strings.frontend.welcome_to', ['place' => app_name()])
+      </div>
+    </div>
+    <!--card-->
+  </div>
+  <!--col-->
+</div>
+<!--row-->
 
-    <!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
-  Authenticate Your Certificate!
-</button>
+<!-- Button trigger modal -->
+<a href="{{ route('scanQr') }}">
+  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+    Authenticate Your Certificate!
+  </button>
+</a>
 
 
 <!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<!-- <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -37,9 +42,9 @@
       </div>
     </div>
   </div>
-</div>
+</div> -->
 
 
-  
+
 
 @endsection
