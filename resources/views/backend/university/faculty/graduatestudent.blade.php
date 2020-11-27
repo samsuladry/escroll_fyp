@@ -32,8 +32,8 @@
 
                 <hr>
 
-                <input type="text" name="user_id" value="{{ Auth::user()->id }}" style="display: none;">
-                <input type="text" name="faculty_id" value="{{ $faculty->id }}" style="display: none;">
+                <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">
+                <input type="hidden" name="faculty_id" value="{{ $faculty->id }}">
 
                 <input type="file" name="certificate" accept=".crt">
               </div>
@@ -64,12 +64,15 @@
             <div class="col text-left">
               Showing {{$students->firstItem()}} to {{$students->lastItem()}} of {{$students->total()}} Students
             </div>
-            <div class="col"></div>
-            Page {{$students->currentPage()}}
+            <div class="col">
+
+                Page {{$students->currentPage()}}
+            </div>
+            <div class="col justify-content-center">
+                {{$students->appends(['search' => $search])->links()}}
+            </div>
           </div>
-          <div class="col justify-content-center">
-            {{$students->appends(['search' => $search])->links()}}
-          </div>
+          
         </div>
         <br>
         <table class="table table-striped">
@@ -94,7 +97,7 @@
               <td>
                 @if($student->qr_code_path == NULL)
                 @else
-                <img width="100px" height="100px" src="/{{ $student->qr_code_path }}">
+                <img src="{{ asset($student->qr_code_path) }}">
                 @endif
               </td>
 

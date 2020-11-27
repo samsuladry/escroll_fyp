@@ -14,7 +14,7 @@
                     <form action="{{url('admin/template/store')}}" method="POST" enctype="multipart/form-data">
                         @csrf
 
-                         <input type="text" name="user_id" style="display: none;" value="{{$logged_in_user->id}}">
+                         <input type="text" name="university_id" style="display: none;" value="{{auth()->user()->university->id}}">
                       <div class="form-group">
                         <label>Description</label>
                         <textarea class="form-control" name="description" rows="3"></textarea>
@@ -25,11 +25,6 @@
                         <input type="file" name="image_template">
                       </div>
 
-                      <div class="form-group">
-                        <label>PDF Template</label><br>
-                        <input type="file" name="pdf_template">
-                      </div>
-                     
                       <button style="float: right;" type="submit" class="btn btn-primary">Submit</button>
                     </form>
                 </div>

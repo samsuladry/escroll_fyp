@@ -6,8 +6,9 @@ use File;
 use Carbon\Carbon;
 use App\Models\Dean;
 use App\Models\Department;
-use App\Models\PreImport;
 use App\Models\Faculty;
+use App\Models\PreImport;
+use App\Models\Rector;
 use App\Models\Student;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -57,7 +58,7 @@ class ExcelTypoController extends Controller
     }
 
     public function importFaculty(Request $request, $filter){
-
+        set_time_limit(3000);
         $faculty = Faculty::where('name', ucwords(str_replace('-', ' ', $filter)))
                           ->where('user_id', Auth::id())
                           ->first();
@@ -86,6 +87,9 @@ class ExcelTypoController extends Controller
             $dean = Dean::where('faculty_id', $faculty->id)
                         ->where('active', 1)
                         ->first();
+            $rector = Rector::where('university_id', auth()->user()->university->id)
+                            ->where('active', 1)
+                            ->first();
 
             if(is_null($department)){
                 $department = Department::create([
@@ -100,7 +104,7 @@ class ExcelTypoController extends Controller
                 File::makeDirectory($path, 0777, true, true);
             }
 
-            QrCode::size(100)->format('png')->generate(auth()->user()->uuid.'/'.$data->matric_no, $path.'\\'.$data->matric_no.'.png');
+            QrCode::format('png')->margin(0)->size(200)->generate(auth()->user()->uuid.'/'.$data->matric_no, $path.'\\'.$data->matric_no.'.png');
             
             $insert_data->push([
                 'matric_number'     => $data->matric_no,
@@ -109,10 +113,13 @@ class ExcelTypoController extends Controller
                 'faculty_id'        => $faculty->id,
                 'department_id'     => $department->id,
                 'dean_id'           => (is_null($dean))? null : $dean->id,
+                'rector_id'         => (is_null($rector))? null : $rector->id,
                 'serial_no'         => $data->serial_no,
                 'date_endorse'      => $data->date_endorse,
                 'citizenship'       => $data->citizenship,
                 'qr_code_path'      => 'qrcode\\'.auth()->user()->university->name.'\\'.$faculty->name.'\\'.$data->matric_no.'.png',
+                'created_at'        => Carbon::now(),
+                'updated_at'        => Carbon::now(),
             ]);  
 
             $data->is_import = 1;
@@ -128,6 +135,8 @@ class ExcelTypoController extends Controller
 
     public function importProgramme(Request $request, $filter)
     {
+        set_time_limit(3000);
+
         $university_id = auth()->user()->university->id;
 
         $importData = PreImport::where('programme', str_replace('-', ' ', $filter))
@@ -153,6 +162,10 @@ class ExcelTypoController extends Controller
                         ->where('active', 1)
                         ->first();
 
+            $rector = Rector::where('university_id', auth()->user()->university->id)
+                            ->where('active', 1)
+                            ->first();
+
             $programme = Department::where('faculty_id', $faculty->id)
                                    ->where('name', str_replace('-', ' ', $filter))
                                    ->first();
@@ -170,7 +183,7 @@ class ExcelTypoController extends Controller
                 File::makeDirectory($path, 0777, true, true);
             }
 
-            QrCode::size(100)->format('png')->generate(auth()->user()->uuid.'/'.$data->matric_no, $path.'\\'.$data->matric_no.'.png');
+            QrCode::format('png')->margin(0)->size(100)->generate(auth()->user()->uuid.'/'.$data->matric_no, $path.'\\'.$data->matric_no.'.png');
 
             $insert_data->push([
                 'matric_number'     => $data->matric_no,
@@ -179,10 +192,13 @@ class ExcelTypoController extends Controller
                 'faculty_id'        => $faculty->id,
                 'department_id'     => $programme->id,
                 'dean_id'           => (is_null($dean))? null : $dean->id,
+                'rector_id'         => (is_null($rector))? null : $rector->id,
                 'serial_no'         => $data->serial_no,
                 'date_endorse'      => $data->date_endorse,
                 'citizenship'       => $data->citizenship,
                 'qr_code_path'      => 'qrcode\\'.auth()->user()->university->name.'\\'.$faculty->name.'\\'.$data->matric_no.'.png',
+                'created_at'        => Carbon::now(),
+                'updated_at'        => Carbon::now(),
             ]);  
 
             $data->is_import = 1;
@@ -199,6 +215,8 @@ class ExcelTypoController extends Controller
 
     public function importCitizenship(Request $request, $filter)
     {
+        set_time_limit(3000);
+
         $university_id = auth()->user()->university->id;
 
         $importData = PreImport::where('citizenship', str_replace('-', ' ', $filter))
@@ -224,6 +242,10 @@ class ExcelTypoController extends Controller
                         ->where('active', 1)
                         ->first();
 
+            $rector = Rector::where('university_id', auth()->user()->university->id)
+                        ->where('active', 1)
+                        ->first();
+        
             $programme = Department::where('faculty_id', $faculty->id)
                                    ->where('name', str_replace('-', ' ', $filter))
                                    ->first();
@@ -241,7 +263,7 @@ class ExcelTypoController extends Controller
                 File::makeDirectory($path, 0777, true, true);
             }
 
-            QrCode::size(100)->format('png')->generate(auth()->user()->uuid.'/'.$data->matric_no, $path.'\\'.$data->matric_no.'.png');
+            QrCode::format('png')->margin(0)->size(100)->generate(auth()->user()->uuid.'/'.$data->matric_no, $path.'\\'.$data->matric_no.'.png');
 
             $insert_data->push([
                 'matric_number'     => $data->matric_no,
@@ -250,10 +272,13 @@ class ExcelTypoController extends Controller
                 'faculty_id'        => $faculty->id,
                 'department_id'     => $programme->id,
                 'dean_id'           => (is_null($dean))? null : $dean->id,
+                'rector_id'         => (is_null($rector))? null : $rector->id,
                 'serial_no'         => $data->serial_no,
                 'date_endorse'      => $data->date_endorse,
                 'citizenship'       => $data->citizenship,
                 'qr_code_path'      => 'qrcode\\'.auth()->user()->university->name.'\\'.$faculty->name.'\\'.$data->matric_no.'.png',
+                'created_at'        => Carbon::now(),
+                'updated_at'        => Carbon::now(),
             ]);  
 
             $data->is_import = 1;

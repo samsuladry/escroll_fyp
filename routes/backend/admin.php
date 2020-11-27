@@ -7,6 +7,7 @@ use App\Http\Controllers\Backend\DeanController;
 use App\Http\Controllers\Backend\DepartmentController;
 use App\Http\Controllers\Backend\BachelorController;
 use App\Http\Controllers\Backend\TemplateController;
+use App\Http\Controllers\Backend\EscrollSetupController;
 use App\Http\Controllers\Backend\ExcelTypoController;
 use App\Http\Controllers\Backend\DigitalCertificateController;
 use App\Http\Controllers\Backend\CsvController;
@@ -69,8 +70,11 @@ Route::put('faculty/{faculty}/department/{department}/bachelor/{bachelor}', [Bac
 Route::get('template', [TemplateController::class, 'view_template'])->name('view-template');
 Route::get('template/add', [TemplateController::class, 'add_template'])->name('add-template');
 Route::post('template/store', [TemplateController::class, 'store_template'])->name('store-template');
-Route::get('template/{template}/edit', [TemplateController::class, 'edit_template'])->name('edit-template');
 Route::put('template/{template}', [TemplateController::class, 'update_template'])->name('update-template');
+
+Route::get('template/{template}/edit', [EscrollSetupController::class, 'edit'])->name('edit-escroll'); //change to escrollsetup
+Route::put('template/{template}/escroll', [EscrollSetupController::class, 'update'])->name('update-escroll');
+Route::get('template/{template}/escroll', [TemplateController::class, 'view_escroll'])->name('view-escroll');
 
 Route::post('import-csv/store', [CsvController::class, 'store_csv']);
 Route::get('import-csv', [CsvController::class, 'import_csv'])->name('import-csv');
