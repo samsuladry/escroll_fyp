@@ -44,8 +44,12 @@
                                           <button class="btn btn-info">Edit</button>
                                         </a>
 
-                                        <a href="{{url('admin/template/'.$template->id.'/escroll')}}">
-                                          <button class="btn btn-info">E-Scroll</button>
+                                        <a href="{{url('admin/template/'.$template->id.'/escroll')}}" target="_blank">
+                                            <button class="btn btn-info">E-Scroll</button>
+                                        </a>
+
+                                        <a href="#">
+                                            <button class="btn btn-info">Activate</button>
                                         </a>
 
                                       </td>

@@ -15,11 +15,19 @@ class CreateEscrollTemplateTable extends Migration
     {
         Schema::create('escroll_template', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->text('user_id');
-            $table->text('description');
+            $table->unsignedBigInteger('university_id');
+            $table->string('description')->nullable();
+            $table->string('name_position')->nullable();
+            $table->string('bachelor_position')->nullable();
+            $table->string('left_signature_position')->nullable();
+            $table->string('right_signature_position')->nullable();
+            $table->string('qr_position')->nullable();
             $table->string('image_template');
-            $table->string('pdf_template');
             $table->timestamps();
+
+            $table->foreign('university_id')
+                  ->references('id')
+                  ->on('universities');
         });
     }
 
