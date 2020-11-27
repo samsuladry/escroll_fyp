@@ -46,7 +46,6 @@
 --}}
 <body class="app header-fixed sidebar-fixed aside-menu-off-canvas sidebar-lg-show">
     @include('backend.includes.header')
-
     <div class="app-body">
         @include('backend.includes.sidebar')
 
