@@ -17,6 +17,7 @@ class EscrollTemplate extends Model
         'right_signature_position',
         'image_template',
         'qr_position',
+        'active',
     ];
 
     public function university()

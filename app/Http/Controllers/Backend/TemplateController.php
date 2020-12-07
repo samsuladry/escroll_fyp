@@ -11,12 +11,14 @@ use App\Models\EscrollSetup;
 use App\Models\Student;
 use App\Models\Rector;
 use App\Models\Dean;
+use Barryvdh\DomPDF\Facade as PDF;
+use Carbon\Carbon;
 
 class TemplateController extends Controller
 {
     public function view_template()
     {
-        $templates = EscrollTemplate::where('university_id', auth()->user()->university->id)->get();
+        $templates = EscrollTemplate::where('university_id', auth()->user()->university->id)->orderBy('active', 'desc')->orderBy('created_at', 'desc')->get();
         return view('backend.university.escroll-templates.index')->with(compact('templates'));
     }
 
@@ -32,19 +34,30 @@ class TemplateController extends Controller
             'description' => 'required',
             'image_template' => 'required',
         ]);
+        // dd(Storage::disk('public')->exists('image_template'));
+
+        if(!Storage::disk('public')->exists('image_template')){
+            Storage::disk('public')->makeDirectory('image_template');
+        }
+            // dd(storage_path('public'));
+        $template = EscrollTemplate::where('active', 1)
+                                   ->where('university_id', auth()->user()->university->id)
+                                   ->update([
+                                       'active'     => 0,
+                                   ]);
 
         $template = EscrollTemplate::create($request->all());
+        $template->update(['image_template'=> $request->file('image_template')->store('image_template', 'public')]);
         $escroll_setup = EscrollSetup::create([
             'escroll_template_id'   =>  $template->id,
         ]);
-        $template->update(['image_template'=> $request->file('image_template')->store('image_template', 'public')]);
-
+        
         return redirect('/admin/template');
     }
 
     public function edit_template(EscrollTemplate $template)
     {
-        return view('backend.university.escroll-templates.edit')->with(compact('template'));
+        return view('backend.university.escroll-templates.edit')->with(compact('template', 'students'));
     }
 
      public function update_template(Request $request, EscrollTemplate $template){
@@ -75,15 +88,63 @@ class TemplateController extends Controller
         return;
     }
 
-    public function view_escroll()
+    public function view_escroll(EscrollTemplate $template)
     {
-        $template = EscrollTemplate::where('university_id', auth()->user()->university->id )->first();
         $rector = Rector::where('university_id', auth()->user()->university->id)
                         ->where('active', 1)
                         ->first();
         $dean = Dean::where('active', 1)
                     ->first();
-        $student = Student::where('matric_number', 1511688)->first();
-        return view('backend.university.escroll.index')->with(compact('template', 'rector', 'dean', 'student'));
+        $student = Student::orderby('id','desc')->first();
+        $downloaded = 0;
+        // dd($rector, $dean, $student, $template);
+        // dd($template->escrollSetup);
+        return view('backend.university.escroll.index')->with(compact('template', 'rector', 'dean', 'student', 'downloaded'));
+    }
+
+    public function download_escroll(EscrollTemplate $template)
+    {
+        $rector = Rector::where('university_id', auth()->user()->university->id)
+                        ->where('active', 1)
+                        ->first();
+        $dean = Dean::where('active', 1)
+            ->first();
+        // dd(asset('storage/'.$dean->signature), base_path().'/storage/'.$dean->signature);
+        $downloaded = 1;
+        $student = Student::first();
+        // $student->qr_code_path = str_replace(' ', '%20', $student->qr_code_path);
+        // dd(base_path().'/public/'.$student->qr_code_path);
+        // dd($student);
+        if($template->escrollSetup->landscape == 1){
+            $landscape = 'landscape';
+        }
+        else{
+            $landscape = 'portrait';
+        }
+        $pdf = PDF::loadView('backend.university.escroll.index', compact('template', 'student','rector','dean', 'downloaded'))->setPaper('a4', $landscape);
+        // dd(public_path('storage/pdf_template').'/'.time().'.pdf');
+        // dd('test1');
+        // Storage::put('public/storage/pdf_template'.'/'.time().'.pdf', $pdf->output());
+        $file = public_path('storage/pdf_template').'/'.time().'.pdf';
+        $pdf->save($file);
+        // dd('test2');
+        // dd($pdf->download('escroll.pdf'));
+        // return $pdf->download('escroll.pdf');
+        // return response()->json(['success'=>'s'], 200);
+        return response()->download($file);
+    }
+
+    public function activate_template(EscrollTemplate $template){
+        if($template->active == 1) return redirect()->back()->with('flash_warning', 'Template already active!');
+        EscrollTemplate::where('university_id', auth()->user()->university->id)
+                                    ->where('active', 1)
+                                    ->update([
+                                        'active'        => 0,
+                                    ]);
+        $template->active = 1;
+        $template->updated_at = Carbon::now();
+        $template->save();
+
+        return redirect()->back()->with('flash_success', 'Template actived');
     }
 }

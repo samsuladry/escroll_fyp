@@ -3,6 +3,8 @@
 @section('title', app_name() . ' | ' . __('Template'))
 
 @section('content')
+<link href="vendor/select2/dist/css/select2.min.css" rel="stylesheet" />
+<script src="vendor/select2/dist/js/select2.min.js"></script>
     <div class="row">
         <div class="col">
 
@@ -31,8 +33,16 @@
                             QR: <input type="checkbox" name="qr" id="qr" {{($template->escrollSetup->qr)? 'checked': ''}}>
                             Serial Number: <input type="checkbox" name="serial_no" id="serial_no" {{($template->escrollSetup->serial_no)? 'checked': ''}}>
                             Date Endorsed: <input type="checkbox" name="date_endorse" id="date_endorse" {{($template->escrollSetup->date_endorse)? 'checked': ''}}>
+                            Landscape: <input type="checkbox" name="landscape" id="landscape" {{($template->escrollSetup->landscape)? 'checked': ''}}>
                         </div>
-
+                        <div class="form-group">
+                            <select name="student" class="student">
+                                <option value="">Please Select</option>
+                                @foreach ($students as $student)
+                                    <option value="{{$student->id}}">{{$student->matric_number}} - {{$student->name}}</option>
+                                @endforeach
+                            </select>
+                        </div>
                         <div class="form-group">
                             <label>Current Image Template</label><br>
                             <img src="{{ asset("storage/$template->image_template") }}" height="100" width="150">
@@ -50,4 +60,12 @@
             </div>
         </div>
     </div>
+    <script>
+        $(document).ready(function() {
+            $('.student').select2({
+                placeholder: 'Select Student',
+                allowClear: true,
+            });
+        });
+    </script>
 @endsection

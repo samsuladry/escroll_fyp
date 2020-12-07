@@ -23,6 +23,7 @@ class CreateEscrollTemplateTable extends Migration
             $table->string('right_signature_position')->nullable();
             $table->string('qr_position')->nullable();
             $table->string('image_template');
+            $table->tinyInteger('active')->default(1);
             $table->timestamps();
 
             $table->foreign('university_id')
