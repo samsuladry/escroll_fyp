@@ -83,6 +83,16 @@ class TemplateController extends Controller
             $template->qr_position = $request->qr_position;
         }
 
+        if(isset($request->serial_no_position)){
+            $request->serial_no_position = 'left:'.$request->serial_no_position['left'].'; '.'top:'.$request->serial_no_position['top'].'; '.'width:'.$request->serial_no_position['width'].'; '.'height:'.$request->serial_no_position['height'].';';
+            $template->serial_no_position = $request->serial_no_position;
+        }
+
+        if(isset($request->date_endorse_position)){
+            $request->date_endorse_position = 'left:'.$request->date_endorse_position['left'].'; '.'top:'.$request->date_endorse_position['top'].'; '.'width:'.$request->date_endorse_position['width'].'; '.'height:'.$request->date_endorse_position['height'].';';
+            $template->date_endorse_position = $request->date_endorse_position;
+        }
+
         $template->save();
 
         return;
@@ -97,9 +107,19 @@ class TemplateController extends Controller
                     ->first();
         $student = Student::orderby('id','desc')->first();
         $downloaded = 0;
-        // dd($rector, $dean, $student, $template);
-        // dd($template->escrollSetup);
-        return view('backend.university.escroll.index')->with(compact('template', 'rector', 'dean', 'student', 'downloaded'));
+
+        if($template->escrollSetup->landscape == 1){
+            $landscape = 'landscape';
+            $width = 1080;
+            $height = 790;
+        }
+        else{
+            $landscape = 'portrait';
+            $height = 1080;
+            $width = 790;
+        }
+
+        return view('backend.university.escroll.index')->with(compact('template', 'rector', 'dean', 'student', 'downloaded', 'width', 'height'));
     }
 
     public function download_escroll(EscrollTemplate $template)
@@ -109,19 +129,21 @@ class TemplateController extends Controller
                         ->first();
         $dean = Dean::where('active', 1)
             ->first();
-        // dd(asset('storage/'.$dean->signature), base_path().'/storage/'.$dean->signature);
+
         $downloaded = 1;
         $student = Student::first();
-        // $student->qr_code_path = str_replace(' ', '%20', $student->qr_code_path);
-        // dd(base_path().'/public/'.$student->qr_code_path);
-        // dd($student);
+
         if($template->escrollSetup->landscape == 1){
             $landscape = 'landscape';
+            $width = 1080;
+            $height = 790;
         }
         else{
             $landscape = 'portrait';
+            $height = 1080;
+            $width = 790;
         }
-        $pdf = PDF::loadView('backend.university.escroll.index', compact('template', 'student','rector','dean', 'downloaded'))->setPaper('a4', $landscape);
+        $pdf = PDF::loadView('backend.university.escroll.index', compact('template', 'student','rector','dean', 'downloaded', 'height', 'width'))->setPaper('a4', $landscape);
         // dd(public_path('storage/pdf_template').'/'.time().'.pdf');
         // dd('test1');
         // Storage::put('public/storage/pdf_template'.'/'.time().'.pdf', $pdf->output());

@@ -80,9 +80,9 @@ Route::get('escroll/{template}/download', [TemplateController::class, 'download_
 
 Route::get('escroll', [EscrollController::class, 'index'])->name('escroll.index');
 Route::post('escroll/total-students', [EscrollController::class, 'getTotalStudents'])->name('escroll.total-students'); // 1st
-Route::post('escroll/dean-count', [EscrollController::class, 'getDeanCount'])->name('escroll.dean-count');
 Route::post('escroll/check-percentage', [EscrollController::class, 'check_percentage'])->name('escroll.check-percentage');
 Route::post('escroll/generate', [EscrollController::class, 'generate'])->name('escroll.generate');
+Route::post('escroll/download-zip', [EscrollController::class, 'download_zip'])->name('escroll.download-zip');
 Route::post('import-csv/store', [CsvController::class, 'store_csv']);
 Route::get('import-csv', [CsvController::class, 'import_csv'])->name('import-csv');
 

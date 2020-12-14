@@ -22,6 +22,8 @@ class CreateEscrollTemplateTable extends Migration
             $table->string('left_signature_position')->nullable();
             $table->string('right_signature_position')->nullable();
             $table->string('qr_position')->nullable();
+            $table->string('serial_no_position')->nullable();
+            $table->string('date_endorse_position')->nullable();
             $table->string('image_template');
             $table->tinyInteger('active')->default(1);
             $table->timestamps();

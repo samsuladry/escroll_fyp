@@ -31,10 +31,11 @@
         @page { margin: 0px; }
     </style>
     <style>
-        body {
+        /* body {
             background-image: url({{base_path().'/public/storage/'.$template->image_template}});
             background-repeat: no-repeat;
-        }
+            background-size: 100%;
+        } */
         img {
             user-drag: none; 
             user-select: none;
@@ -64,22 +65,22 @@
             <div draggable="true" id="bachelor" class="ui-widget-content" style="{{$template->bachelor_position}}position:absolute;text-align: CENTER;" data-item="1"><span>{{$student->department->name}}</span></div>
         @endif
         @if ($template->escrollSetup->left_signature == 1)
-            <div draggable="true" id="left" class="ui-widget-content" style="{{$template->left_signature_position}}position:absolute;text-align: CENTER;" data-item="2"><img src="{{base_path().'/public/storage/'.$dean->signature}}" alt="dean" style="max-width:100%;max-height:100%;" unselectable="on"></div>
+            <div draggable="true" id="left" class="ui-widget-content" style="{{$template->left_signature_position}}position:absolute;text-align: CENTER;" data-item="2"><img src="{{base_path().'/public/storage/'.$dean->signature}}" alt="dean" style="{{$template->left_signature_position}}" unselectable="on"></div>
         @endif
         @if ($template->escrollSetup->right_signature == 1)
-            <div draggable="true" id="right" class="ui-widget-content" style="{{$template->right_signature_position}}position:absolute;text-align: CENTER;" data-item="3"><img src="{{base_path().'/public/storage/'.$rector->signature}}" alt="rector" style="max-width:100%;max-height:100%;" unselectable="on"></div>
+            <div draggable="true" id="right" class="ui-widget-content" style="{{$template->right_signature_position}}position:absolute;text-align: CENTER;" data-item="3"><img src="{{base_path().'/public/storage/'.$rector->signature}}" alt="rector" style="{{$template->right_signature_position}}" unselectable="on"></div>
         @endif
         @if ($template->escrollSetup->qr == 1)
-            <div draggable="true" id="qr" class="ui-widget-content" style="{{$template->qr_position}}position:absolute;text-align: CENTER;" data-item="4"><img src="{{base_path().'/public/'.$student->qr_code_path}}" alt="qr" style="max-width:100%;max-height:100%;" unselectable="on"></div>
+            <div draggable="true" id="qr" class="ui-widget-content" style="{{$template->qr_position}}position:absolute;text-align: CENTER;" data-item="4"><img src="{{base_path().'/public/'.$student->qr_code_path}}" alt="qr" style="{{$template->qr_position}}" unselectable="on"></div>
         @endif
         @if ($template->escrollSetup->serial_no == 1)
-            <div draggable="true" id="serial_no" class="ui-widget-content" style="{{$template->qr_position}}position:absolute;text-align: CENTER;" data-item="4"><span>{{$student->serial_no}}</span></div>
+            <div draggable="true" id="serial_no" class="ui-widget-content" style="{{$template->serial_no_position}}position:absolute;text-align: CENTER;" data-item="4"><span>{{$student->serial_no}}</span></div>
         @endif
         @if ($template->escrollSetup->date_endorse == 1)
-            <div draggable="true" id="qr" class="ui-widget-content" style="{{$template->qr_position}}position:absolute;text-align: CENTER;" data-item="4"><span>{{$student->date_endorse}}</span></div>
+            <div draggable="true" id="qr" class="ui-widget-content" style="{{$template->date_endorse_position}}position:absolute;text-align: CENTER;" data-item="4"><span>{{$student->date_endorse}}</span></div>
         @endif
     @else
-        <img src="{{asset('storage/'.$template->image_template)}}">
+        <img src="{{asset('storage/'.$template->image_template)}}" width="{{$width}}px" height="{{$height}}px">
         
         @if ($template->escrollSetup->name == 1)
             <div draggable="true" id="name" class="dragme ui-widget-content" style="{{$template->name_position}}" data-item="0"><span>{{$student->name}}</span></div>
@@ -97,10 +98,10 @@
             <div draggable="true" id="qr" class="dragme ui-widget-content" style="{{$template->qr_position}}" data-item="4"><img src="{{asset($student->qr_code_path)}}" alt="qr" style="max-width:100%;max-height:100%;" unselectable="on"></div>
         @endif
         @if ($template->escrollSetup->serial_no == 1)
-            <div draggable="true" id="serial_no" class="dragme ui-widget-content" style="{{$template->qr_position}}" data-item="5"><span>{{$student->serial_no}}</span></div>
+            <div draggable="true" id="serial_no" class="dragme ui-widget-content" style="{{$template->serial_no_position}}" data-item="5"><span>{{$student->serial_no}}</span></div>
         @endif
         @if ($template->escrollSetup->date_endorse == 1)
-            <div draggable="true" id="qr" class="dragme ui-widget-content" style="{{$template->qr_position}}" data-item="6"><span>{{$student->date_endorse}}</span></div>
+            <div draggable="true" id="date_endorse" class="dragme ui-widget-content" style="{{$template->date_endorse_position}}" data-item="6"><span>{{$student->date_endorse}}</span></div>
         @endif
     @endif
     
@@ -149,7 +150,10 @@
                 left_signature_position     : $('#left').css(["left", "top", "width", "height"]),
                 right_signature_position    : $('#right').css(["left", "top", "width", "height"]),
                 qr_position                 : $('#qr').css(["left", "top", "width", "height"]),
+                serial_no_position          : $('#serial_no').css(["left", "top", "width", "height"]),
+                date_endorse_position       : $('#date_endorse').css(["left", "top", "width", "height"]),
             };
+            console.log(data);
             $.ajax({
                 type: 'PUT',
                 url: "{{route('admin.update-template', $template->id)}}",

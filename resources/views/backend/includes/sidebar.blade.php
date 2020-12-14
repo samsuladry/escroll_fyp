@@ -1,9 +1,7 @@
 <div class="sidebar">
     <nav class="sidebar-nav">
         <ul class="nav">
-            <li class="nav-title">
-                @lang('menus.backend.sidebar.general')
-            </li>
+            <li class="nav-title">@lang('menus.backend.sidebar.general')</li>
             <li class="nav-item">
                 <a class="nav-link {{
                     active_class(Route::is('admin/dashboard'))
@@ -52,27 +50,28 @@
                     List Faculty
                 </a>
             </li>
-            <li class="nav-item">
-                <a href="#escrollMenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle nav-link"> <i class="nav-icon fas fa-certificate"></i>Escroll</a>
+            <li class="nav-item nav-dropdown">
+                <a class="nav-link nav-dropdown-toggle"> <i class="nav-icon fas fa-certificate"></i>Escroll</a>
+                <ul class="nav-dropdown-items">
+                    <li class="nav-item">
+                        <a class="nav-link {{
+                            active_class(Route::is('admin/template'))
+                        }}" href="{{ route('admin.view-template') }}">
+                            <i class="nav-icon fas fa-certificate"></i>
+                            Template Management
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{
+                            active_class(Route::is('admin/escroll'))
+                        }}" href="{{ route('admin.escroll.index') }}">
+                            <i class="nav-icon fas fa-certificate"></i>
+                            Assign Template
+                        </a>
+                    </li>
+                </ul>
             </li>
-            <ul class="collapse list-unstyled" id="escrollMenu">
-                <li class="nav-item">
-                    <a class="nav-link {{
-                        active_class(Route::is('admin/template'))
-                    }}" href="{{ route('admin.view-template') }}">
-                        <i class="nav-icon fas fa-certificate"></i>
-                        Template Management
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{
-                        active_class(Route::is('admin/escroll'))
-                    }}" href="{{ route('admin.escroll.index') }}">
-                        <i class="nav-icon fas fa-certificate"></i>
-                        Assign Template
-                    </a>
-                </li>
-            </ul>
+            
             
 
             <li class="nav-item">

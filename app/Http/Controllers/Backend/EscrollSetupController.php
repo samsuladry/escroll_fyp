@@ -29,6 +29,7 @@ class EscrollSetupController extends Controller
         if(isset($request->date_endorse))       $escroll_setup->date_endorse = 1;        else $escroll_setup->date_endorse = 0;
         if(isset($request->serial_no))          $escroll_setup->serial_no = 1;           else $escroll_setup->serial_no = 0;
         if(isset($request->landscape))          $escroll_setup->landscape = 1;           else $escroll_setup->landscape = 0;
+        if(isset($request->image_template))     $template->update(['image_template'=> $request->file('image_template')->store('image_template', 'public')]);
         $escroll_setup->save();
 
         return redirect()->back();

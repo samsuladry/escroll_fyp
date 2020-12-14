@@ -10,12 +10,20 @@
                 <strong>Generate PDF</strong>
             </div>
             <div class="card-body">
-                <button id="generate" disabled>Generate PDF</button>
+                <button id="generate">Generate PDF</button>
                 <div class="panel-body">
                     <span id="success_message"></span>
-                    <div class="form-group" id="process" style="display:block;">
+                    <div class="form-group" id="process" style="display:none;">
                         <div class="progress">
-                            <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div>
+                            <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                                <span id="display-percentage" style="color:black;"></span>
+                            </div>
+                        </div>
+                        <div>
+                            <span id="display-time"></span>
+                        </div>
+                        <div id="zip-process">
+                            <span class="spinner-border text-success"></span> <span>Zipping file and download...</span>
                         </div>
                     </div>
                 </div>
@@ -29,47 +37,20 @@
 
 <script>
     var totalStudents = 0;
+    var counter = 0;
 
     $(document).ready(function() {
-        console.log('test');
+        $('#zip-process').css('display', 'none');
         $.ajaxSetup({
             headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
 
+        // $('.progress').atttr('display', 'none');
         $("#generate").click(function () {
             event.preventDefault();
-            $.ajax({
-                type: 'POST',
-                url: '{{route("admin.escroll.dean-count")}}',
-                beforeSend: function () {
-                    $('#generate').attr('disabled', 'disabled');
-                    $('#process').css('display', 'block');
-                    clearTimer = setInterval(() => {
-                        get_updated_percentage(totalStudents);
-                    }, 1000);
-                },
-                success: (data) => {
-                    console.log(data);
-                    $.each(data.data, (k, v) => {
-                        var stop = 0;
-                        while( stop == 0 ){
-                            console.log('while not stop');
-                            generate_pdf_by_batch(v)
-                            .then(result => {
-                                stop = result.finish;
-                            })
-                            .catch(err => {
-                                alert('failed to generate pdf for studenst');
-                            });
-                        }
-                    });
-                },
-                error: () => {
-                    alert('failed to generate pdf for studenst1');
-                },
-            });
+            generate_pdf();
         });
 
         get_total_students()
@@ -87,40 +68,112 @@
                 type:"POST",
                 url: '{{route("admin.escroll.total-students")}}',
                 success: resolve,
-                error: reject,
+                error: reject
             });
         });
     }
 
-    function get_updated_percentage(data){
+    function get_percentage(totalStudents){
         $.ajax({
             type: 'POST',
             url: '{{route("admin.escroll.check-percentage")}}',
-            data: {totalStudents: data},
+            data: {totalStudents: totalStudents},
             success: (data) => {
-                $('.progress-bar').css('width', data+'%');
-                if(data >= 100){
-                    $('.progress-bar').css('width', '100%');
-                    $('#generate').attr('disabled', false);
-                    clearInterval(clearTimer);
+                $('.progress-bar').css('width', data.total+'%');
+                console.log(data.total);
+                $('#display-percentage').html(data.total_files+'/'+data.totalStudents+' ('+data.total+'%)');
+                minit = parseInt(counter/60);
+                second = (counter - minit*60);
+                if(minit == 0 && second == 1){
+                    $('#display-time').html('');
+                    $('#display-time').html(second+' second elapsed');
                 }
+                else if(minit == 0){
+                    $('#display-time').html('');
+                    $('#display-time').html(second+' seconds elapsed');
+                }
+                else if((minit == 1 && second == 1) || (minit == 1 && second == 0)){
+                    $('#display-time').html('');
+                    $('#display-time').html(minit + ' minute ' +second+' second elapsed');
+                }
+                else {
+                    $('#display-time').html('');
+                    $('#display-time').html(minit + ' minutes ' +second+' seconds elapsed');
+                }
+                if(data.total >= 100){
+                    $('.progress-bar').css('width', '100%');
+                    clearInterval(clearTimer);
+                    clearInterval(myInterval);
+                    setTimeout(() => {
+                        $('#zip-process').css('display', 'block');
+                        download_zip();
+                    }, 2000);
+                }
+                // $('#display-percentage').html('');
+
+            },
+            complete: () => {
             },
             error: (error) => {
                 alert('Failed to check percentage');
+                clearInterval(clearTimer);
+                clearInterval(myInterval);
             }
-        })
+        });
     }
 
-    async function generate_pdf_by_batch(dean){
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                type: 'POST',
-                url: '{{route("admin.escroll.generate")}}',
-                data: {dean_id: dean},
-                success: resolve,
-                error: reject,
-            });
+    function generate_pdf(){
+        $.ajax({
+            type: 'POST',
+            url: '{{route("admin.escroll.generate")}}',
+            beforeSend: function () {
+                $('#generate').attr('disabled', 'disabled');
+                $('#process').css('display', 'block');
+                clearTimer = setInterval(() => {
+                    console.log('total_students' + totalStudents)
+                    get_percentage(totalStudents);
+                }, 1000);
+                myInterval = setInterval(function () {
+                ++counter;
+                }, 1000);
+            },
+            success: (data) => {
+            },
+            complete: (data) => {
+                $('#generate').attr('disabled', false);
+            },
+            error: (error) => {
+                clearInterval(clearTimer);
+                clearInterval(myInterval);
+                alert(error.responseJSON.msg);
+            },
         });
+    }
+
+    function download_zip(){
+        $.ajax({
+            type: 'POST',
+            url: '{{route("admin.escroll.download-zip")}}',
+            xhrFields: {
+                    responseType: 'blob'
+                },
+            beforeSend: () => {
+                $('#zip-process').css('display', 'block');
+            },
+            success: function(response){
+                $('#zip-process').css('display', 'none');
+                var blob = new Blob([response]);
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = "{{auth()->user()->university->acronym}}.zip";
+                link.click();
+            },
+            complete: () => {
+                $('#generate').attr('disabled', false);
+            },
+            error: function(blob){
+            }
+        })
     }
 </script>
 @endsection
