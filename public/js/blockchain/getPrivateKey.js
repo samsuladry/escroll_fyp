@@ -1,11 +1,12 @@
 // change: prompt user mnemonic or PK
 
 //Boleh minta mnemonic user
-let mnemonic;
-// let mnemonic = "used young please bridge alley cluster legal excuse cigar below panda siege";
+// let mnemonic;
+let mnemonic = "used young please bridge alley cluster legal excuse cigar below panda siege";
 
 // ask private key from user
-let PK = "0x7cc1f2fa4ed33cbd2b193bf48aaac1aaf03df8f660dd47e4e38ee4cf439e0710"
+let PK;
+// let PK = "0x7cc1f2fa4ed33cbd2b193bf48aaac1aaf03df8f660dd47e4e38ee4cf439e0710"
 
 // change: function on click push data to blockchain.
 // let key;

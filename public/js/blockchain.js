@@ -111,10 +111,13 @@ const init = async (student_json) => {
 
 	// console.log(getAllStudentMatricNumberInTheUniversity())
 	insertAllStudent(student_json);
+	let nostud = await getAllStudentMatricNumberInTheUniversity();
+	console.log(nostud)
+	console.log(nostud.length)
 
-	let pelajar = await getStudentDetail("1420242", uni_address)
+	// let pelajar = await getStudentDetail("1420242", uni_address)
 
-	console.log(pelajar)
+	// console.log(pelajar)
 
 }
 
@@ -138,24 +141,48 @@ function send(student_json) {
 }
 
 // current change: activate button on click
-function insertAllStudent(student_json) {
+async function insertAllStudent(student_json) {
+
+	var batch = 50;
+	var a = _.chunk(student_json, batch);
+
+	console.log(a)
+
+	// console.log(a[0][0])
+	// console.log(student_json[0])
+
 	var imported_students = new Array();
+
+
+	// let i = 0;
 	web3.eth.getTransactionCount(uni_address)
 		.then(count => {
-			let i = 0
-			console.log(student_json[i])
-			
-			// insertStudent
-			while (i < 1) {
-				insertStudent(count, student_json[i].matric_number, "hash", JSON.stringify(student_json[i]));
-				imported_students.push(student_json[i].matric_number);
-				count++
-				i++
-			}
+			for (let i = 0; i < student_json.length; i++) {
+				// while (i < a[j].length) {
+				// console.log("count atas" + count)
 
+				console.log("count: " + count)
+				insertStudent(count, student_json[i].matric_number, "hash", JSON.stringify(student_json[i]))
+				console.log("student inserted: " + i)
+				count++
+				imported_students.push(student_json[i].matric_number);
+
+			}
 			updateStudentDatabase(imported_students);
+		}).catch(function (e) {
+
+			console.log(err)
 		});
-}
+
+	// insertStudent(count, a[j][i].matric_number, "hash", JSON.stringify(a[j][i]));
+	// .then(res => {
+	// console.log("student inserted: a." + j + "." + i)
+	// }), [];
+
+	// }
+};
+
+
 
 function updateStudentDatabase(imported_students) {
 	var xhttp = new XMLHttpRequest();
@@ -290,22 +317,32 @@ async function insertStudent(txCount, matNo, dataHash, jsonData) {
 	const raw = '0x' + serializedTx.toString('hex')
 
 
-	var result = '';
 
 	// //Broadcast the transaction
-	web3.eth.sendSignedTransaction(raw)
-		.on('error', (e) => {
-			// console.log(JSON.parse(e))
-			console.log('error');
-			console.log(e['message']);
-			// console.log(e->message);
-		})
-		.then(res => {
+	sendTx()
+	let countErr = 0;
+	function sendTx() {
+		web3.eth.sendSignedTransaction(raw)
+			.on('error', (e) => {
+				// console.log(JSON.parse(e))
+				// console.log('error');
+				// console.log(e['message']);
+				// console.log(e);
+				console.log("failed at matric no: " + matNo)
+				countErr++;
+				if (countErr ==1){
+					sendTx()
+				}
+				else{
+					console.log("Student already exist for matric number " + matNo)
+				}
+			})
+			.then(res => {
+				// console.log(res.transactionHash)
+				console.log("Student with matric number ", matNo, " has been added")
+			})
+	}
 
-			// console.log(res)
-			console.log("Student with matric number ", matNo, " has been added")
-		})
-	// return await result;
 }
 
 async function updateStudent(txCount, matNo, dataHash, jsonData) {

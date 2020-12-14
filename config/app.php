@@ -193,7 +193,7 @@ return [
         SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
         Elibyy\TCPDF\ServiceProvider::class,
         Yajra\DataTables\DataTablesServiceProvider::class,
-    
+        Barryvdh\DomPDF\ServiceProvider::class,
 
         // Package Service Providers that aren't auto-discover...
 
@@ -257,7 +257,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
-        'PDF' => Elibyy\TCPDF\Facades\TCPDF::class,
-  
+        // 'PDF' => Elibyy\TCPDF\Facades\TCPDF::class,
+        'PDF' => Barryvdh\DomPDF\Facade::class,
     ],
 ];

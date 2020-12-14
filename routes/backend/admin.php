@@ -11,6 +11,7 @@ use App\Http\Controllers\Backend\EscrollSetupController;
 use App\Http\Controllers\Backend\ExcelTypoController;
 use App\Http\Controllers\Backend\DigitalCertificateController;
 use App\Http\Controllers\Backend\CsvController;
+use App\Http\Controllers\Backend\EscrollController;
 use App\Http\Controllers\Backend\UniversityController;
 use App\Http\Controllers\Backend\BlockchainStudentController;
 
@@ -71,19 +72,22 @@ Route::get('template', [TemplateController::class, 'view_template'])->name('view
 Route::get('template/add', [TemplateController::class, 'add_template'])->name('add-template');
 Route::post('template/store', [TemplateController::class, 'store_template'])->name('store-template');
 Route::put('template/{template}', [TemplateController::class, 'update_template'])->name('update-template');
-
+Route::post('template/{template}/activate', [TemplateController::class, 'activate_template'])->name('activate-template');
 Route::get('template/{template}/edit', [EscrollSetupController::class, 'edit'])->name('edit-escroll'); //change to escrollsetup
 Route::put('template/{template}/escroll', [EscrollSetupController::class, 'update'])->name('update-escroll');
 Route::get('template/{template}/escroll', [TemplateController::class, 'view_escroll'])->name('view-escroll');
+Route::get('escroll/{template}/download', [TemplateController::class, 'download_escroll'])->name('download-escroll');
 
+Route::get('escroll', [EscrollController::class, 'index'])->name('escroll.index');
+Route::post('escroll/total-students', [EscrollController::class, 'getTotalStudents'])->name('escroll.total-students'); // 1st
+Route::post('escroll/check-percentage', [EscrollController::class, 'check_percentage'])->name('escroll.check-percentage');
+Route::post('escroll/generate', [EscrollController::class, 'generate'])->name('escroll.generate');
+Route::post('escroll/download-zip', [EscrollController::class, 'download_zip'])->name('escroll.download-zip');
 Route::post('import-csv/store', [CsvController::class, 'store_csv']);
 Route::get('import-csv', [CsvController::class, 'import_csv'])->name('import-csv');
 
 Route::get('gradute-student', [DashboardController::class, 'graduate_student'])->name('graduate-student');
 Route::get('gradute-student/{student}/view-cert', [DashboardController::class, 'view_cert'])->name('view-cert');
-
-
-
 Route::get('university', [UniversityController::class, 'university'])->name('university');
 Route::get('university/{university}/list-college/{college}/graduate-student/{student}/view-cert-pdf', 
 	[UniversityController::class, 'view_cert_pdf'])->name('view-cert-pdf');

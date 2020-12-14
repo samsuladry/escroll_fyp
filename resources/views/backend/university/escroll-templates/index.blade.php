@@ -22,6 +22,7 @@
                                       <th scope="col">ID</th>
                                       <th scope="col">Description</th>  
                                       <th scope="col">Preview</th>
+                                      <th scope="col">Created At</th>
                                       <th scope="col">Action</th>  
                                     </tr>
                                   </thead>
@@ -33,24 +34,26 @@
                                     @if(!count($templates))
                                     @else
                                     <tr>
-                                      <th>{{$template->id}}</th>
-                                      <th>{{$template->description}}</th>
-                                      <th>
-                                        <img src="{{ asset("storage/$template->image_template") }}" height="100" width="150">
-                                      </th>
+                                      <th>{{$loop->iteration}}</th>
+                                      <td>{{$template->description}}</td>
                                       <td>
+                                        <img src="{{ asset("storage/$template->image_template") }}" height="100" width="150">
+                                      </td>
+                                      <td>{{$template->created_at}}</td>
+                                      <td class="btn-group">
 
-                                        <a href="{{url('admin/template/'.$template->id.'/edit')}}">
+                                        <a href="{{route('admin.edit-escroll', $template->id)}}">
                                           <button class="btn btn-info">Edit</button>
                                         </a>
 
-                                        <a href="{{url('admin/template/'.$template->id.'/escroll')}}" target="_blank">
+                                        <a href="{{route('admin.view-escroll', $template->id)}}" target="_blank">
                                             <button class="btn btn-info">E-Scroll</button>
                                         </a>
 
-                                        <a href="#">
-                                            <button class="btn btn-info">Activate</button>
-                                        </a>
+                                        <form action="{{route('admin.activate-template', $template->id)}}" method="POST">
+                                            @csrf
+                                            <button class="btn  {{($template->active)? 'btn-success': 'btn-warning' }}">{{($template->active)? 'Activated': 'Deactivated' }}</button>
+                                        </form>
 
                                       </td>
                         

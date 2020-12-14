@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Rector;
+use App\Models\Student;
 
 class RectorController extends Controller
 {
@@ -38,12 +39,19 @@ class RectorController extends Controller
         $rectors = Rector::where('id', '!=', $rector->id)
                          ->where('university_id', auth()->user()->university->id)
                          ->get();
-
+        
         foreach($rectors as $data){
             $data->active = 0;
             $data->save();
         }
 
+        $students = Student::where('is_import', 0)->get();
+
+        foreach($students as $student){
+            $student->rector_id = $rector->id;
+            $student->save();
+        }
+        
         return redirect('admin/rector')->with('flash_success', 'Rector created');
     }
 
@@ -76,6 +84,13 @@ class RectorController extends Controller
         $rector->active = !$rector->active;
         $rector->save();
 
+        $students = Student::where('is_import', 0)->get();
+
+        foreach($students as $student){
+            $student->rector_id = $rector->id;
+            $student->save();
+        }
+        
         return redirect()->back()->with('flash_success', 'Rector actived');
     }
 }
