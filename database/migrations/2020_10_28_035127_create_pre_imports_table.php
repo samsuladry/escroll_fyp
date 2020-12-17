@@ -22,13 +22,15 @@ class CreatePreImportsTable extends Migration
             $table->string('citizenship');
             $table->string('serial_no');
             $table->string('date_endorse');
-            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('university_id');
+            $table->unsignedBigInteger('academic_levels_id')->nullable();
+            $table->string('batch')->default(1);
             $table->tinyInteger('is_import')->default(0);
             $table->timestamps();
 
-            $table->foreign('user_id')
+            $table->foreign('university_id')
                   ->references('id')
-                  ->on('users');
+                  ->on('universities');
         });
     }
 

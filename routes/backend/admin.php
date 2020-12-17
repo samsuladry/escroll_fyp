@@ -15,6 +15,7 @@ use App\Http\Controllers\Backend\EscrollController;
 use App\Http\Controllers\Backend\UniversityController;
 use App\Http\Controllers\Backend\BlockchainStudentController;
 use App\Http\Controllers\Backend\MoeController;
+use App\Http\Controllers\Backend\AcademicLevelController;
 
 // All route names are prefixed with 'admin.'.
 Route::redirect('/', '/admin/dashboard', 301);
@@ -22,6 +23,12 @@ Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard'
 Route::get('dashboard/sign-pdf', [DashboardController::class, 'sign_pdf'])->name('sign-pdf');
 Route::get('dashboard/test', [DashboardController::class, 'test']);
 // Route::get('dashboard/test/activate', [FacultyController::class, 'sign_pdf']);
+
+Route::get('academic', [AcademicLevelController::class, 'index'])->name('academic.index');
+Route::post('academic', [AcademicLevelController::class, 'store'])->name('academic.store');
+Route::get('academic/create', [AcademicLevelController::class, 'create'])->name('academic.create');
+Route::post('academic/{academic_level}', [AcademicLevelController::class, 'update'])->name('academic.update');
+Route::delete('academic/{academic_level}', [AcademicLevelController::class, 'destroy'])->name('academic.destroy');
 
 Route::get('check', [ExcelTypoController::class, 'index'])->name('check.index');
 Route::get('check/faculty/{faculty}', [ExcelTypoController::class, 'faculty'])->name('check.faculty');
@@ -84,7 +91,7 @@ Route::post('escroll/total-students', [EscrollController::class, 'getTotalStuden
 Route::post('escroll/check-percentage', [EscrollController::class, 'check_percentage'])->name('escroll.check-percentage');
 Route::post('escroll/generate', [EscrollController::class, 'generate'])->name('escroll.generate');
 Route::post('escroll/download-zip', [EscrollController::class, 'download_zip'])->name('escroll.download-zip');
-Route::post('import-csv/store', [CsvController::class, 'store_csv']);
+Route::post('import-csv/store', [CsvController::class, 'store_csv'])->name('store-csv');
 Route::get('import-csv', [CsvController::class, 'import_csv'])->name('import-csv');
 
 Route::get('gradute-student', [DashboardController::class, 'graduate_student'])->name('graduate-student');

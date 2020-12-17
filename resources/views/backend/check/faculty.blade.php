@@ -10,7 +10,7 @@
                     <h3><strong>Students for Faculty {{ucwords(str_replace('-', ' ', $faculty)) }}</strong></h3>
                     <form action="{{ route('admin.check.faculty.import', $faculty) }}" method="POST">
                         @csrf
-                        <button type="submit" class="btn btn-sm btn-success">Import & generate QR</button>
+                        <button type="submit" class="btn btn-sm btn-success"><i class="fas fa-qrcode"></i> Import & generate QR</button>
                     </form>
                 </div>
                 <div class="card-body">
