@@ -127,6 +127,7 @@ class TemplateController extends Controller
         $rector = Rector::university()
                         ->where('active', 1)
                         ->first();
+        // dd(base_path().'/public/storage/'.$rector->signature, asset('storage\\'.$rector->signature));
         $dean = Dean::where('active', 1)
             ->first();
 
@@ -143,7 +144,7 @@ class TemplateController extends Controller
             $height = 1080;
             $width = 790;
         }
-        $pdf = PDF::loadView('backend.university.escroll.index', compact('template', 'student','rector','dean', 'downloaded', 'height', 'width'))->setPaper('a4', $landscape);
+        $pdf = PDF::setOptions(['isHtmlParserEnabled' => true, 'isRemoteEnabled' => true])->loadView('backend.university.escroll.index', compact('template', 'student','rector','dean', 'downloaded'))->setPaper('a4', $landscape);
         // dd(public_path('storage/pdf_template').'/'.time().'.pdf');
         // dd('test1');
         // Storage::put('public/storage/pdf_template'.'/'.time().'.pdf', $pdf->output());
