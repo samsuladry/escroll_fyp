@@ -308,7 +308,7 @@ class ExcelTypoController extends Controller
 
 		foreach ($importData as $data) {
 			$faculty = Faculty::where('name', $data->faculty)
-				->where('university_id', Auth::id())
+				->where('university_id', auth()->user()->university->id)
 				->first();
 
 			if (is_null($faculty)) {
