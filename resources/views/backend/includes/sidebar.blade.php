@@ -6,7 +6,7 @@
                 <a class="nav-link {{
                     active_class(Route::is('admin/dashboard'))
                 }}" href="{{ route('admin.dashboard') }}">
-                    <i class="nav-icon fas fa-tachometer-alt"></i>
+                    <i class="nav-icon fas fa-columns"></i>
                     @lang('menus.backend.sidebar.dashboard')
                 </a>
             </li>
@@ -15,6 +15,12 @@
 
             @role('university')
 
+            <li class="nav-item">
+                <a href="{{route('admin.academic.index')}}" class="nav-link">
+                    <i class="nav-icon fas fa-user-graduate"></i>
+                    Academic Level
+                </a>
+            </li>
             <li class="nav-item">
                 <a class="nav-link {{
                     active_class(Route::is('admin/import-csv'))

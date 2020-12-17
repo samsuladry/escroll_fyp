@@ -22,8 +22,8 @@ class Rector extends Model
         return $this->hasMany('App\Models\Student');
     }
 
-    public function university()
+    public function scopeUniversity($query)
     {
-        return $this->hasOne('App\Models\University');
+        return $query->where('university_id', auth()->user()->university->id);
     }
 }

@@ -24,14 +24,14 @@ class FacultyController extends Controller
 
         if(isset($request->search)){
             $search = $request->search;
-            $faculties = Faculty::where('user_id', $user_id)
+            $faculties = Faculty::where('university_id', auth()->user()->university->id)
                                 ->where(function ($query) use ($search) {
                                     $query->where('name', 'like', '%'.$search.'%');
                                 })
                                 ->paginate(15);
         }
         else{
-            $faculties = Faculty::where('user_id', $user_id)->paginate(15);
+            $faculties = Faculty::where('university_id', auth()->user()->university->id)->paginate(15);
         }
 
         return view('backend.university.faculty.index')->with(compact('faculties', 'search'));
@@ -163,7 +163,7 @@ class FacultyController extends Controller
 
 
         $user_id = Auth::id();
-        $certificate_info = Certificate::where('user_id', $user_id)->first();
+        $certificate_info = Certificate::where('university_id', auth()->user()->university->id)->first();
 
         $name = $certificate_info->name;
         $location = $certificate_info->location;

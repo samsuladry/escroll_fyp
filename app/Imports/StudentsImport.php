@@ -44,7 +44,7 @@ class StudentsImport implements ToModel, WithBatchInserts, WithChunkReading, Wit
             'citizenship'   => $row['citizenship'] ?? $row['nationality'],
             'serial_no'     => $row['serial_no'],
             'date_endorse'  => Carbon::parse($date),
-            'user_id'       => Auth::id(),
+            'university_id' => auth()->user()->university->id,
         ]);
     }
 

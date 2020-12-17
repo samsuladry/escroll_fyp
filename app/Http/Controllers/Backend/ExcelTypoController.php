@@ -60,20 +60,20 @@ class ExcelTypoController extends Controller
     public function importFaculty(Request $request, $filter){
         set_time_limit(3000);
         $faculty = Faculty::where('name', ucwords(str_replace('-', ' ', $filter)))
-                          ->where('user_id', Auth::id())
+                          ->where('university_id', auth()->user()->university->id)
                           ->first();
 
         $university_id = auth()->user()->university->id;
 
         if(is_null($faculty)){
             $faculty = Faculty::create([
-                'user_id'   => Auth::id(),
-                'name'      => ucwords(str_replace('-', ' ', $filter)),
+                'university_id'   => auth()->user()->university->id,
+                'name'            => ucwords(str_replace('-', ' ', $filter)),
             ]);
         }
 
         $importData = PreImport::where('faculty', ucwords(str_replace('-', ' ', $filter)))
-                               ->where('user_id', Auth::id())
+                               ->where('university_id', auth()->user()->university->id)
                                ->where('is_import', 0)
                                ->get();
 
@@ -87,7 +87,7 @@ class ExcelTypoController extends Controller
             $dean = Dean::where('faculty_id', $faculty->id)
                         ->where('active', 1)
                         ->first();
-            $rector = Rector::where('university_id', auth()->user()->university->id)
+            $rector = Rector::university()
                             ->where('active', 1)
                             ->first();
 
@@ -118,6 +118,8 @@ class ExcelTypoController extends Controller
                 'date_endorse'      => $data->date_endorse,
                 'citizenship'       => $data->citizenship,
                 'qr_code_path'      => 'qrcode\\'.auth()->user()->university->name.'\\'.$faculty->name.'\\'.$data->matric_no.'.png',
+                'batch'             => $data->batch,
+                'academic_levels_id'=> $data->academic_levels_id,
                 'created_at'        => Carbon::now(),
                 'updated_at'        => Carbon::now(),
             ]);  
@@ -140,7 +142,7 @@ class ExcelTypoController extends Controller
         $university_id = auth()->user()->university->id;
 
         $importData = PreImport::where('programme', str_replace('-', ' ', $filter))
-                               ->where('user_id', Auth::id())
+                               ->where('university_id', auth()->user()->university->id)
                                ->where('is_import', 0)
                                ->get();
 
@@ -148,13 +150,13 @@ class ExcelTypoController extends Controller
 
         foreach($importData as $data){
             $faculty = Faculty::where('name', $data->faculty)
-                              ->where('user_id', Auth::id())
+                              ->where('university_id', auth()->user()->university->id)
                               ->first();
             
             if(is_null($faculty)){
                 $faculty = Faculty::create([
-                    'user_id'       => Auth::id(),
-                    'name'          => $data->faculty,
+                    'university_id'   => auth()->user()->university->id,
+                    'name'            => $data->faculty,
                 ]);
             }
 
@@ -162,7 +164,7 @@ class ExcelTypoController extends Controller
                         ->where('active', 1)
                         ->first();
 
-            $rector = Rector::where('university_id', auth()->user()->university->id)
+            $rector = Rector::university()
                             ->where('active', 1)
                             ->first();
 
@@ -220,7 +222,7 @@ class ExcelTypoController extends Controller
         $university_id = auth()->user()->university->id;
 
         $importData = PreImport::where('citizenship', str_replace('-', ' ', $filter))
-                               ->where('user_id', Auth::id())
+                               ->where('university_id', auth()->user()->university->id)
                                ->where('is_import', 0)
                                ->get();
 
@@ -233,8 +235,8 @@ class ExcelTypoController extends Controller
             
             if(is_null($faculty)){
                 $faculty = Faculty::create([
-                    'user_id'       => Auth::id(),
-                    'name'          => $data->faculty,
+                    'university_id'   => auth()->user()->university->id,
+                    'name'            => $data->faculty,
                 ]);
             }
 
@@ -242,7 +244,7 @@ class ExcelTypoController extends Controller
                         ->where('active', 1)
                         ->first();
 
-            $rector = Rector::where('university_id', auth()->user()->university->id)
+            $rector = Rector::university()
                         ->where('active', 1)
                         ->first();
         
@@ -298,7 +300,7 @@ class ExcelTypoController extends Controller
         if(isset($request->search)){
             $search = $request->search;
             $students = PreImport::where('faculty', ucwords(str_replace('-', ' ', $faculty)))
-                                 ->where('user_id', Auth::id())
+                                 ->where('university_id', auth()->user()->university->id)
                                  ->where('is_import', 0)
                                  ->where(function ($query) use ($search) {
                                     $query->where('name', 'like', '%'.$search.'%')
@@ -311,7 +313,7 @@ class ExcelTypoController extends Controller
         }
         else{
             $students = PreImport::where('faculty', ucwords(str_replace('-', ' ', $faculty)))
-                                 ->where('user_id', Auth::id())
+                                 ->where('university_id', auth()->user()->university->id)
                                  ->where('is_import', 0)
                                  ->paginate(15);
         }
@@ -326,7 +328,7 @@ class ExcelTypoController extends Controller
         if(isset($request->search)){
             $search = $request->search;
             $students = PreImport::where('programme', strtoupper(str_replace('-', ' ', $programme)))
-                                 ->where('user_id', Auth::id())
+                                 ->where('university_id', auth()->user()->university->id)
                                  ->where('is_import', 0)
                                  ->where(function ($query) use ($search) {
                                     $query->where('name', 'like', '%'.$search.'%')
@@ -339,7 +341,7 @@ class ExcelTypoController extends Controller
         }
         else{
             $students = PreImport::where('programme', strtoupper(str_replace('-', ' ', $programme)))
-                                 ->where('user_id', Auth::id())
+                                 ->where('university_id', auth()->user()->university->id)
                                  ->where('is_import', 0)
                                  ->paginate(15);
         }
@@ -353,7 +355,7 @@ class ExcelTypoController extends Controller
         if(isset($request->search)){
             $search = $request->search;
             $students = PreImport::where('citizenship', ucwords(str_replace('-', ' ', $citizenship)))
-                                 ->where('user_id', Auth::id())
+                                 ->where('university_id', auth()->user()->university->id)
                                  ->where('is_import', 0)
                                  ->where(function ($query) use ($search) {
                                     $query->where('name', 'like', '%'.$search.'%')
@@ -366,7 +368,7 @@ class ExcelTypoController extends Controller
         }
         else{
             $students = PreImport::where('citizenship', ucwords(str_replace('-', ' ', $citizenship)))
-                                 ->where('user_id', Auth::id())
+                                 ->where('university_id', auth()->user()->university->id)
                                  ->where('is_import', 0)
                                  ->paginate(15);
         }

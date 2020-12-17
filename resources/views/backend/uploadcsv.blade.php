@@ -3,12 +3,11 @@
 @section('title', app_name() . ' | ' . __('Upload Csv'))
 
 @section('content')
-
 <div class="row">
   <div class="col">
     <div class="card">
       <div class="card-header">
-        <strong>CSV Format</strong>
+        <strong>Excel Format (.xlsx, .xls)</strong>
       </div>
       <!--card-header-->
       <div class="card-body">
@@ -58,16 +57,38 @@
   <div class="col">
     <div class="card">
       <div class="card-header">
-        <strong>Upload CSV</strong>
+        <strong>Upload Excel</strong>
       </div>
       <!--card-header-->
       <div class="card-body">
         <div class="col-lg-12" style="margin-top: 1em;margin-bottom: 4em;">
 
-          <form action="{{url('admin/import-csv/store')}}" method="POST" enctype="multipart/form-data" style="margin-top: 1em;">
+          <form action="{{route('admin.store-csv')}}" method="POST" enctype="multipart/form-data" style="margin-top: 1em;">
             @csrf
-            <input type="file" name="file" accept=".xlsx, .xls">
-            <br>
+            <div class="row form-group">
+                <label for="file" class="col-sm-2 control-label">Upload File</label>
+                <div class="col-sm-10">
+                    <input type="file" name="file" accept=".xlsx, .xls" class="form-control-file" required>
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <label for="academic" class="col-sm-2 control-label">Academic Level</label>
+                <div class="col-sm-10">
+                    <select name="academic" id="academic" class="form-control" required>
+                        <option value="">Please Select</option>
+                        @foreach ($academic_level as $academic)
+                            <option value="{{$academic->id}}">{{$academic->name}}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <div class="row form-group">
+                <label for="batch" class="col-sm-2 control-label">Convocation Batch</label>
+                <div class="col-sm-10">
+                    <input type="text" name="batch" id="batch" class="form-control" autocomplete="off" required>
+                </div>
+            </div>
             <button class=" btn btn-success" style="margin-top: 1em;">Upload</button>
           </form>
 
@@ -76,30 +97,6 @@
       </div>
       <!--card-body-->
 
-      {{-- <div class="card-body">
-        <div className="container-fluid mt-5">
-          <div className="row">
-            <main role="main" className="col-lg-12 d-flex text-center">
-              <div className="content mr-auto ml-auto">
-                <a href=https://ipfs.infura.io/ipfs/QmNaziHqZ8zBS2vrYwd3bdXJHmeoHDsBm9cf4b6YUWZBcX target="_blank" rel="noopener noreferrer">
-                  <img src=https://ipfs.infura.io/ipfs/QmNaziHqZ8zBS2vrYwd3bdXJHmeoHDsBm9cf4b6YUWZBcX />
-                </a>
-                <h2>Images (Change)</h2>
-
-                <form id="ipfsSubmit">
-                  <input id="ipfsFile" type="file"/>
-                  <input id="ipfsSubmit2" type="submit" />
-                </form>
-
-              </div>
-            </main>
-          </div>
-        </div>
-      </div> --}}
-
-
-
-
     </div>
     <!--card-->
   </div>
@@ -107,3 +104,21 @@
 </div>
 <!--row-->
 @endsection
+
+@push('before-scripts')
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+@endpush
+@push('after-scripts')
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#academic').select2({
+            placeholder: 'Select Academic Level',
+            autoClear: true,
+        });
+    });
+</script>
+@endpush
+@push('before-styles')
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+@endpush

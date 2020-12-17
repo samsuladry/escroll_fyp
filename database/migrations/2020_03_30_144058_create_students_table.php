@@ -18,7 +18,7 @@ class CreateStudentsTable extends Migration
             $table->string('hash')->nullable();
             $table->string('matric_number');
             $table->string('name');
-            $table->string('university_id');
+            $table->unsignedBigInteger('university_id');
             $table->string('faculty_id');
             $table->string('dean_id')->nullable();
             $table->string('rector_id')->nullable();
@@ -29,6 +29,8 @@ class CreateStudentsTable extends Migration
             $table->string('citizenship')->nullable();
             $table->string('qr_code_path')->nullable();
             $table->string('pdf_doc_path')->nullable();
+            $table->string('batch')->nullable();
+            $table->unsignedBigInteger('academic_levels_id')->nullable();
             $table->tinyInteger('is_import')->default(0);
             $table->timestamps();
         });

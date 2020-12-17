@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateFacultyTable extends Migration
+class CreateAcademicLevelsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,28 @@ class CreateFacultyTable extends Migration
      */
     public function up()
     {
-        Schema::create('faculty', function (Blueprint $table) {
+        Schema::create('academic_levels', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('university_id');
             $table->string('name');
+            $table->tinyInteger('is_delete');
             $table->timestamps();
 
             $table->foreign('university_id')
                   ->references('id')
                   ->on('universities');
+        });
+
+        Schema::table('students', function (Blueprint $table) {
+            $table->foreign('academic_levels_id')
+                  ->references('id')
+                  ->on('academic_levels');
+        });
+
+        Schema::table('pre_imports', function (Blueprint $table) {
+            $table->foreign('academic_levels_id')
+                  ->references('id')
+                  ->on('academic_levels');
         });
     }
 
@@ -32,6 +45,6 @@ class CreateFacultyTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('faculty');
+        Schema::dropIfExists('academic_levels');
     }
 }
