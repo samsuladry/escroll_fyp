@@ -14,6 +14,7 @@ use App\Http\Controllers\Backend\CsvController;
 use App\Http\Controllers\Backend\EscrollController;
 use App\Http\Controllers\Backend\UniversityController;
 use App\Http\Controllers\Backend\BlockchainStudentController;
+use App\Http\Controllers\Backend\MoeController;
 
 // All route names are prefixed with 'admin.'.
 Route::redirect('/', '/admin/dashboard', 301);
@@ -103,3 +104,10 @@ Route::post('blockchainstudent/store', [BlockchainStudentController::class, 'sto
 
 Route::get('student', [BlockchainStudentController::class, 'getStudents']);
 Route::post('student', [BlockchainStudentController::class, 'setStudentImport']);
+
+Route::get('moe', [MoeController::class, 'index'])->name('moe');
+Route::get('moe/registration', [MoeController::class, 'registration'])->name('moe.registration');
+Route::get('moe/blockExplorer', [MoeController::class, 'blockExplorer'])->name('moe.block.explorer');
+Route::get('moe/dataSummary', [MoeController::class, 'dataSummary'])->name('moe.data.summary');
+
+

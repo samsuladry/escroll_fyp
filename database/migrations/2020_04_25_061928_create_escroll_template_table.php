@@ -28,9 +28,9 @@ class CreateEscrollTemplateTable extends Migration
             $table->tinyInteger('active')->default(1);
             $table->timestamps();
 
-            $table->foreign('university_id')
-                  ->references('id')
-                  ->on('universities');
+            // $table->foreign('university_id')
+            //       ->references('id')
+            //       ->on('universities');
         });
     }
 

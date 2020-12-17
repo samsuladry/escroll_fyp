@@ -14,19 +14,6 @@ class CreateRectorTable extends Migration
      */
     public function up()
     {
-
-        Schema::create('universities', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->string('name');
-            $table->string('acronym');
-            $table->unsignedBigInteger('user_id');
-            $table->timestamps();
-
-            $table->foreign('user_id')
-                  ->references('id')
-                  ->on('users');
-        });
-
         Schema::create('rectors', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id');
@@ -41,9 +28,9 @@ class CreateRectorTable extends Migration
                   ->references('id')
                   ->on('users');
 
-            $table->foreign('university_id')
-                  ->references('id')
-                  ->on('universities');
+            // $table->foreign('university_id')
+            //       ->references('id')
+            //       ->on('universities');
         });
     }
 
@@ -55,6 +42,5 @@ class CreateRectorTable extends Migration
     public function down()
     {
         Schema::dropIfExists('rectors');
-        Schema::dropIfExists('universities');
     }
 }
