@@ -20,22 +20,10 @@ class CreateAcademicLevelsTable extends Migration
             $table->tinyInteger('is_delete');
             $table->timestamps();
 
-            $table->foreign('university_id')
-                  ->references('id')
-                  ->on('universities');
+            
         });
 
-        Schema::table('students', function (Blueprint $table) {
-            $table->foreign('academic_levels_id')
-                  ->references('id')
-                  ->on('academic_levels');
-        });
-
-        Schema::table('pre_imports', function (Blueprint $table) {
-            $table->foreign('academic_levels_id')
-                  ->references('id')
-                  ->on('academic_levels');
-        });
+        
     }
 
     /**
