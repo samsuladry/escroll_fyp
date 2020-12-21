@@ -18,360 +18,435 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class ExcelTypoController extends Controller
 {
-    public function index()
-    {
-        $faculties = PreImport::select('faculty')
-                              ->where('is_import', 0)
-                              ->groupBy('faculty')
-                              ->orderBy('faculty')
-                              ->get();
+	public function index()
+	{
+		$faculties = PreImport::select('faculty')
+			->where('is_import', 0)
+			->groupBy('faculty')
+			->orderBy('faculty')
+			->get();
 
-        $programmes = PreImport::select('programme')
-                              ->groupBy('programme')
-                              ->where('is_import', 0)
-                              ->orderBy('programme')
-                              ->get();
+		$programmes = PreImport::select('programme')
+			->groupBy('programme')
+			->where('is_import', 0)
+			->orderBy('programme')
+			->get();
 
-        $citizenships = PreImport::select('citizenship')
-                                 ->groupBy('citizenship')
-                                 ->where('is_import', 0)
-                                 ->orderBy('citizenship')
-                                 ->get();
+		$citizenships = PreImport::select('citizenship')
+			->groupBy('citizenship')
+			->where('is_import', 0)
+			->orderBy('citizenship')
+			->get();
 
-        return view('backend.check.index', compact('faculties', 'programmes', 'citizenships'));
-    }
+		return view('backend.check.index', compact('faculties', 'programmes', 'citizenships'));
+	}
 
-    public function update(Request $request, $student){
+	public function update(Request $request, $student)
+	{
 
-        $student = PreImport::find($student);
-        
-        $student->matric_no     = $request->matric_no;
-        $student->name          = $request->name;
-        $student->faculty       = $request->faculty;
-        $student->programme     = $request->programme;
-        $student->citizenship   = $request->citizenship;
-        $student->serial_no     = $request->serial_no;
-        $student->date_endorse  = Carbon::parse($request->date_endorse);
-        $student->save();
+		$student = PreImport::find($student);
 
-        return redirect()->back()->with('flash_success', 'Successfully updated');
-    }
+		$student->matric_no     = $request->matric_no;
+		$student->name          = $request->name;
+		$student->faculty       = $request->faculty;
+		$student->programme     = $request->programme;
+		$student->citizenship   = $request->citizenship;
+		$student->serial_no     = $request->serial_no;
+		$student->date_endorse  = Carbon::parse($request->date_endorse);
+		$student->save();
 
-    public function importFaculty(Request $request, $filter){
-        set_time_limit(3000);
-        $faculty = Faculty::where('name', ucwords(str_replace('-', ' ', $filter)))
-                          ->where('university_id', auth()->user()->university->id)
-                          ->first();
+		return redirect()->back()->with('flash_success', 'Successfully updated');
+	}
 
-        $university_id = auth()->user()->university->id;
+	public function importAll(Request $request)
+	{
+		set_time_limit(3000);
 
-        if(is_null($faculty)){
-            $faculty = Faculty::create([
-                'university_id'   => auth()->user()->university->id,
-                'name'            => ucwords(str_replace('-', ' ', $filter)),
-            ]);
-        }
+		$university_id = auth()->user()->university->id;
 
-        $importData = PreImport::where('faculty', ucwords(str_replace('-', ' ', $filter)))
-                               ->where('university_id', auth()->user()->university->id)
-                               ->where('is_import', 0)
-                               ->get();
+		$importData = PreImport::where('university_id', auth()->user()->university->id)
+			->where('is_import', 0)
+			->get();
 
-        $insert_data = collect();
+		$insert_data = collect();
 
-        foreach($importData as $data){
+		foreach ($importData as $data) {
+			$faculty = Faculty::where('name', $data->faculty)
+				->where('university_id', auth()->user()->university->id)
+				->first();
 
-            $department = Department::where('name', $data->programme)
-                        ->first();
+			if (is_null($faculty)) {
+				$faculty = Faculty::create([
+					'university_id'   => auth()->user()->university->id,
+					'name'            => $data->faculty,
+				]);
+			}
 
-            $dean = Dean::where('faculty_id', $faculty->id)
-                        ->where('active', 1)
-                        ->first();
-            $rector = Rector::university()
-                            ->where('active', 1)
-                            ->first();
+			$dean = Dean::where('faculty_id', $faculty->id)
+				->where('active', 1)
+				->first();
 
-            if(is_null($department)){
-                $department = Department::create([
-                    'faculty_id'    => $faculty->id,
-                    'name'          => $data->programme,
-                ]);
-            }
+			$rector = Rector::university()
+				->where('active', 1)
+				->first();
 
-            $path = public_path('qrcode\\'.auth()->user()->university->name.'\\'.$faculty->name);
+			$department = Department::where('name', $data->programme)
+				->first();
 
-            if(!File::exists($path)){
-                File::makeDirectory($path, 0777, true, true);
-            }
+			if (is_null($department)) {
+				$department = Department::create([
+					'faculty_id'    => $faculty->id,
+					'name'          => $data->programme,
+				]);
+			}
 
-            QrCode::format('png')->margin(0)->backgroundColor(255, 255, 255, 0)->size(200)->generate(auth()->user()->uuid.'/'.$data->matric_no, $path.'\\'.$data->matric_no.'.png');
-            
-            $insert_data->push([
-                'matric_number'     => $data->matric_no,
-                'name'              => $data->name,
-                'university_id'     => $university_id,
-                'faculty_id'        => $faculty->id,
-                'department_id'     => $department->id,
-                'dean_id'           => (is_null($dean))? null : $dean->id,
-                'rector_id'         => (is_null($rector))? null : $rector->id,
-                'serial_no'         => $data->serial_no,
-                'date_endorse'      => $data->date_endorse,
-                'citizenship'       => $data->citizenship,
-                'qr_code_path'      => 'qrcode\\'.auth()->user()->university->name.'\\'.$faculty->name.'\\'.$data->matric_no.'.png',
-                'batch'             => $data->batch,
-                'academic_levels_id'=> $data->academic_levels_id,
-                'created_at'        => Carbon::now(),
-                'updated_at'        => Carbon::now(),
-            ]);  
+			$path = public_path('qrcode\\' . auth()->user()->university->name . '\\' . $faculty->name);
 
-            $data->is_import = 1;
-            $data->save();
-        }
+			if (!File::exists($path)) {
+				File::makeDirectory($path, 0777, true, true);
+			}
 
-        foreach($insert_data->chunk(500) as $chunk){
-            \DB::table('students')->insert($chunk->toArray());
-        }
+			QrCode::format('png')->margin(0)->backgroundColor(255, 255, 255, 0)->size(100)->generate(auth()->user()->uuid . '/' . $data->matric_no, $path . '\\' . $data->matric_no . '.png');
 
-        return redirect()->route('admin.check.index')->with('flash_success', 'Success import');
-    }
+			$insert_data->push([
+				'matric_number'     => $data->matric_no,
+				'name'              => $data->name,
+				'university_id'     => $university_id,
+				'faculty_id'        => $faculty->id,
+				'department_id'     => $department->id,
+				'dean_id'           => (is_null($dean)) ? null : $dean->id,
+				'rector_id'         => (is_null($rector)) ? null : $rector->id,
+				'serial_no'         => $data->serial_no,
+				'date_endorse'      => $data->date_endorse,
+				'citizenship'       => $data->citizenship,
+				'qr_code_path'      => 'qrcode\\' . auth()->user()->university->name . '\\' . $faculty->name . '\\' . $data->matric_no . '.png',
+				'created_at'        => Carbon::now(),
+				'updated_at'        => Carbon::now(),
+			]);
 
-    public function importProgramme(Request $request, $filter)
-    {
-        set_time_limit(3000);
+			$data->is_import = 1;
+			$data->save();
+		}
 
-        $university_id = auth()->user()->university->id;
+		foreach ($insert_data->chunk(500) as $chunk) {
+			\DB::table('students')->insert($chunk->toArray());
+		}
 
-        $importData = PreImport::where('programme', str_replace('-', ' ', $filter))
-                               ->where('university_id', auth()->user()->university->id)
-                               ->where('is_import', 0)
-                               ->get();
+		return redirect()->route('admin.check.index')->with('flash_success', 'Success import');
+	}
 
-        $insert_data = collect();
+	public function importFaculty(Request $request, $filter)
+	{
+		set_time_limit(3000);
+		$faculty = Faculty::where('name', ucwords(str_replace('-', ' ', $filter)))
+			->where('university_id', auth()->user()->university->id)
+			->first();
 
-        foreach($importData as $data){
-            $faculty = Faculty::where('name', $data->faculty)
-                              ->where('university_id', auth()->user()->university->id)
-                              ->first();
-            
-            if(is_null($faculty)){
-                $faculty = Faculty::create([
-                    'university_id'   => auth()->user()->university->id,
-                    'name'            => $data->faculty,
-                ]);
-            }
+		$university_id = auth()->user()->university->id;
 
-            $dean = Dean::where('faculty_id', $faculty->id)
-                        ->where('active', 1)
-                        ->first();
+		if (is_null($faculty)) {
+			$faculty = Faculty::create([
+				'university_id'   => auth()->user()->university->id,
+				'name'            => ucwords(str_replace('-', ' ', $filter)),
+			]);
+		}
 
-            $rector = Rector::university()
-                            ->where('active', 1)
-                            ->first();
+		$importData = PreImport::where('faculty', ucwords(str_replace('-', ' ', $filter)))
+			->where('university_id', auth()->user()->university->id)
+			->where('is_import', 0)
+			->get();
 
-            $programme = Department::where('faculty_id', $faculty->id)
-                                   ->where('name', str_replace('-', ' ', $filter))
-                                   ->first();
-            
-            if(is_null($programme)){
-                $programme = Department::create([
-                    'faculty_id'    => $faculty->id,
-                    'name'          => $data->programme,
-                ]);
-            }
+		$insert_data = collect();
 
-            $path = public_path('qrcode\\'.auth()->user()->university->name.'\\'.$faculty->name);
+		foreach ($importData as $data) {
 
-            if(!File::exists($path)){
-                File::makeDirectory($path, 0777, true, true);
-            }
+			$department = Department::where('name', $data->programme)
+				->first();
 
-            QrCode::format('png')->margin(0)->backgroundColor(255, 255, 255, 0)->size(100)->generate(auth()->user()->uuid.'/'.$data->matric_no, $path.'\\'.$data->matric_no.'.png');
+			$dean = Dean::where('faculty_id', $faculty->id)
+				->where('active', 1)
+				->first();
+			$rector = Rector::university()
+				->where('active', 1)
+				->first();
 
-            $insert_data->push([
-                'matric_number'     => $data->matric_no,
-                'name'              => $data->name,
-                'university_id'     => $university_id,
-                'faculty_id'        => $faculty->id,
-                'department_id'     => $programme->id,
-                'dean_id'           => (is_null($dean))? null : $dean->id,
-                'rector_id'         => (is_null($rector))? null : $rector->id,
-                'serial_no'         => $data->serial_no,
-                'date_endorse'      => $data->date_endorse,
-                'citizenship'       => $data->citizenship,
-                'qr_code_path'      => 'qrcode\\'.auth()->user()->university->name.'\\'.$faculty->name.'\\'.$data->matric_no.'.png',
-                'created_at'        => Carbon::now(),
-                'updated_at'        => Carbon::now(),
-            ]);  
+			if (is_null($department)) {
+				$department = Department::create([
+					'faculty_id'    => $faculty->id,
+					'name'          => $data->programme,
+				]);
+			}
 
-            $data->is_import = 1;
-            $data->save();
-        }
+			$path = public_path('qrcode\\' . auth()->user()->university->name . '\\' . $faculty->name);
 
-        foreach($insert_data->chunk(500) as $chunk){
-            \DB::table('students')->insert($chunk->toArray());
-        }
+			if (!File::exists($path)) {
+				File::makeDirectory($path, 0777, true, true);
+			}
 
-        return redirect()->route('admin.check.index')->with('flash_success', 'Success import');
+			QrCode::format('png')->margin(0)->backgroundColor(255, 255, 255, 0)->size(200)->generate(auth()->user()->uuid . '/' . $data->matric_no, $path . '\\' . $data->matric_no . '.png');
 
-    }
+			$insert_data->push([
+				'matric_number'     => $data->matric_no,
+				'name'              => $data->name,
+				'university_id'     => $university_id,
+				'faculty_id'        => $faculty->id,
+				'department_id'     => $department->id,
+				'dean_id'           => (is_null($dean)) ? null : $dean->id,
+				'rector_id'         => (is_null($rector)) ? null : $rector->id,
+				'serial_no'         => $data->serial_no,
+				'date_endorse'      => $data->date_endorse,
+				'citizenship'       => $data->citizenship,
+				'qr_code_path'      => 'qrcode\\' . auth()->user()->university->name . '\\' . $faculty->name . '\\' . $data->matric_no . '.png',
+				'batch'             => $data->batch,
+				'academic_levels_id' => $data->academic_levels_id,
+				'created_at'        => Carbon::now(),
+				'updated_at'        => Carbon::now(),
+			]);
 
-    public function importCitizenship(Request $request, $filter)
-    {
-        set_time_limit(3000);
+			$data->is_import = 1;
+			$data->save();
+		}
 
-        $university_id = auth()->user()->university->id;
+		foreach ($insert_data->chunk(500) as $chunk) {
+			\DB::table('students')->insert($chunk->toArray());
+		}
 
-        $importData = PreImport::where('citizenship', str_replace('-', ' ', $filter))
-                               ->where('university_id', auth()->user()->university->id)
-                               ->where('is_import', 0)
-                               ->get();
+		return redirect()->route('admin.check.index')->with('flash_success', 'Success import');
+	}
 
-        $insert_data = collect();
+	public function importProgramme(Request $request, $filter)
+	{
+		set_time_limit(3000);
 
-        foreach($importData as $data){
-            $faculty = Faculty::where('name', $data->faculty)
-                              ->where('user_id', Auth::id())
-                              ->first();
-            
-            if(is_null($faculty)){
-                $faculty = Faculty::create([
-                    'university_id'   => auth()->user()->university->id,
-                    'name'            => $data->faculty,
-                ]);
-            }
+		$university_id = auth()->user()->university->id;
 
-            $dean = Dean::where('faculty_id', $faculty->id)
-                        ->where('active', 1)
-                        ->first();
+		$importData = PreImport::where('programme', str_replace('-', ' ', $filter))
+			->where('university_id', auth()->user()->university->id)
+			->where('is_import', 0)
+			->get();
 
-            $rector = Rector::university()
-                        ->where('active', 1)
-                        ->first();
-        
-            $programme = Department::where('faculty_id', $faculty->id)
-                                   ->where('name', str_replace('-', ' ', $filter))
-                                   ->first();
-            
-            if(is_null($programme)){
-                $programme = Department::create([
-                    'faculty_id'    => $faculty->id,
-                    'name'          => $data->programme,
-                ]);
-            }
+		$insert_data = collect();
 
-            $path = public_path('qrcode\\'.auth()->user()->university->name.'\\'.$faculty->name);
+		foreach ($importData as $data) {
+			$faculty = Faculty::where('name', $data->faculty)
+				->where('university_id', auth()->user()->university->id)
+				->first();
 
-            if(!File::exists($path)){
-                File::makeDirectory($path, 0777, true, true);
-            }
+			if (is_null($faculty)) {
+				$faculty = Faculty::create([
+					'university_id'   => auth()->user()->university->id,
+					'name'            => $data->faculty,
+				]);
+			}
 
-            QrCode::format('png')->margin(0)->backgroundColor(255, 255, 255, 0)->size(100)->generate(auth()->user()->uuid.'/'.$data->matric_no, $path.'\\'.$data->matric_no.'.png');
+			$dean = Dean::where('faculty_id', $faculty->id)
+				->where('active', 1)
+				->first();
 
-            $insert_data->push([
-                'matric_number'     => $data->matric_no,
-                'name'              => $data->name,
-                'university_id'     => $university_id,
-                'faculty_id'        => $faculty->id,
-                'department_id'     => $programme->id,
-                'dean_id'           => (is_null($dean))? null : $dean->id,
-                'rector_id'         => (is_null($rector))? null : $rector->id,
-                'serial_no'         => $data->serial_no,
-                'date_endorse'      => $data->date_endorse,
-                'citizenship'       => $data->citizenship,
-                'qr_code_path'      => 'qrcode\\'.auth()->user()->university->name.'\\'.$faculty->name.'\\'.$data->matric_no.'.png',
-                'created_at'        => Carbon::now(),
-                'updated_at'        => Carbon::now(),
-            ]);  
+			$rector = Rector::university()
+				->where('active', 1)
+				->first();
 
-            $data->is_import = 1;
-            $data->save();
-        }
+			$programme = Department::where('faculty_id', $faculty->id)
+				->where('name', str_replace('-', ' ', $filter))
+				->first();
 
-        foreach($insert_data->chunk(500) as $chunk){
-            \DB::table('students')->insert($chunk->toArray());
-        }
+			if (is_null($programme)) {
+				$programme = Department::create([
+					'faculty_id'    => $faculty->id,
+					'name'          => $data->programme,
+				]);
+			}
 
-        return redirect()->route('admin.check.index')->with('flash_success', 'Success import');
-    }
+			$path = public_path('qrcode\\' . auth()->user()->university->name . '\\' . $faculty->name);
 
-    public function faculty(Request $request, $faculty)
-    {
-        $search = '';
-        if(isset($request->search)){
-            $search = $request->search;
-            $students = PreImport::where('faculty', ucwords(str_replace('-', ' ', $faculty)))
-                                 ->where('university_id', auth()->user()->university->id)
-                                 ->where('is_import', 0)
-                                 ->where(function ($query) use ($search) {
-                                    $query->where('name', 'like', '%'.$search.'%')
-                                          ->orWhere('programme', 'like', '%'.$search.'%')
-                                          ->orWhere('citizenship', 'like', '%'.$search.'%')
-                                          ->orWhere('serial_no', 'like', '%'.$search.'%')
-                                          ->orWhere('date_endorse', 'like', '%'.$search.'%');
-                                 })
-                                 ->paginate(15);
-        }
-        else{
-            $students = PreImport::where('faculty', ucwords(str_replace('-', ' ', $faculty)))
-                                 ->where('university_id', auth()->user()->university->id)
-                                 ->where('is_import', 0)
-                                 ->paginate(15);
-        }
-        
+			if (!File::exists($path)) {
+				File::makeDirectory($path, 0777, true, true);
+			}
 
-        return view('backend.check.faculty', compact('students', 'faculty', 'search'));
-    }
+			QrCode::format('png')->margin(0)->backgroundColor(255, 255, 255, 0)->size(100)->generate(auth()->user()->uuid . '/' . $data->matric_no, $path . '\\' . $data->matric_no . '.png');
 
-    public function programme(Request $request, $programme)
-    {
-        $search = '';
-        if(isset($request->search)){
-            $search = $request->search;
-            $students = PreImport::where('programme', strtoupper(str_replace('-', ' ', $programme)))
-                                 ->where('university_id', auth()->user()->university->id)
-                                 ->where('is_import', 0)
-                                 ->where(function ($query) use ($search) {
-                                    $query->where('name', 'like', '%'.$search.'%')
-                                          ->orWhere('faculty', 'like', '%'.$search.'%')
-                                          ->orWhere('citizenship', 'like', '%'.$search.'%')
-                                          ->orWhere('serial_no', 'like', '%'.$search.'%')
-                                          ->orWhere('date_endorse', 'like', '%'.$search.'%');
-                                 })
-                                 ->paginate(15);
-        }
-        else{
-            $students = PreImport::where('programme', strtoupper(str_replace('-', ' ', $programme)))
-                                 ->where('university_id', auth()->user()->university->id)
-                                 ->where('is_import', 0)
-                                 ->paginate(15);
-        }
+			$insert_data->push([
+				'matric_number'     => $data->matric_no,
+				'name'              => $data->name,
+				'university_id'     => $university_id,
+				'faculty_id'        => $faculty->id,
+				'department_id'     => $programme->id,
+				'dean_id'           => (is_null($dean)) ? null : $dean->id,
+				'rector_id'         => (is_null($rector)) ? null : $rector->id,
+				'serial_no'         => $data->serial_no,
+				'date_endorse'      => $data->date_endorse,
+				'citizenship'       => $data->citizenship,
+				'qr_code_path'      => 'qrcode\\' . auth()->user()->university->name . '\\' . $faculty->name . '\\' . $data->matric_no . '.png',
+				'created_at'        => Carbon::now(),
+				'updated_at'        => Carbon::now(),
+			]);
 
-        return view('backend.check.programme', compact('students', 'programme', 'search'));
-    }
+			$data->is_import = 1;
+			$data->save();
+		}
 
-    public function citizenship(Request $request, $citizenship)
-    {
-        $search = '';
-        if(isset($request->search)){
-            $search = $request->search;
-            $students = PreImport::where('citizenship', ucwords(str_replace('-', ' ', $citizenship)))
-                                 ->where('university_id', auth()->user()->university->id)
-                                 ->where('is_import', 0)
-                                 ->where(function ($query) use ($search) {
-                                    $query->where('name', 'like', '%'.$search.'%')
-                                          ->orWhere('faculty', 'like', '%'.$search.'%')
-                                          ->orWhere('programme', 'like', '%'.$search.'%')
-                                          ->orWhere('serial_no', 'like', '%'.$search.'%')
-                                          ->orWhere('date_endorse', 'like', '%'.$search.'%');
-                                 })
-                                 ->paginate(15);
-        }
-        else{
-            $students = PreImport::where('citizenship', ucwords(str_replace('-', ' ', $citizenship)))
-                                 ->where('university_id', auth()->user()->university->id)
-                                 ->where('is_import', 0)
-                                 ->paginate(15);
-        }
-        return view('backend.check.citizenship', compact('students', 'citizenship', 'search'));
-    }
+		foreach ($insert_data->chunk(500) as $chunk) {
+			\DB::table('students')->insert($chunk->toArray());
+		}
+
+		return redirect()->route('admin.check.index')->with('flash_success', 'Success import');
+	}
+
+	public function importCitizenship(Request $request, $filter)
+	{
+		set_time_limit(3000);
+
+		$university_id = auth()->user()->university->id;
+
+		$importData = PreImport::where('citizenship', str_replace('-', ' ', $filter))
+			->where('university_id', auth()->user()->university->id)
+			->where('is_import', 0)
+			->get();
+
+		$insert_data = collect();
+
+		foreach ($importData as $data) {
+			$faculty = Faculty::where('name', $data->faculty)
+				->where('university_id', auth()->user()->university->id)
+				->first();
+
+			if (is_null($faculty)) {
+				$faculty = Faculty::create([
+					'university_id'   => auth()->user()->university->id,
+					'name'            => $data->faculty,
+				]);
+			}
+
+			$dean = Dean::where('faculty_id', $faculty->id)
+				->where('active', 1)
+				->first();
+
+			$rector = Rector::university()
+				->where('active', 1)
+				->first();
+
+			$programme = Department::where('faculty_id', $faculty->id)
+				->where('name', str_replace('-', ' ', $filter))
+				->first();
+
+			if (is_null($programme)) {
+				$programme = Department::create([
+					'faculty_id'    => $faculty->id,
+					'name'          => $data->programme,
+				]);
+			}
+
+			$path = public_path('qrcode\\' . auth()->user()->university->name . '\\' . $faculty->name);
+
+			if (!File::exists($path)) {
+				File::makeDirectory($path, 0777, true, true);
+			}
+
+			QrCode::format('png')->margin(0)->backgroundColor(255, 255, 255, 0)->size(100)->generate(auth()->user()->uuid . '/' . $data->matric_no, $path . '\\' . $data->matric_no . '.png');
+
+			$insert_data->push([
+				'matric_number'     => $data->matric_no,
+				'name'              => $data->name,
+				'university_id'     => $university_id,
+				'faculty_id'        => $faculty->id,
+				'department_id'     => $programme->id,
+				'dean_id'           => (is_null($dean)) ? null : $dean->id,
+				'rector_id'         => (is_null($rector)) ? null : $rector->id,
+				'serial_no'         => $data->serial_no,
+				'date_endorse'      => $data->date_endorse,
+				'citizenship'       => $data->citizenship,
+				'qr_code_path'      => 'qrcode\\' . auth()->user()->university->name . '\\' . $faculty->name . '\\' . $data->matric_no . '.png',
+				'created_at'        => Carbon::now(),
+				'updated_at'        => Carbon::now(),
+			]);
+
+			$data->is_import = 1;
+			$data->save();
+		}
+
+		foreach ($insert_data->chunk(500) as $chunk) {
+			\DB::table('students')->insert($chunk->toArray());
+		}
+
+		return redirect()->route('admin.check.index')->with('flash_success', 'Success import');
+	}
+
+	public function faculty(Request $request, $faculty)
+	{
+		$search = '';
+		if (isset($request->search)) {
+			$search = $request->search;
+			$students = PreImport::where('faculty', ucwords(str_replace('-', ' ', $faculty)))
+				->where('university_id', auth()->user()->university->id)
+				->where('is_import', 0)
+				->where(function ($query) use ($search) {
+					$query->where('name', 'like', '%' . $search . '%')
+						->orWhere('programme', 'like', '%' . $search . '%')
+						->orWhere('citizenship', 'like', '%' . $search . '%')
+						->orWhere('serial_no', 'like', '%' . $search . '%')
+						->orWhere('date_endorse', 'like', '%' . $search . '%');
+				})
+				->paginate(15);
+		} else {
+			$students = PreImport::where('faculty', ucwords(str_replace('-', ' ', $faculty)))
+				->where('university_id', auth()->user()->university->id)
+				->where('is_import', 0)
+				->paginate(15);
+		}
+
+
+		return view('backend.check.faculty', compact('students', 'faculty', 'search'));
+	}
+
+	public function programme(Request $request, $programme)
+	{
+		$search = '';
+		if (isset($request->search)) {
+			$search = $request->search;
+			$students = PreImport::where('programme', strtoupper(str_replace('-', ' ', $programme)))
+				->where('university_id', auth()->user()->university->id)
+				->where('is_import', 0)
+				->where(function ($query) use ($search) {
+					$query->where('name', 'like', '%' . $search . '%')
+						->orWhere('faculty', 'like', '%' . $search . '%')
+						->orWhere('citizenship', 'like', '%' . $search . '%')
+						->orWhere('serial_no', 'like', '%' . $search . '%')
+						->orWhere('date_endorse', 'like', '%' . $search . '%');
+				})
+				->paginate(15);
+		} else {
+			$students = PreImport::where('programme', strtoupper(str_replace('-', ' ', $programme)))
+				->where('university_id', auth()->user()->university->id)
+				->where('is_import', 0)
+				->paginate(15);
+		}
+
+		return view('backend.check.programme', compact('students', 'programme', 'search'));
+	}
+
+	public function citizenship(Request $request, $citizenship)
+	{
+		$search = '';
+		if (isset($request->search)) {
+			$search = $request->search;
+			$students = PreImport::where('citizenship', ucwords(str_replace('-', ' ', $citizenship)))
+				->where('university_id', auth()->user()->university->id)
+				->where('is_import', 0)
+				->where(function ($query) use ($search) {
+					$query->where('name', 'like', '%' . $search . '%')
+						->orWhere('faculty', 'like', '%' . $search . '%')
+						->orWhere('programme', 'like', '%' . $search . '%')
+						->orWhere('serial_no', 'like', '%' . $search . '%')
+						->orWhere('date_endorse', 'like', '%' . $search . '%');
+				})
+				->paginate(15);
+		} else {
+			$students = PreImport::where('citizenship', ucwords(str_replace('-', ' ', $citizenship)))
+				->where('university_id', auth()->user()->university->id)
+				->where('is_import', 0)
+				->paginate(15);
+		}
+		return view('backend.check.citizenship', compact('students', 'citizenship', 'search'));
+	}
 }

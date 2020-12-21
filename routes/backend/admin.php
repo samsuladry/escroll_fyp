@@ -35,6 +35,7 @@ Route::get('check/faculty/{faculty}', [ExcelTypoController::class, 'faculty'])->
 Route::get('check/programme/{programme}', [ExcelTypoController::class, 'programme'])->name('check.programme');
 Route::get('check/citizenship/{citizenship}', [ExcelTypoController::class, 'citizenship'])->name('check.citizenship');
 Route::post('check/update/{id}', [ExcelTypoController::class, 'update'])->name('check.update');
+Route::post('check/import/all', [ExcelTypoController::class, 'importAll'])->name('check.all.import');
 Route::post('check/import/faculty/{faculty}', [ExcelTypoController::class, 'importFaculty'])->name('check.faculty.import');
 Route::post('check/import/programme/{programme}', [ExcelTypoController::class, 'importProgramme'])->name('check.programme.import');
 Route::post('check/import/citizenship/{citizenship}', [ExcelTypoController::class, 'importCitizenship'])->name('check.citizenship.import');
