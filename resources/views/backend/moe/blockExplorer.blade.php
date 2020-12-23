@@ -1,9 +1,6 @@
 @extends('backend.moe.layouts.layout')
 
 @section('content')
-
-<h1>Block Explorer</h1>
-
 <div class="header">
     <h1>Block Explorer</h1>
 </div>
@@ -37,11 +34,33 @@
 <script type="module">
     // import web3 from '/js/web3.js';
     import unixToDate from '/js/blockchain/unixToDate.js'
-    // import web3 from '/js/web3.js'
-    const web3 = new Web3('https://ropsten.infura.io/v3/6abc6ef995814f84950059729182f065');
+    import web3 from '/js/blockchain/web3.js'
+    // const web3 = new Web3('https://ropsten.infura.io/v3/6abc6ef995814f84950059729182f065');
 
     let txnHash = document.getElementById("txn-input")
+    // console.log('Test', web3)
 
+    //kalau pakai macam ni nanti dia tak susun desc
+    // web3.eth.getBlockNumber()
+    // .then(res =>
+    // {
+    //     for(var i=0; i<10; i++)
+    //     {
+    //         web3.eth.getBlock(res - i).then(res =>
+    //         {
+    //             var blockNumber = res.number;
+    //             var blockHash = res.hash;
+    //             var t = res.timestamp;
+    //             var time = unixToDate(t);
+    //             // let x = window.location.href = "";
+
+    //             // var transactionHash = block.transactions
+    //             // console.log("Block " + time)
+    //             $('tbody').append("<tr><td>" + blockNumber + "</td><td>" + blockHash + "</td><td>" + time + "</td></tr>")
+    //         })
+            
+    //     }
+    // })
     // function sendTxnHash()
     // {
     //     // document.getElementById('target').submit();
@@ -59,48 +78,29 @@
     // }
     // })
 
-    // async function listBlock()
-    // {
-        
-    //     let latestBlock = await web3.eth.getBlockNumber()
-    //     // console.log("test: ", latestBlock)
-    //     for(var i=0; i<10; i++)
-    //     {
-    //         var block = await web3.eth.getBlock(latestBlock - i)
-    //         var blockNumber = block.number;
-    //         var blockHash = block.hash;
-    //         var t = block.timestamp;
-    //         var time = unixToDate(t);
-    //         // let x = window.location.href = "";
-
-    //         // var transactionHash = block.transactions
-    //         // console.log("Block " + time)
-    //         $('tbody').append("<tr><td>" + blockNumber + "</td><td>" + blockHash + "</td><td>" + time + "</td></tr>")
-    //     }
-
-    // }
-    // listBlock()
-
-    web3.eth.getBlockNumber()
-    .then(res =>
+    async function listBlock()
     {
+        
+        let latestBlock = await web3.eth.getBlockNumber()
+        // console.log("test: ", latestBlock)
         for(var i=0; i<10; i++)
         {
-            web3.eth.getBlock(res - i).then(res =>
-            {
-                var blockNumber = res.number;
-                var blockHash = res.hash;
-                var t = res.timestamp;
-                var time = unixToDate(t);
-                // let x = window.location.href = "";
+            var block = await web3.eth.getBlock(latestBlock - i)
+            var blockNumber = block.number;
+            var blockHash = block.hash;
+            var t = block.timestamp;
+            var time = unixToDate(t);
+            // let x = window.location.href = "";
 
-                // var transactionHash = block.transactions
-                // console.log("Block " + time)
-                $('tbody').append("<tr><td>" + blockNumber + "</td><td>" + blockHash + "</td><td>" + time + "</td></tr>")
-            })
-            
+            // var transactionHash = block.transactions
+            // console.log("Block " + time)
+            $('tbody').append("<tr><td>" + blockNumber + "</td><td>" + blockHash + "</td><td>" + time + "</td></tr>")
         }
-    })
+
+    }
+    listBlock()
+
+    
 
 
 </script>

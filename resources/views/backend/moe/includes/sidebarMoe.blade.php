@@ -16,7 +16,7 @@
 
            
 
-            @role('university')
+            {{-- @role('university') --}}
 
             <li class="nav-item">
                 <a class="nav-link {{
@@ -31,7 +31,7 @@
                 <a class="nav-link {{
                     active_class(Route::is('admin/moe/blockExplorer'))
                 }}" href="{{ route('admin.moe.block.explorer') }}">
-                    <i class="nav-icon fas fa-upload"></i>
+                    <i class="nav-icon fas fa-cube"></i>
                     Block Explorer
                 </a>
             </li>
@@ -47,41 +47,14 @@
 
             <li class="nav-item">
                 <a class="nav-link {{
-                    active_class(Route::is('admin/faculty'))
-                }}" href="{{ route('admin.view-faculty') }}">
-                    <i class="nav-icon fas fa-list"></i>
-                    USM
+                    active_class(Route::is('admin/moe/dataSummary'))
+                }}" href="{{ route('admin.moe.uni.page') }}">
+                    <i class="nav-icon fas fa-book-open"></i>
+                    University Page
                 </a>
             </li>
 
-            <li class="nav-item">
-                <a class="nav-link {{
-                    active_class(Route::is('admin/template*'))
-                }}" href="{{ route('admin.view-template') }}">
-                    <i class="nav-icon fas fa-certificate"></i>
-                    UMS
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link {{
-                    active_class(Route::is('admin/digital_certificate*'))
-                }}" href="{{ url('admin/digital_certificate') }}">
-                    <i class="nav-icon fas fa-pencil-alt"></i>
-                    UNISZA
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link {{
-                    active_class(Route::is('admin/digital_certificate*'))
-                }}" href="{{ url('admin/digital_certificate') }}">
-                    <i class="nav-icon fas fa-pencil-alt"></i>
-                    UUM
-                </a>
-            </li>
-
-            @endrole
+            {{-- @endrole --}}
 
            
 

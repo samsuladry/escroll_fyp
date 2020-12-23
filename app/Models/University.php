@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class University extends Model
 {
+    
     protected $fillable = [
         'name', 'blockchainAddress', 'acronym', 'user_id'
     ];

@@ -16,7 +16,7 @@ class CreateUniversities extends Migration
         Schema::create('universities', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
-            $table->string('blockchainAddress');
+            $table->string('blockchainAddress')->nullable();
             $table->string('acronym');
             $table->unsignedBigInteger('user_id');
             $table->timestamps();
