@@ -15,6 +15,7 @@ use App\Http\Controllers\Backend\EscrollController;
 use App\Http\Controllers\Backend\UniversityController;
 use App\Http\Controllers\Backend\BlockchainStudentController;
 use App\Http\Controllers\Backend\MoeController;
+use App\Http\Controllers\Backend\AjaxController;
 use App\Http\Controllers\Backend\AcademicLevelController;
 
 // All route names are prefixed with 'admin.'.
@@ -115,7 +116,12 @@ Route::post('student', [BlockchainStudentController::class, 'setStudentImport'])
 
 Route::get('moe', [MoeController::class, 'index'])->name('moe');
 Route::get('moe/registration', [MoeController::class, 'registration'])->name('moe.registration');
+Route::post('moe/registration', [MoeController::class, 'store'])->name('moe.registration.store');
 Route::get('moe/blockExplorer', [MoeController::class, 'blockExplorer'])->name('moe.block.explorer');
 Route::get('moe/dataSummary', [MoeController::class, 'dataSummary'])->name('moe.data.summary');
+Route::get('moe/uniPage', [MoeController::class, 'uniPage'])->name('moe.uni.page');
+
+
+
 
 

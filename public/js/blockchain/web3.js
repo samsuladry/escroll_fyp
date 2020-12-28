@@ -5,9 +5,10 @@ import unixToDate from './unixToDate.js'
 
 
 // const Web3 = require('web3')
-// const web3 = new Web3('https://ropsten.infura.io/v3/6abc6ef995814f84950059729182f065'); //pakai ni tak dapat address maybe sebab dia tak connect dengan metamask kot
-const web3 = new Web3(Web3.givenProvider || 'https://ropsten.infura.io/v3/6abc6ef995814f84950059729182f065'); //dapat address maybe sebab dia connect dengan address yang ada kat metamask
+const web3 = new Web3('https://ropsten.infura.io/v3/6abc6ef995814f84950059729182f065'); //pakai ni tak dapat address maybe sebab dia tak connect dengan metamask kot
+// const web3 = new Web3(Web3.givenProvider || 'https://ropsten.infura.io/v3/6abc6ef995814f84950059729182f065'); //dapat address maybe sebab dia connect dengan address yang ada kat metamask
 
+export default web3
 const contractEscroll = new web3.eth.Contract(contractAbi, contractAddress)
 // console.log("Contract Simple: ", contractSimple)
 
