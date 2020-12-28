@@ -104,10 +104,6 @@
                     $('.progress-bar').css('width', '100%');
                     clearInterval(clearTimer);
                     clearInterval(myInterval);
-                    setTimeout(() => {
-                        $('#zip-process').css('display', 'block');
-                        download_zip();
-                    }, 2000);
                 }
                 // $('#display-percentage').html('');
 
@@ -138,6 +134,10 @@
                 }, 1000);
             },
             success: (data) => {
+                setTimeout(() => {
+                    $('#zip-process').css('display', 'block');
+                    download_zip();
+                }, 5000);
             },
             complete: (data) => {
                 $('#generate').attr('disabled', false);
@@ -162,11 +162,11 @@
             },
             success: function(response){
                 $('#zip-process').css('display', 'none');
-                var blob = new Blob([response]);
-                var link = document.createElement('a');
-                link.href = window.URL.createObjectURL(blob);
-                link.download = "{{auth()->user()->university->acronym}}.zip";
-                link.click();
+                // var blob = new Blob([response]);
+                // var link = document.createElement('a');
+                // link.href = window.URL.createObjectURL(blob);
+                // link.download = "{{auth()->user()->university->acronym}}.zip";
+                // link.click();
             },
             complete: () => {
                 $('#generate').attr('disabled', false);

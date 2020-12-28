@@ -9,7 +9,7 @@ class Faculty extends Model
     protected $table = 'faculty';
 
      protected $fillable = [
-     	'user_id',
+     	'university_id',
         'name',
     ];
 

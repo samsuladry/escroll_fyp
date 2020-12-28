@@ -16,6 +16,8 @@
             position: absolute;
             left: 0;
             top: 0;
+            margin: 0;
+            padding: 0;
             /* set these so Chrome doesn't return 'auto' from getComputedStyle */
             width: 50%;
             background: rgba(255, 255, 255, 1);
@@ -65,13 +67,13 @@
             <div draggable="true" id="bachelor" class="ui-widget-content" style="{{$template->bachelor_position}}position:absolute;text-align: CENTER;" data-item="1"><span>{{$student->department->name}}</span></div>
         @endif
         @if ($template->escrollSetup->left_signature == 1)
-            <div draggable="true" id="left" class="ui-widget-content" style="{{$template->left_signature_position}}position:absolute;text-align: CENTER;" data-item="2"><img src="{{base_path().'/public/storage/'.$dean->signature}}" alt="dean" style="{{$template->left_signature_position}}" unselectable="on"></div>
+            <div draggable="true" id="left" class="ui-widget-content" style="{{$template->left_signature_position}}position:absolute;text-align: CENTER;" data-item="2"><img src="{{base_path().'/public/storage/'.$dean->signature}}" alt="dean" style="max-width:100%;max-height:100%;" unselectable="on"></div>
         @endif
         @if ($template->escrollSetup->right_signature == 1)
-            <div draggable="true" id="right" class="ui-widget-content" style="{{$template->right_signature_position}}position:absolute;text-align: CENTER;" data-item="3"><img src="{{base_path().'/public/storage/'.$rector->signature}}" alt="rector" style="{{$template->right_signature_position}}" unselectable="on"></div>
+            <div draggable="true" id="right" class="ui-widget-content" style="{{$template->right_signature_position}}position:absolute;text-align: CENTER;" data-item="3"><img src="{{base_path().'/public/storage/'.$rector->signature}}" alt="rector" style="max-width:100%;max-height:100%;" unselectable="on"></div>
         @endif
         @if ($template->escrollSetup->qr == 1)
-            <div draggable="true" id="qr" class="ui-widget-content" style="{{$template->qr_position}}position:absolute;text-align: CENTER;" data-item="4"><img src="{{base_path().'/public/'.$student->qr_code_path}}" alt="qr" style="{{$template->qr_position}}" unselectable="on"></div>
+            <div draggable="true" id="qr" class="ui-widget-content" style="{{$template->qr_position}}position:absolute;text-align: CENTER;" data-item="4"><img src="{{base_path().'/public/'.$student->qr_code_path}}" alt="qr" style="max-width:100%;max-height:100%;" unselectable="on"></div>
         @endif
         @if ($template->escrollSetup->serial_no == 1)
             <div draggable="true" id="serial_no" class="ui-widget-content" style="{{$template->serial_no_position}}position:absolute;text-align: CENTER;" data-item="4"><span>{{$student->serial_no}}</span></div>
