@@ -88,6 +88,7 @@ Route::get('template/{template}/escroll', [TemplateController::class, 'view_escr
 Route::get('escroll/{template}/download', [TemplateController::class, 'download_escroll'])->name('download-escroll');
 
 Route::get('escroll', [EscrollController::class, 'index'])->name('escroll.index');
+Route::post('escroll/remove-folder', [EscrollController::class, 'removeFolder'])->name('escroll.remove-folder'); // 1st
 Route::post('escroll/total-students', [EscrollController::class, 'getTotalStudents'])->name('escroll.total-students'); // 1st
 Route::post('escroll/check-percentage', [EscrollController::class, 'check_percentage'])->name('escroll.check-percentage');
 Route::post('escroll/generate', [EscrollController::class, 'generate'])->name('escroll.generate');
