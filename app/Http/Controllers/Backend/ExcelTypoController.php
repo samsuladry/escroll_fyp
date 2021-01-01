@@ -183,7 +183,7 @@ class ExcelTypoController extends Controller
 				File::makeDirectory($path, 0777, true, true);
 			}
 
-			QrCode::format('png')->margin(0)->backgroundColor(255, 255, 255, 0)->size(200)->generate(auth()->user()->uuid . '/' . $data->matric_no, $path . '\\' . $data->matric_no . '.png');
+			QrCode::format('png')->margin(0)->backgroundColor(255, 255, 255, 0)->size(200)->generate(auth()->user()->university->blockchainAddress . '/' . $data->matric_no, $path . '\\' . $data->matric_no . '.png');
 
 			$insert_data->push([
 				'matric_number'     => $data->matric_no,

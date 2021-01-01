@@ -24,7 +24,22 @@ class EscrollController extends Controller
                           ->groupBy('batch')
                           ->get();
 
-        return view('backend.university.escroll-generate.index');
+        if(Storage::disk('public')->exists('zip')){
+            Storage::disk('public')->makeDirectory('zip');
+        }
+
+        $file_names = [];
+        foreach(File::files(public_path('storage/zip/')) as $file)
+        {
+			// dd($file);
+            if(substr(basename($file), 0, strlen(auth()->user()->university->acronym)) == auth()->user()->university->acronym)
+            {
+				array_push($file_names, basename($file));
+            }
+        }
+		
+		// dd($file_names);
+        return view('backend.university.escroll-generate.index', compact('file_names', 'batches', 'academic_levels'));
     }
 
     public function generate(Request $request)

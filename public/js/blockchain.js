@@ -30,8 +30,10 @@ function startBlockchain() {
 	xhttp.send();
 	xhttp.onload = (student_json) => {
 		if (xhttp.status == 200 && xhttp.readyState == 4) {
+			// console.log(JSON.parse(xhttp.responseText))
 			student_json = JSON.parse(xhttp.responseText);
 			init(student_json)
+			
 		}
 	};
 	// };
@@ -75,29 +77,33 @@ $('#activateGraduateStudent').click(function (e) {
 			"please unlock it first and reload the page.");
 	}
 
+	
 	startBlockchain();
 });
 
 // display all student's details in table
 getAllStudentMatricNumberInTheUniversity().then(function (result) {
-	// displayStudent(result, uni_address);
+	displayStudent(result, uni_address);
 });
 
 
 // change: get no. iteration, get data bachelor, display qrcode, not qrcode's path
-// async function displayStudent(input_matric, uniAddress) {
-// 	var printresult = "";
-// 	for (var i = 0; i < input_matric.length; i++) {
-// 		getStudentDetail(input_matric[i], uniAddress).then(function (result) {
-// 			// console.log(result)
-// 			result[4] = JSON.parse(result[4])
-// 			// console.log(result[4].matric_number)
+async function displayStudent(input_matric, uniAddress) {
+	var printresult = "";
+	var count = 0;
+	for (var i = 0; i < input_matric.length; i++) {
+		getStudentDetail(uniAddress, input_matric[i]).then(function (result) {
+			// console.log(result)
+			result[4] = JSON.parse(result[4])
+			// console.log(result[4].matric_number)
 
-// 			printresult += "<tr><th>" + i + "</th><td>" + result[2] + "</td><td>" + result[4].name + "</td><td>" + result[3] + "</td><td>" + result[4].qr_code_path + "</td><td></tr>";
-// 			document.getElementById("tablestudent").innerHTML = printresult;
-// 		});
-// 	}
-// }
+			printresult += "<tr><th>" + (count + 1) + "</th><td>" + result[2] + "</td><td>" + result[4].name + "</td><td>" + result[3] + "</td><td>" + result[4].qr_code_path + "</td><td></tr>";
+			// printresult += "<tr><th>" + i + "</th><td>" + result[2] + "</td><td>" + result[4] + "</td><td>" + result[3] + "</td><td>" + result[4] + "</td><td></tr>";
+			document.getElementById("tablestudent").innerHTML = printresult;
+			count++;
+		});
+	}
+}
 
 
 //-------------- MAIN PART----------------
@@ -110,9 +116,11 @@ const init = async (student_json) => {
 	// send(student_json);
 
 	// console.log(getAllStudentMatricNumberInTheUniversity())
-	insertAllStudent(student_json);
+
+	insertRecursive(student_json,0)
+	// insertAllStudent(student_json);
 	let nostud = await getAllStudentMatricNumberInTheUniversity();
-	console.log(nostud)
+	// console.log(nostud)
 	console.log(nostud.length)
 
 	// let pelajar = await getStudentDetail("1420242", uni_address)
@@ -143,10 +151,10 @@ function send(student_json) {
 // current change: activate button on click
 async function insertAllStudent(student_json) {
 
-	var batch = 50;
-	var a = _.chunk(student_json, batch);
+	// var batch = 50;
+	// var a = _.chunk(student_json, batch);
 
-	console.log(a)
+	// console.log(a)
 
 	// console.log(a[0][0])
 	// console.log(student_json[0])
@@ -182,6 +190,22 @@ async function insertAllStudent(student_json) {
 	// }
 };
 
+async function insertRecursive(student_json, i) {
+	let count = web3.eth.getTransactionCount(uni_address);
+	if (student_json.length < i) {
+		return 0;
+	}
+
+	let promise = new Promise((resolve, reject)=>{
+		insertStudent(count, student_json[i].matric_number, "hash", JSON.stringify(student_json[i]))
+	})
+
+	promise.then(res => {
+		console.log(res)
+		i++;
+		insertRecursive(student_json, i);
+	})
+}
 
 
 function updateStudentDatabase(imported_students) {
@@ -201,8 +225,24 @@ function updateStudentDatabase(imported_students) {
 			console.log('imported students to db');
 		}
 	}
+
 }
 
+// verifyStudent(uni_address, "1710714");
+function verifyStudent(uniAddress, matricNumber) {
+	checkStudentExistance(uniAddress, matricNumber).then(result => {
+		console.log(result)
+		// $('#verifyStudentImg').src="asset("img/backend/correct.png")";
+	});
+
+}
+
+async function checkStudentExistance(uniAddress, matricNumber) {
+	const result = await contractEscroll.methods.checkStudentExistance(uniAddress, matricNumber).call({
+		from: web3.eth.defaultAccount
+	});
+	return result;
+}
 
 //set default blockchain address
 async function setDefaultAccount() {
@@ -213,8 +253,8 @@ async function setDefaultAccount() {
 };
 
 // get one student's detail
-export async function getStudentDetail(matricNumber, uniAddress) {
-	const result = await contractEscroll.methods.getStudent(matricNumber, uniAddress).call({
+export async function getStudentDetail(uniAddress, matricNumber) {
+	const result = await contractEscroll.methods.getStudent(uniAddress, matricNumber).call({
 		from: web3.eth.defaultAccount
 	});
 	// 6 is the time in the student detail
@@ -228,6 +268,8 @@ async function getAllStudentMatricNumberInTheUniversity() {
 	});
 	return result;
 }
+
+
 
 // new*
 async function getUniversity(uniAddress) {
@@ -329,17 +371,21 @@ async function insertStudent(txCount, matNo, dataHash, jsonData) {
 				// console.log(e['message']);
 				// console.log(e);
 				console.log("failed at matric no: " + matNo)
+
+				// sendTx();
+
 				countErr++;
-				if (countErr ==1){
+				if (countErr == 1) {
 					sendTx()
 				}
-				else{
+				else {
 					console.log("Student already exist for matric number " + matNo)
 				}
 			})
 			.then(res => {
 				// console.log(res.transactionHash)
 				console.log("Student with matric number ", matNo, " has been added")
+				return res;
 			})
 	}
 
