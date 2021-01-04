@@ -172,7 +172,7 @@
   async function displayData()
   {
     // let json = document.getElementById('jsonData')
-    let pelajar = await getStudentDetail(matricNumber, uniAddress)
+    let pelajar = await getStudentDetail(uniAddress, matricNumber)
     document.getElementById("address").innerHTML = pelajar[0]
     document.getElementById("uniName").innerHTML = pelajar[1]
     document.getElementById("matNo").innerHTML = pelajar[2]
