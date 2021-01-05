@@ -150,4 +150,8 @@
 <script type="module" src="{{ asset('js/blockchain.js') }}" defer></script>
 <script type="module" src="{{ asset('js/ipfs.js') }}" defer></script>
 <!--row-->
+<script type="module" src="https://cdn.jsdelivr.net/npm/web3@1.3.0/dist/web3.min.js" defer></script>
+<script type="module" src="https://cdn.jsdelivr.net/gh/ethereumjs/browser-builds/dist/ethereumjs-tx/ethereumjs-tx-1.3.3.min.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/ethers@5.0.19/dist/ethers.umd.min.js"></script>
+<script type="module" src="{{ asset('js/blockchain.js') }}"></script>
 @endsection
