@@ -207,7 +207,8 @@ async function insertAllStudent(student_json) {
 		await web3.eth.getTransactionCount(uni_address)
 			.then(count => {
 				console.log(count)
-				insertStudent(count, student_json[i].matric_number, "hash", JSON.stringify(student_json[i]));
+				var matricNumber =  uni_address + "/" + student_json[i].matric_number;
+				insertStudent(count, matricNumber, "hash", JSON.stringify(student_json[i]));
 				imported_students.push(student_json[i].matric_number);
 				updateStudentDatabase(imported_students)
 			});
