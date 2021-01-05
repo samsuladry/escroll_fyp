@@ -209,11 +209,10 @@ async function insertAllStudent(student_json) {
 				console.log(count)
 				insertStudent(count, student_json[i].matric_number, "hash", JSON.stringify(student_json[i]));
 				imported_students.push(student_json[i].matric_number);
-
-
+				updateStudentDatabase(imported_students)
 			});
 	}
-	updateStudentDatabase(imported_students);
+	
 
 };
 
