@@ -36,4 +36,4 @@ Route::group(['namespace' => 'Backend', 'prefix' => 'admin', 'as' => 'admin.', '
 });
 
 Route::get('/scanQr', [ScannerController::class, 'scan'])->name('scanQr');
-Route::get('/display', [ScannerController::class, 'display'])->name('display');
+Route::post('/display', [ScannerController::class, 'display'])->name('display');

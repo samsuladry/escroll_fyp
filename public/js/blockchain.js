@@ -11,6 +11,7 @@ const contract_address = contractAddress;
 const uni_address = account;
 
 
+
 // GET data from database phpmyadmin/mysql
 function reqListener() {
 	console.log(this.responseText);
@@ -63,7 +64,6 @@ const contractEscroll = new web3.eth.Contract(
 	contract_abi,
 	contract_address
 );
-
 
 
 // insert new student
@@ -153,26 +153,48 @@ async function insertAllStudent(student_json) {
 
 	var imported_students = new Array();
 
+	// web3.eth.getTransactionCount(uni_address)
+	//  .then(count =>
+	// 	{
+	// 		for (let i = 0; i < student_json.length; i++)
+	// 		{
+	// 			var matricNumber =  uni_address + "/" + student_json[i].matric_number;
+	// 			insertStudent(count, matricNumber, "hash", JSON.stringify(student_json[i]));
+	// 			imported_students.push(student_json[i].matric_number);
+	// 			count++
+	// 		}
+	// 		updateStudentDatabase(imported_students)
+	// 	})
 
-	// let i = 0;
-	web3.eth.getTransactionCount(uni_address)
-		.then(count => {
-			for (let i = 0; i < student_json.length; i++) {
-				// while (i < a[j].length) {
-				// console.log("count atas" + count)
+	
 
-				console.log("count: " + count)
-				insertStudent(count, student_json[i].matric_number, "hash", JSON.stringify(student_json[i]))
-				console.log("student inserted: " + i)
-				count++
+	for (let i = 0; i < student_json.length; i++) 
+	{
+		await web3.eth.getTransactionCount(uni_address)
+			.then(count => {
+				console.log("Count: ", count)
+				console.log("i: ", i)
+				var matricNumber =  uni_address + "/" + student_json[i].matric_number;
+				insertStudent(count, matricNumber, "hash", JSON.stringify(student_json[i]));
 				imported_students.push(student_json[i].matric_number);
+				
+			});
+	}
+	updateStudentDatabase(imported_students)
 
-			}
-			updateStudentDatabase(imported_students);
-		}).catch(function (e) {
 
-			console.log(err)
-		});
+	// var count = await web3.eth.getTransactionCount(uni_address)
+	// for (let i = 0; i < student_json.length; i++)
+	// {
+	// 	var matricNumber =  uni_address + "/" + student_json[i].matric_number;
+	// 	// console.log(matricNumber)
+	// 	insertStudent(count, matricNumber, "hash", JSON.stringify(student_json[i]));
+	// 	imported_students.push(student_json[i].matric_number);
+	// 	count++
+		
+	// }
+	// updateStudentDatabase(imported_students)
+
 
 	// insertStudent(count, a[j][i].matric_number, "hash", JSON.stringify(a[j][i]));
 	// .then(res => {
@@ -181,7 +203,6 @@ async function insertAllStudent(student_json) {
 
 	// }
 };
-
 
 
 function updateStudentDatabase(imported_students) {
@@ -319,29 +340,21 @@ async function insertStudent(txCount, matNo, dataHash, jsonData) {
 
 
 	// //Broadcast the transaction
-	sendTx()
-	let countErr = 0;
-	function sendTx() {
-		web3.eth.sendSignedTransaction(raw)
-			.on('error', (e) => {
-				// console.log(JSON.parse(e))
-				// console.log('error');
-				// console.log(e['message']);
-				// console.log(e);
-				console.log("failed at matric no: " + matNo)
-				countErr++;
-				if (countErr ==1){
-					sendTx()
-				}
-				else{
-					console.log("Student already exist for matric number " + matNo)
-				}
-			})
-			.then(res => {
-				// console.log(res.transactionHash)
-				console.log("Student with matric number ", matNo, " has been added")
-			})
-	}
+	web3.eth.sendSignedTransaction(raw)
+		.on('error', (e) => {
+			// console.log(JSON.parse(e))
+			// console.log('error');
+			// console.log(e['message']);
+			// console.log(e);
+			console.log("failed at matric no: " + matNo)
+
+			// sendTx();
+		})
+		.then(res => {
+			// console.log(res.transactionHash)
+			console.log("Student with matric number ", matNo, " has been added")
+			// return res;
+		})
 
 }
 
