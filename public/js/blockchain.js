@@ -1,6 +1,6 @@
 import unixToDate from './blockchain/unixToDate.js'
 import { contractAbi, contractAddress } from './blockchain/contract.js'
-import web3 from '/js/blockchain/web3.js'
+import web3 from './blockchain/web3.js'
 import { privateKey as PK, walletAddress as account } from './blockchain/getPrivateKey.js'
 // import IPFS from './ipfs';
 
@@ -133,8 +133,7 @@ const init = async (student_json) => {
 
 	// console.log(getAllStudentMatricNumberInTheUniversity())
 
-	insertRecursive(student_json,0)
-	// insertAllStudent(student_json);
+	insertAllStudent(student_json);
 	let nostud = await getAllStudentMatricNumberInTheUniversity();
 	// console.log(nostud)
 	console.log(nostud.length)
@@ -307,12 +306,6 @@ export async function getStudentDetail(uniAddress, matricNumber)
 	// alert('result')
 	result[6] = unixToDate(result[6])
 	return result;
-}
-
-async function checkStudentExistance(uniAddress, matricNumber)
-{
-	let result = await contractEscroll.methods.checkStudentExistance(uniAddress, matricNumber).call()
-	return result
 }
 
 async function getAllStudentMatricNumberInTheUniversity() {
