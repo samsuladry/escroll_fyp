@@ -1,8 +1,62 @@
 // fix contract address once contract is deployed
 // change: samsul will deploy contract to server, then we will use the contract address
 // 0x83c184bB27fed6001980E72F19F4f70bEe7a19cB //contract ada 3000 student
-export const contractAddress = '0xC640fAa6EEfffE9bE8a977DA557bF9608eB18b0b'
+export const contractAddress = '0x787EB8d1CbD262fd9d6787241927ff4A0f74C77B'
 export const contractAbi = [
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_uniAddress",
+				"type": "address"
+			}
+		],
+		"name": "deleteUniversity",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_matricNumber",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_dataHash",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_jsonData",
+				"type": "string"
+			}
+		],
+		"name": "insertStudent",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_uniAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "_uniName",
+				"type": "string"
+			}
+		],
+		"name": "insertUniversity",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
 	{
 		"inputs": [],
 		"stateMutability": "nonpayable",
@@ -189,6 +243,47 @@ export const contractAbi = [
 	{
 		"inputs": [
 			{
+				"internalType": "string",
+				"name": "_matricNumber",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_dataHash",
+				"type": "string"
+			}
+		],
+		"name": "updateMicroCredential",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_matricNumber",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_dataHash",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_jsonData",
+				"type": "string"
+			}
+		],
+		"name": "updateStudent",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
@@ -259,19 +354,6 @@ export const contractAbi = [
 			}
 		],
 		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_uniAddress",
-				"type": "address"
-			}
-		],
-		"name": "deleteUniversity",
-		"outputs": [],
-		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -373,47 +455,6 @@ export const contractAbi = [
 			}
 		],
 		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "_matricNumber",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_dataHash",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_jsonData",
-				"type": "string"
-			}
-		],
-		"name": "insertStudent",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_uniAddress",
-				"type": "address"
-			},
-			{
-				"internalType": "string",
-				"name": "_uniName",
-				"type": "string"
-			}
-		],
-		"name": "insertUniversity",
-		"outputs": [],
-		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -526,47 +567,6 @@ export const contractAbi = [
 			}
 		],
 		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "_matricNumber",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_dataHash",
-				"type": "string"
-			}
-		],
-		"name": "updateMicroCredential",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "_matricNumber",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_dataHash",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_jsonData",
-				"type": "string"
-			}
-		],
-		"name": "updateStudent",
-		"outputs": [],
-		"stateMutability": "nonpayable",
 		"type": "function"
 	}
 ]

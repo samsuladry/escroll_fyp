@@ -16,23 +16,34 @@ use Maatwebsite\Excel\Facades\Excel;
 use Ramsey\Uuid\Uuid;
 use App\Imports\StudentsImport;
 use App\Models\Student;
-
+use App\Models\PreImport;
+use App\Models\AcademicLevel;
 
 class CsvController extends Controller
 {
      public function import_csv(){
  
-    	return view('backend.uploadcsv');
+        $academic_level = AcademicLevel::all();
+
+    	return view('backend.uploadcsv', compact('academic_level'));
     }
 
     public function store_csv(){
 
         request()->validate([
-            'file'  =>  'required|mimes:csv,xls,xlsx'
+            'file'      =>  'required|mimes:csv,xls,xlsx',
+            'batch'     =>  'required',
+            'academic'  =>  'required',
         ]);
 
         if(!Excel::import(new StudentsImport, request()->file('file'))) return redirect()->back()->with('flash-danger', 'Invalid import format!');
-         
+        
+        PreImport::where('university_id', auth()->user()->university->id)
+                 ->update([
+                    'batch'             => request()->batch,
+                    'academic_levels_id'    => request()->academic,
+                 ]);
+        
     	return redirect('/admin/check');
     }
 }

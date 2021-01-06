@@ -18,7 +18,7 @@ class TemplateController extends Controller
 {
     public function view_template()
     {
-        $templates = EscrollTemplate::where('university_id', auth()->user()->university->id)->orderBy('active', 'desc')->orderBy('created_at', 'desc')->get();
+        $templates = EscrollTemplate::university()->orderBy('active', 'desc')->orderBy('created_at', 'desc')->get();
         return view('backend.university.escroll-templates.index')->with(compact('templates'));
     }
 
@@ -41,7 +41,7 @@ class TemplateController extends Controller
         }
             // dd(storage_path('public'));
         $template = EscrollTemplate::where('active', 1)
-                                   ->where('university_id', auth()->user()->university->id)
+                                   ->university()
                                    ->update([
                                        'active'     => 0,
                                    ]);
@@ -100,7 +100,7 @@ class TemplateController extends Controller
 
     public function view_escroll(EscrollTemplate $template)
     {
-        $rector = Rector::where('university_id', auth()->user()->university->id)
+        $rector = Rector::university()
                         ->where('active', 1)
                         ->first();
         $dean = Dean::where('active', 1)
@@ -124,9 +124,10 @@ class TemplateController extends Controller
 
     public function download_escroll(EscrollTemplate $template)
     {
-        $rector = Rector::where('university_id', auth()->user()->university->id)
+        $rector = Rector::university()
                         ->where('active', 1)
                         ->first();
+        // dd(base_path().'/public/storage/'.$rector->signature, asset('storage\\'.$rector->signature));
         $dean = Dean::where('active', 1)
             ->first();
 
@@ -143,7 +144,7 @@ class TemplateController extends Controller
             $height = 1080;
             $width = 790;
         }
-        $pdf = PDF::loadView('backend.university.escroll.index', compact('template', 'student','rector','dean', 'downloaded', 'height', 'width'))->setPaper('a4', $landscape);
+        $pdf = PDF::setOptions(['isHtmlParserEnabled' => true, 'isRemoteEnabled' => true])->loadView('backend.university.escroll.index', compact('template', 'student','rector','dean', 'downloaded'))->setPaper('a4', $landscape);
         // dd(public_path('storage/pdf_template').'/'.time().'.pdf');
         // dd('test1');
         // Storage::put('public/storage/pdf_template'.'/'.time().'.pdf', $pdf->output());
@@ -158,7 +159,7 @@ class TemplateController extends Controller
 
     public function activate_template(EscrollTemplate $template){
         if($template->active == 1) return redirect()->back()->with('flash_warning', 'Template already active!');
-        EscrollTemplate::where('university_id', auth()->user()->university->id)
+        EscrollTemplate::university()
                                     ->where('active', 1)
                                     ->update([
                                         'active'        => 0,

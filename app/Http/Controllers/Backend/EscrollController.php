@@ -7,6 +7,7 @@ use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use App\Models\EscrollTemplate;
+use App\Models\AcademicLevel;
 use App\Models\Student;
 use App\Models\Faculty;
 use App\Models\Rector;
@@ -18,9 +19,41 @@ class EscrollController extends Controller
 {
     public function index()
     {
-        return view('backend.university.escroll-generate.index');
+        $academic_levels = AcademicLevel::all();
+        $batches = Student::select('batch')
+                          ->groupBy('batch')
+                          ->orderBy('batch', 'desc')
+                          ->get();
+
+        if(Storage::disk('public')->exists('zip')){
+            Storage::disk('public')->makeDirectory('zip');
+        }
+
+        $file_names = [];
+        foreach(File::files(public_path('storage/zip')) as $file)
+        {
+            if(substr(basename($file), 0, strlen(auth()->user()->university->acronym)) == auth()->user()->university->acronym)
+            {
+                array_push($file_names, basename($file));
+            }
+        }
+
+        return view('backend.university.escroll-generate.index', compact('file_names', 'batches', 'academic_levels'));
     }
 
+    public function removeFolder()
+    {
+        $directory = 'pdf/'.auth()->user()->university->acronym;
+
+        if(Storage::disk('public')->exists($directory)){
+            do{
+                storage::disk('public')->deleteDirectory($directory);
+            }while(Storage::disk('public')->exists($directory));
+        }
+
+        return response()->json(['success' => 1 ], 200);
+    }
+    
     public function generate(Request $request)
     {
         set_time_limit(0);
@@ -29,15 +62,20 @@ class EscrollController extends Controller
         $dean = Dean::where('id', 1)->first();
 
         $students = Student::where('university_id', $university_id)
+                           ->where('batch', $request->batch)
+                           ->where('academic_levels_id', $request->academic_level)
                            ->orderBy('serial_no')
-                           ->get();
+                           ->get()#;
+                           ->take(100);
 
-        $rector = Rector::where('university_id', $university_id)
+        $academic_level = AcademicLevel::find($request->academic_level);
+
+        $rector = Rector::university()
                         ->where('active', 1)
                         ->first();
 
         $template = EscrollTemplate::where('active', 1)
-                                   ->where('university_id', $university_id)
+                                   ->university()
                                    ->first();
 
         if($template->escrollSetup->landscape == 1){
@@ -53,10 +91,6 @@ class EscrollController extends Controller
 
         $directory = 'pdf/'.auth()->user()->university->acronym;
 
-        if(Storage::disk('public')->exists($directory)){
-            storage::disk('public')->deleteDirectory($directory);
-        }
-
         if(!Storage::disk('public')->exists($directory)){
             Storage::disk('public')->makeDirectory($directory);
         }
@@ -64,6 +98,7 @@ class EscrollController extends Controller
         foreach ($students as $student) {
             if(connection_aborted()){
                 Storage::disk('public')->deleteDirectory('pdf/'.auth()->user()->university->acronym);
+                exit();
                 return response()->json(['msg' => 'User closed the browser'], 500);
             }
             if(is_null($student->dean_id)){
@@ -76,14 +111,17 @@ class EscrollController extends Controller
             }
 
             $pdf = PDF::loadView('backend.university.escroll.index', compact('template', 'student','rector','dean', 'downloaded', 'width', 'height'))->setPaper('a4', $landscape);
-            $file = public_path('storage/'.$directory).'/'.$student->matric_number.'.pdf';
+            $file = public_path('storage/'.$directory).'/'.$student->serial_no.'.pdf';
             $pdf->save($file);
 
-            $student->pdf_doc_path = 'storage/'.$directory.'/'.$student->matric_number.'.pdf';
+            $student->pdf_doc_path = 'storage/'.$directory.'/'.$student->serial_no.'.pdf';
             $student->save();
+            $pdf = null;
+            $file = null;
+            $faculty = null;
         }
 
-        return response()->json(['success' => 1 ], 200);
+        return response()->json(['success' => 1, 'batch' => $request->batch, 'academic_level' => $academic_level->name], 200);
     }
 
     public function check_percentage(Request $request)
@@ -99,7 +137,7 @@ class EscrollController extends Controller
         $total = Student::where('university_id', auth()->user()->university->id)
                         ->orderBy('serial_no')
                         ->get()
-                        // ->take(1000)
+                        ->take(100)
                         ->count();
 
         if(is_null($total) || $total == 0){
@@ -109,12 +147,28 @@ class EscrollController extends Controller
         return response()->json(['total' => $total], 200);
     }
 
-    public function download_zip(){
+    public function download_zip()
+    {
         set_time_limit(0);
-        $zip_file = public_path('storage/pdf/').auth()->user()->university->acronym.'.zip';
-        $zip = new ZipArchive();
-        $zip->open($zip_file, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+        if(!Storage::disk('public')->exists('zip')){
+            Storage::disk('public')->makeDirectory('zip');
+        }
 
+        if(request()->download == 'true'){
+            $zip_file = public_path('storage/zip/').request()->filename;
+            return response()->download($zip_file, auth()->user()->university->acronym);
+        }
+        // try{
+
+        // }catch(){
+
+        // }
+        $zip_file = public_path('storage/zip/').request()->filename.'.zip';
+
+        $zip = new ZipArchive();
+        // dd('pass', $zip_file);
+        $zip->open($zip_file, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+        // dd('pass', $zip_file);
         $path = storage_path('app/public/pdf/'.auth()->user()->university->acronym);
         $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
         foreach ($files as $name => $file)
@@ -130,7 +184,7 @@ class EscrollController extends Controller
             }
         }
         $zip->close();
-        Storage::disk('public')->deleteDirectory('pdf/'.auth()->user()->university->acronym);
+        // Storage::disk('public')->deleteDirectory('pdf/'.auth()->user()->university->acronym);
         return response()->download($zip_file);
     }
 }

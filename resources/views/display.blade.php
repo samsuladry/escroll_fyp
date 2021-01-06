@@ -119,8 +119,36 @@
 
                         <thead class="thead-light">
                           <tr>
-                            <th>Json Data</th> 
-                            <td id="jsonData"></td>
+                            <th>Name</th> 
+                            <td id="jsonData_name"></td>
+                          </tr>
+                        </thead>
+
+                        <thead class="thead-dark">
+                          <tr>
+                            <th>Faculty</th> 
+                            <td id="jsonData_faculty"></td>
+                          </tr>
+                        </thead>
+
+                        <thead class="thead-light">
+                          <tr>
+                            <th>Bachelor</th> 
+                            <td id="jsonData_bachelor"></td>
+                          </tr>
+                        </thead>
+                        
+                        <thead class="thead-dark">
+                          <tr>
+                            <th>Date Endorse</th> 
+                            <td id="jsonData_date_endorse"></td>
+                          </tr>
+                        </thead>
+
+                        <thead class="thead-light">
+                          <tr>
+                            <th>Citizenship</th> 
+                            <td id="jsonData_citizenship"></td>
                           </tr>
                         </thead>
 
@@ -172,11 +200,18 @@
   async function displayData()
   {
     // let json = document.getElementById('jsonData')
-    let pelajar = await getStudentDetail(matricNumber, uniAddress)
+    console.log(matricNumber)
+    let pelajar = await getStudentDetail(uniAddress, matricNumber)
+
+    pelajar[4] = JSON.parse(pelajar[4])
     document.getElementById("address").innerHTML = pelajar[0]
     document.getElementById("uniName").innerHTML = pelajar[1]
     document.getElementById("matNo").innerHTML = pelajar[2]
-    document.getElementById("jsonData").innerHTML = pelajar[4]
+    document.getElementById("jsonData_name").innerHTML = pelajar[4].name
+    document.getElementById("jsonData_faculty").innerHTML = pelajar[4].faculty
+    document.getElementById("jsonData_bachelor").innerHTML = pelajar[4].bachelor
+    document.getElementById("jsonData_date_endorse").innerHTML = pelajar[4].date_endorse
+    document.getElementById("jsonData_citizenship").innerHTML = pelajar[4].citizenship
     document.getElementById("status").innerHTML = pelajar[5]
     document.getElementById("timestamp").innerHTML = pelajar[6]
     document.getElementById("blockNo").innerHTML = pelajar[7]
@@ -195,8 +230,8 @@
 <!-- <script>
 
   const web3 = new Web3('HTTP://127.0.0.1:8545') 
-  let address = {{$address}}
-  let matricNumber = {{$matricNumber}}
+  {{-- let address = {{$address}} --}}
+  {{-- let matricNumber = {{$matricNumber}} --}}
   displayData(matricNumber, address)
   
 

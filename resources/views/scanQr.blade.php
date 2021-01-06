@@ -107,15 +107,46 @@
 		$("#content").append('<input type="hidden" name="address" value="' + address + '">')
 		$("#content").append('<input type="hidden" name="matricNumber" value="' + matricNumber + '">')
 		$("#target").submit()
+
+
 		toggleClose()
+
 	}
 
 	scanner.addListener('scan', result);
-	function togglePopup()
-	{
+
+	function togglePopup() {
 		document.getElementById("popup-1").classList.toggle("active", true)
-		Instascan.Camera.getCameras()
-			.then(cameras => 
+		Instascan.Camera.getCameras().then(cameras => {
+			if (cameras.length > 0) {
+				scanner.start(cameras[0]);
+			} else {
+				console.error("There is no camera");
+			}
+		);
+
+
+		async function result(content)
+		{
+			
+			let realContent = content.split("/")
+			let address = realContent[0]
+			let matricNumber = content
+			// var _token = $("input[name='_token']").val();
+			
+			$("#content").append('<input type="hidden" name="matricNumber" value="'+matricNumber+'">')
+			$("#content").append('<input type="hidden" name="address" value="'+address+'">')
+			$("#target").submit()
+
+			
+			toggleClose()
+
+		}
+
+		scanner.addListener('scan', result);
+		function togglePopup(){
+			document.getElementById("popup-1").classList.toggle("active", true)
+			Instascan.Camera.getCameras().then(cameras => 
 				{
 					if(cameras.length > 0){
 						scanner.start(cameras[0]);
