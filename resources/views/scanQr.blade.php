@@ -20,7 +20,7 @@
 	<div class="container mt-2 mb-2">
 		<div class="row">
 			<div class="col-4">
-				<img src="{{ asset('img/iium_logo.png') }}" alt="" class="container">
+				<img src="{{ asset('img/IIUM.png') }}" alt="" class="container">
 			</div>
 			<div class="col-6">
 			</div>
