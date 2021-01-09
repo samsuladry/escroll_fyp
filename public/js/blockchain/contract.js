@@ -1,7 +1,7 @@
 // fix contract address once contract is deployed
 // change: samsul will deploy contract to server, then we will use the contract address
 // 0x83c184bB27fed6001980E72F19F4f70bEe7a19cB //contract ada 3000 student
-export const contractAddress = '0x787EB8d1CbD262fd9d6787241927ff4A0f74C77B'
+export const contractAddress = '0x078eB9FF30723E472647e466Ae87307C5Eb2c046'
 export const contractAbi = [
 	{
 		"inputs": [
@@ -61,31 +61,6 @@ export const contractAbi = [
 		"inputs": [],
 		"stateMutability": "nonpayable",
 		"type": "constructor"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "string",
-				"name": "matricNumber",
-				"type": "string"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "deployTime",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "blockNumber",
-				"type": "uint256"
-			}
-		],
-		"name": "studentGrad",
-		"type": "event"
 	},
 	{
 		"anonymous": false,
@@ -198,67 +173,6 @@ export const contractAbi = [
 		"type": "event"
 	},
 	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "uniAddress",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "string",
-				"name": "uniName",
-				"type": "string"
-			},
-			{
-				"indexed": false,
-				"internalType": "string[]",
-				"name": "matricNo",
-				"type": "string[]"
-			},
-			{
-				"indexed": false,
-				"internalType": "string",
-				"name": "status",
-				"type": "string"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "deployTime",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "blockNumber",
-				"type": "uint256"
-			}
-		],
-		"name": "universitiesInserted",
-		"type": "event"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "_matricNumber",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_dataHash",
-				"type": "string"
-			}
-		],
-		"name": "updateMicroCredential",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"inputs": [
 			{
 				"internalType": "string",
@@ -284,49 +198,6 @@ export const contractAbi = [
 	{
 		"inputs": [
 			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "allUniAdd",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "allUniName",
-		"outputs": [
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_uniAddress",
-				"type": "address"
-			},
-			{
 				"internalType": "string",
 				"name": "_matricNumber",
 				"type": "string"
@@ -344,38 +215,7 @@ export const contractAbi = [
 		"type": "function"
 	},
 	{
-		"inputs": [],
-		"name": "contractOwner",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "getAllStudentMatricNumberInTheUniversity",
-		"outputs": [
-			{
-				"internalType": "string[]",
-				"name": "",
-				"type": "string[]"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
 		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_uniAddress",
-				"type": "address"
-			},
 			{
 				"internalType": "string",
 				"name": "_matricNumber",
@@ -432,7 +272,7 @@ export const contractAbi = [
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "_uniAdd",
+				"name": "_uniAddress",
 				"type": "address"
 			}
 		],
@@ -442,11 +282,6 @@ export const contractAbi = [
 				"internalType": "address",
 				"name": "",
 				"type": "address"
-			},
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
 			},
 			{
 				"internalType": "string",
@@ -517,34 +352,57 @@ export const contractAbi = [
 				"internalType": "address",
 				"name": "",
 				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
-		"name": "universities",
+		"name": "uniAdd",
 		"outputs": [
 			{
 				"internalType": "address",
-				"name": "uniAddress",
+				"name": "",
 				"type": "address"
-			},
-			{
-				"internalType": "string",
-				"name": "uniName",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "status",
-				"type": "string"
-			},
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "deployTime",
+				"name": "",
 				"type": "uint256"
-			},
+			}
+		],
+		"name": "uniAddress",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "blockNumber",
+				"name": "",
 				"type": "uint256"
+			}
+		],
+		"name": "uniName",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
 			}
 		],
 		"stateMutability": "view",

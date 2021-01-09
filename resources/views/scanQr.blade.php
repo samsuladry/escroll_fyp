@@ -64,7 +64,7 @@
 	</div>
 </body>
 
-
+</html>
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
@@ -79,42 +79,25 @@
 <script type="module" src="{{ asset('js/blockchain/unixTodate.js') }}"></script>
 <script type="module" src="{{ asset('js/blockchain.js') }}"></script>
 
-
-
-
-
-
-
-
 <script>
 	// let popUp = document.getElementById("popUp")
 	// let popUp2 = document.getElementById("popUp1")
-
 	popUp.addEventListener("click", togglePopup, true)
 	popUp1.addEventListener("click", toggleClose)
 	let scanner = new Instascan.Scanner({
 		video: document.getElementById('preview')
 	});
-
-
 	async function result(content) {
-
-		let realContent = content.split("/")
-		let address = realContent[0]
+		// let realContent = content.split("/")
+		// let address = realContent[0]
 		let matricNumber = content
 		// var _token = $("input[name='_token']").val();
-
-		$("#content").append('<input type="hidden" name="address" value="' + address + '">')
+		// $("#content").append('<input type="hidden" name="address" value="' + address + '">')
 		$("#content").append('<input type="hidden" name="matricNumber" value="' + matricNumber + '">')
 		$("#target").submit()
-
-
 		toggleClose()
-
 	}
-
 	scanner.addListener('scan', result);
-
 	function togglePopup() {
 		document.getElementById("popup-1").classList.toggle("active", true)
 		Instascan.Camera.getCameras().then(cameras => {
@@ -124,42 +107,10 @@
 				console.error("There is no camera");
 			}
 		});
-
-
-		async function result(content) {
-
-			let realContent = content.split("/")
-			let address = realContent[0]
-			let matricNumber = content
-			// var _token = $("input[name='_token']").val();
-
-			$("#content").append('<input type="hidden" name="matricNumber" value="' + matricNumber + '">')
-			$("#content").append('<input type="hidden" name="address" value="' + address + '">')
-			$("#target").submit()
-
-
-			toggleClose()
-
-		}
-
-		scanner.addListener('scan', result);
-
-		function togglePopup() {
-			document.getElementById("popup-1").classList.toggle("active", true)
-			Instascan.Camera.getCameras().then(cameras => {
-				if (cameras.length > 0) {
-					scanner.start(cameras[0]);
-				} else {
-					console.error("There is no camera");
-				}
-			});
-		}
-
-		function toggleClose() {
-			document.getElementById("popup-1").classList.toggle("active", false)
-			scanner.stop()
-		}
+	}
+	function toggleClose() {
+		document.getElementById("popup-1").classList.toggle("active", false)
+		scanner.stop()
 	}
 </script>
 
-</html>

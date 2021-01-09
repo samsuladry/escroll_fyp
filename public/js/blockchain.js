@@ -5,12 +5,17 @@ import { privateKey as PK, walletAddress as account } from './blockchain/getPriv
 // import IPFS from './ipfs';
 
 
+
 const contract_abi = contractAbi;
 const contract_address = contractAddress;
 
 const uni_address = account;
 
-
+const expectedBlockTime = 1000; 
+const sleep = (milliseconds) => 
+{
+    return new Promise(resolve => setTimeout(resolve, milliseconds))
+}
 
 // GET data from database phpmyadmin/mysql
 function reqListener() {
@@ -133,17 +138,20 @@ const init = async (student_json) => {
 
 	// console.log(getAllStudentMatricNumberInTheUniversity())
 
+	
 	insertAllStudent(student_json);
-	let nostud = await getAllStudentMatricNumberInTheUniversity();
+
+	// alert(account)
+	// let nostud = await getAllStudentMatricNumberInTheUniversity();
 	// console.log(nostud)
-	console.log(nostud.length)
+	// console.log(nostud.length)
 
 	// //Nak check student ada dalam blockchain ke tak
 	// let i = 0
 	// while(i < student_json.length)
 	// {
 	// 	var matricNumber = uni_address + "/" + student_json[i].matric_number
-	// 	var check = await checkStudentExistance(uni_address, matricNumber)
+	// 	var check = await checkStudentExistance(matricNumber)
 	// 	// if(check == true)
 	// 	// {
 	// 	// 	console.log("Check: ", check)
@@ -190,6 +198,7 @@ function send(student_json) {
 // }
 
 // current change: activate button on click
+
 async function insertAllStudent(student_json) {
 
 	var batch = 100;
@@ -207,8 +216,11 @@ async function insertAllStudent(student_json) {
 	// 	{
 	// 		for (let i = 0; i < student_json.length; i++)
 	// 		{
+	// 			console.log("Count: ", count)
+	// 			console.log("i: ", i)
 	// 			var matricNumber =  uni_address + "/" + student_json[i].matric_number;
 	// 			insertStudent(count, matricNumber, "hash", JSON.stringify(student_json[i]));
+	// 			// insertStudent(count, student_json[i].matric_number, "hash", JSON.stringify(student_json[i]));
 	// 			imported_students.push(student_json[i].matric_number);
 	// 			count++
 	// 		}
@@ -217,32 +229,33 @@ async function insertAllStudent(student_json) {
 
 	
 
-	for (let i = 0; i < student_json.length; i++) 
-	{
-		await web3.eth.getTransactionCount(uni_address)
-			.then(count => {
-				console.log("Count: ", count)
-				console.log("i: ", i)
-				var matricNumber =  uni_address + "/" + student_json[i].matric_number;
-				insertStudent(count, matricNumber, "hash", JSON.stringify(student_json[i]));
-				imported_students.push(student_json[i].matric_number);
-				
-			});
-	}
-	updateStudentDatabase(imported_students)
-
-
-	// var count = await web3.eth.getTransactionCount(uni_address)
-	// for (let i = 0; i < student_json.length; i++)
+	// for (let i = 0; i < student_json.length; i++) 
 	// {
-	// 	var matricNumber =  uni_address + "/" + student_json[i].matric_number;
-	// 	// console.log(matricNumber)
-	// 	insertStudent(count, matricNumber, "hash", JSON.stringify(student_json[i]));
-	// 	imported_students.push(student_json[i].matric_number);
-	// 	count++
-		
+	// 	await web3.eth.getTransactionCount(uni_address)
+	// 		.then(count => {
+	// 			console.log("Count: ", count)
+	// 			console.log("i: ", i)
+	// 			var matricNumber =  uni_address + "/" + student_json[i].matric_number;
+	// 			insertStudent(count, matricNumber, "hash", JSON.stringify(student_json[i]));
+	// 			imported_students.push(student_json[i].matric_number);
+	// 		});
 	// }
 	// updateStudentDatabase(imported_students)
+
+
+	var count = await web3.eth.getTransactionCount(uni_address)
+	for (let i = 0; i < student_json.length; i++)
+	{
+		var matricNumber =  uni_address + "/" + student_json[i].matric_number;
+		// console.log(matricNumber)
+		console.log("Count: ", count)
+		console.log("i: ", i)
+		await insertStudent(count, matricNumber, "hash", JSON.stringify(student_json[i]));
+		imported_students.push(student_json[i].matric_number);
+		count++
+		
+	}
+	updateStudentDatabase(imported_students)
 
 
 	// insertStudent(count, a[j][i].matric_number, "hash", JSON.stringify(a[j][i]));
@@ -275,19 +288,13 @@ function updateStudentDatabase(imported_students) {
 }
 
 // verifyStudent(uni_address, "1710714");
-function verifyStudent(uniAddress, matricNumber) {
-	checkStudentExistance(uniAddress, matricNumber).then(result => {
+function verifyStudent(matricNumber) 
+{
+	checkStudentExistance(matricNumber).then(result => {
 		console.log(result)
 		// $('#verifyStudentImg').src="asset("img/backend/correct.png")";
 	});
 
-}
-
-async function checkStudentExistance(uniAddress, matricNumber) {
-	const result = await contractEscroll.methods.checkStudentExistance(uniAddress, matricNumber).call({
-		from: web3.eth.defaultAccount
-	});
-	return result;
 }
 
 //set default blockchain address
@@ -299,21 +306,27 @@ async function setDefaultAccount() {
 };
 
 // get one student's detail
-export async function getStudentDetail(uniAddress, matricNumber) 
+export async function getStudentDetail(matricNumber) 
 {
-	const result = await contractEscroll.methods.getStudent( uniAddress, matricNumber).call();
+	const result = await contractEscroll.methods.getStudent(matricNumber).call();
 	// 6 is the time in the student detail
 	// alert('result')
 	result[6] = unixToDate(result[6])
 	return result;
 }
 
-async function getAllStudentMatricNumberInTheUniversity() {
-	const result = await contractEscroll.methods.getAllStudentMatricNumberInTheUniversity().call({
-		from: web3.eth.defaultAccount
-	});
-	return result;
+async function checkStudentExistance(matricNumber)
+{
+	let result = await contractEscroll.methods.checkStudentExistance(matricNumber).call()
+	return result
 }
+
+// async function getAllStudentMatricNumberInTheUniversity() {
+// 	const result = await contractEscroll.methods.getAllStudentMatricNumberInTheUniversity().call({
+// 		from: web3.eth.defaultAccount
+// 	});
+// 	return result;
+// }
 
 
 
@@ -409,24 +422,34 @@ async function insertStudent(txCount, matNo, dataHash, jsonData)
 
 
 
-	// //Broadcast the transaction
+	//Broadcast the transaction
 	web3.eth.sendSignedTransaction(raw)
-		.on('error', (e) => {
-			// console.log(JSON.parse(e))
-			// console.log('error');
-			// console.log(e['message']);
-			// console.log(e);
-			console.log("failed at matric no: " + matNo)
-
-			// sendTx();
-		})
-		.then(res => {
-			// console.log(res.transactionHash)
-			console.log("Student with matric number ", matNo, " has been added")
-			// return res;
+		.on('error', (e) => 
+		{
+					// console.log(JSON.parse(e))
+					// console.log('error');
+					// console.log(e['message']);
+					// console.log(e);
+					console.log("failed at matric no: " + matNo)
+		
+					// sendTx();
+				})
+		.then(async function(res)
+		{
+			console.log("Submitted transaction with hash: ", res.transactionHash)
+			let transactionReceipt = null
+			console.log('Transaction receipt: ', transactionReceipt)
+			while (transactionReceipt == null) 
+			{ 	
+				// Waiting expectedBlockTime until the transaction is mined
+				transactionReceipt = await web3.eth.getTransactionReceipt(res.transactionHash);
+				await sleep(expectedBlockTime)
+			}
+			console.log("Got the transaction receipt: ", transactionReceipt)
 		})
 
 }
+
 
 async function updateStudent(txCount, matNo, dataHash, jsonData) 
 {
@@ -459,3 +482,5 @@ async function updateStudent(txCount, matNo, dataHash, jsonData)
 		})
 
 }
+
+

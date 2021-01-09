@@ -191,7 +191,6 @@
 <script type="module">
   import { getStudentDetail } from "{{ asset('js/blockchain.js') }}";
   
-  let uniAddress = '{{$address}}';
   let matricNumber = '{{$matricNumber}}';
 
   // console.log(address)
@@ -201,12 +200,15 @@
   {
     // let json = document.getElementById('jsonData')
     console.log(matricNumber)
-    let pelajar = await getStudentDetail(uniAddress, matricNumber)
+    let pelajar = await getStudentDetail(matricNumber)
+    console.log(pelajar)
+    let realContent = pelajar[2].split("/")
+    let matricNo = realContent[1]
 
     pelajar[4] = JSON.parse(pelajar[4])
     document.getElementById("address").innerHTML = pelajar[0]
     document.getElementById("uniName").innerHTML = pelajar[1]
-    document.getElementById("matNo").innerHTML = pelajar[2]
+    document.getElementById("matNo").innerHTML = matricNo
     document.getElementById("jsonData_name").innerHTML = pelajar[4].name
     document.getElementById("jsonData_faculty").innerHTML = pelajar[4].faculty
     document.getElementById("jsonData_bachelor").innerHTML = pelajar[4].bachelor
