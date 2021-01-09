@@ -20,7 +20,6 @@ class ScannerController extends Controller
         ]);
 
         $matricNumber = $request->matricNumber;
-        $address = $request->address;
 
         // // return response()->json(['success'=>'QR code is valid']);
         // return redirect()-> route('display', compact('address', 'matricNumber'));
