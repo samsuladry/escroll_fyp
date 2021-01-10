@@ -1,36 +1,14 @@
 // import unixToDate from '/js/blockchain/unixToDate.js'
 import { contractAbi, contractAddress } from "./blockchain/contract.js";
 import web3 from "./blockchain/web3.js";
+import { setAccount } from "{{ asset('js/blockchain/getPrivateKey.js') }}";
 
 const contractEscroll = new web3.eth.Contract(contractAbi, contractAddress);
 
-let mnemonic = "";
-let PK = "";
-let account;
-
-async function setAccount () {
-    mnemonic = "";
-    PK = "";
-
-    let MnemonicOrPK = $("#MnemonicOrPK").val();
-    if (MnemonicOrPK == "mnemonicPhrases") {
-        mnemonic = $("input[name=mnemonicPhrases]").val();
-        let mnemonicWallet = ethers.Wallet.fromMnemonic(mnemonic);
-        PK = mnemonicWallet.privateKey;
-		account = mnemonicWallet.address;
-		
-    } else if (MnemonicOrPK == "privateKeyPhrases") {
-        PK = $("input[name=mnemonicPhrases]").val();
-        let privateKeyWallet = new ethers.Wallet(PK);
-        account = privateKeyWallet.address;
-	}
-	console.log(account)
-};
-
-// TODO: SAMSUL: panggil dengan insertUniversity ni tak boleh sekalikan jeke?
 function panggil(PK) {
     // extract private key and wallet address from mnemonic or private key
     // alert(PK)
+    setAccount();
     web3.eth
         .getTransactionCount(account)
         .then((count) => {

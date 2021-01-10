@@ -181,14 +181,27 @@
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <!-- <script type="module" src="{{ asset('js/ipfs.js') }}" defer></script> -->
-<script type="module" src="{{ asset('js/uniRegistration.js') }}"></script>
+<!-- <script type="module" src="{{ asset('js/uniRegistration.js') }}"></script> -->
 
-<script>
+<script type="module">
 	// import 'js/blockchain.js';
 	// MnemonicOrPK
+	import { setAccount } from "{{ asset('js/blockchain/getPrivateKey.js') }}";
+	import { startBlockchain } from "{{ asset('js/blockchain.js') }}";
+	
 	$(".save-data").click(function() {
-		setAccount();
+		setAccount().then(function(result){
+
+			let PK = result.privateKey;
+			PK = PK.replace("0x", "");
+			console.log(PK)
+			let account = result.address;
+			console.log(account)
+			startBlockchain(PK, account);
+		});
 	});
+
+
 
 	// loading bar
 	var totalStudents = 0;
