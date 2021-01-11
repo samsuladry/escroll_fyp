@@ -181,7 +181,7 @@
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <!-- <script type="module" src="{{ asset('js/ipfs.js') }}" defer></script> -->
-<!-- <script type="module" src="{{ asset('js/uniRegistration.js') }}"></script> -->
+{{-- <script type="module" src="{{ asset('js/uniRegistration.js') }}"></script>/ --}}
 
 <script type="module">
 	// import 'js/blockchain.js';

@@ -1,10 +1,16 @@
 // import mnemonicPhrase from '../uniRegistration.js';
-import { contractAbi, contractAddress } from '../blockchain/contract.js'
-import web3 from '../blockchain/web3.js'
+// import { contractAbi, contractAddress } from '../blockchain/contract.js'
+// import web3 from '../blockchain/web3.js'
 
-let mnemonic = "";
-let PK = "";
-let account;
+// change: prompt user mnemonic or PK
+// let mnemonic ="someone hour art similar civil attitude ostrich convince dumb cheap diary foil";
+// let mnemonic = 'lucky talent engine flavor essay update autumn worth tornado net wrong vacuum';
+var mnemonic = 'lucky talent engine flavor essay update autumn worth tornado net wrong vacuum';
+var PK = "";
+var account;
+// let mnemonicWallet = ethers.Wallet.fromMnemonic(mnemonic);
+// PK = mnemonicWallet.privateKey;
+// account = mnemonicWallet.address;
 
 export async function setAccount () {
     mnemonic = "";
@@ -28,5 +34,5 @@ export async function setAccount () {
 
 
 //TO DO: prompt user mnemonic OR private key of blockchain account
-export let privateKey = PK.replace("0x", "");
-export let walletAddress = account;
+// export let privateKey = PK.replace("0x", "");
+// export let walletAddress = account;

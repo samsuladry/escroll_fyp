@@ -133,6 +133,22 @@ async function displayStudent(input_matric, uniAddress) {
 const init = async (student_json, PK, uni_address) => {
 	setDefaultAccount(uni_address);
 	insertAllStudent(student_json, PK, uni_address);
+
+	// //Nak check student ada dalam blockchain ke tak
+	// let i = 0
+	// while(i < student_json.length)
+	// {
+	// 	var matricNumber = uni_address + "/" + student_json[i].matric_number
+	// 	var check = await checkStudentExistance(matricNumber)
+	// 	// if(check == true)
+	// 	// {
+	// 	// 	console.log("Check: ", check)
+
+	// 	// }
+	// 	console.log("Check: ", check)
+	// 	i++
+
+	// }
 }
 
 
@@ -258,7 +274,7 @@ async function getUniversity(PK, uniAddress) {
 	return getUniversity
 }
 
-async function insertUniversity(PK, txCount, address, uniName) {
+export async function insertUniversity(PK, txCount, address, uniName) {
 	var privateKey = new ethereumjs.Buffer.Buffer(PK, 'hex');
 	let data = contractEscroll.methods.insertUniversity(address, uniName).encodeABI()
 
