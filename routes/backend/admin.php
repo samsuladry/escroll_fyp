@@ -112,7 +112,7 @@ Route::get('university/{university}/list-college/{college}/graduate-student/{stu
 Route::get('blockchainstudent', [BlockchainStudentController::class, 'index'])->name('index');
 Route::post('blockchainstudent/store', [BlockchainStudentController::class, 'store'])->name('store');
 
-Route::get('student', [BlockchainStudentController::class, 'getStudents']);
+Route::get('student/{faculty}', [BlockchainStudentController::class, 'getStudents']);
 Route::post('student', [BlockchainStudentController::class, 'setStudentImport']);
 
 Route::get('moe', [MoeController::class, 'index'])->name('moe');

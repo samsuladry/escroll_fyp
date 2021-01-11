@@ -186,18 +186,24 @@
 <script type="module">
 	// import 'js/blockchain.js';
 	// MnemonicOrPK
-	import { setAccount } from "{{ asset('js/blockchain/getPrivateKey.js') }}";
-	import { startBlockchain } from "{{ asset('js/blockchain.js') }}";
+	import {
+		setAccount
+	} from "{{ asset('js/blockchain/getPrivateKey.js') }}";
+	import {
+		startBlockchain
+	} from "{{ asset('js/blockchain.js') }}";
+
+	var facultyId = <?php echo json_encode($faculty->id, JSON_HEX_TAG); ?>;
 	
 	$(".save-data").click(function() {
-		setAccount().then(function(result){
-
+		setAccount().then(function(result) {
+			// console.log(facultyName);
 			let PK = result.privateKey;
 			PK = PK.replace("0x", "");
-			console.log(PK)
+			// console.log(PK)
 			let account = result.address;
-			console.log(account)
-			startBlockchain(PK, account);
+			// console.log(account)
+			startBlockchain(PK, account, facultyId, "{{ asset('') }}");
 		});
 	});
 

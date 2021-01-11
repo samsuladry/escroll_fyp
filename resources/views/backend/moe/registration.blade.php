@@ -102,7 +102,7 @@
 <script type="module" src="{{ asset('js/uniRegistration.js') }}"></script>
 
 <script type="module">
-  import unixToDate from '/js/blockchain/unixToDate.js'
+  // import unixToDate from '{{ asset("js/blockchain/unixToDate.js") }}'
   // import web3 from '/js/blockchain/web3.js'
 
   $(".save-data").click(function(event)

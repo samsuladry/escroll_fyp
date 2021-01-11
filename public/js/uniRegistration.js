@@ -1,7 +1,7 @@
 // import unixToDate from '/js/blockchain/unixToDate.js'
 import { contractAbi, contractAddress } from "./blockchain/contract.js";
 import web3 from "./blockchain/web3.js";
-import { setAccount, privateKey, walletAddress } from "./blockchain/getPrivateKey.js";
+import { setAccount } from "./blockchain/getPrivateKey.js";
 import { insertUniversity } from './blockchain.js';
 
 const contractEscroll = new web3.eth.Contract(contractAbi, contractAddress);

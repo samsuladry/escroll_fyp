@@ -21,7 +21,7 @@ function reqListener() {
 	console.log(this.responseText);
 }
 
-export function startBlockchain(PK, uni_address) {
+export function startBlockchain(PK, uni_address, facultyId, url) {
 	// var oReq = new XMLHttpRequest(); // New request object
 
 	// current change: cant access var student_json without passing the data through function
@@ -31,16 +31,19 @@ export function startBlockchain(PK, uni_address) {
 
 	
 	var xhttp = new XMLHttpRequest();
-	var student_json = '';
-	
-	xhttp.open('get', '../../student', true); //admin/student -> admin.php
+	// var student_json = '';
+	url = url+'admin/student/'+facultyId;
+	xhttp.open('get', url, true); //admin/student -> admin.php
 	xhttp.send();
+	// xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xhttp.onload = (student_json) => {
 		if (xhttp.status == 200 && xhttp.readyState == 4) {
+			// console.log(xhttp.responseText)
 			// console.log(JSON.parse(xhttp.responseText))
 			student_json = JSON.parse(xhttp.responseText);
-			console.log(PK)
-			console.log(uni_address)
+			// console.log(PK)
+			// console.log(uni_address)
+			console.log(student_json)
 			init(student_json, PK, uni_address)
 			
 		}
