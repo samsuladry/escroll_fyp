@@ -135,23 +135,23 @@ async function displayStudent(input_matric, uniAddress) {
 //-------------- MAIN PART----------------
 const init = async (student_json, PK, uni_address) => {
 	setDefaultAccount(uni_address);
-	insertAllStudent(student_json, PK, uni_address);
+	// insertAllStudent(student_json, PK, uni_address);
 
 	// //Nak check student ada dalam blockchain ke tak
-	// let i = 0
-	// while(i < student_json.length)
-	// {
-	// 	var matricNumber = uni_address + "/" + student_json[i].matric_number
-	// 	var check = await checkStudentExistance(matricNumber)
-	// 	// if(check == true)
-	// 	// {
-	// 	// 	console.log("Check: ", check)
+	let i = 0
+	while(i < student_json.length)
+	{
+		var matricNumber = uni_address + "/" + student_json[i].matric_number
+		var check = await checkStudentExistance(matricNumber)
+		// if(check == true)
+		// {
+		// 	console.log("Check: ", check)
 
-	// 	// }
-	// 	console.log("Check: ", check)
-	// 	i++
+		// }
+		console.log("Check: ", check)
+		i++
 
-	// }
+	}
 }
 
 
@@ -184,26 +184,28 @@ function send(student_json) {
 
 async function insertAllStudent(student_json, PK, uni_address) {
 
-	var batch = 100;
+	var batch = 1000;
 	var a = _.chunk(student_json, batch);
-
 	console.log(student_json.length)
 
 	var imported_students = new Array();
 
 
-	for (let i = 0; i < student_json.length; i++) 
-	{
-		await web3.eth.getTransactionCount(uni_address)
+	
+	await web3.eth.getTransactionCount(uni_address)
 			.then(count => {
-				console.log("Count: ", count)
-				console.log("i: ", i)
-				var matricNumber =  uni_address + "/" + student_json[i].matric_number;
-				insertStudent(PK, count, matricNumber, "hash", JSON.stringify(student_json[i]));
-				imported_students.push(student_json[i].matric_number);
+				for (let i = 0; i < student_json.length; i++) 
+				{
+					console.log("Count: ", count)
+					console.log("i: ", i)
+					var matricNumber =  uni_address + "/" + student_json[i].matric_number;
+					insertStudent(PK, count, matricNumber, "hash", JSON.stringify(student_json[i]));
+					imported_students.push(student_json[i].matric_number);
+					count++
+				}
+				updateStudentDatabase(imported_students)
 			});
-	}
-	updateStudentDatabase(imported_students)
+	
 
 };
 
@@ -277,7 +279,7 @@ async function getUniversity(PK, uniAddress) {
 	return getUniversity
 }
 
-export async function insertUniversity(PK, txCount, address, uniName) {
+export async function insertUniversity(txCount, address, uniName, PK) {
 	var privateKey = new ethereumjs.Buffer.Buffer(PK, 'hex');
 	let data = contractEscroll.methods.insertUniversity(address, uniName).encodeABI()
 
@@ -387,7 +389,7 @@ async function insertStudent(PK, txCount, matNo, dataHash, jsonData)
 				transactionReceipt = await web3.eth.getTransactionReceipt(res.transactionHash);
 				await sleep(expectedBlockTime)
 			}
-			// console.log("Got the transaction receipt: ", transactionReceipt)
+			console.log("Got the transaction receipt: ", transactionReceipt)
 		})
 
 }

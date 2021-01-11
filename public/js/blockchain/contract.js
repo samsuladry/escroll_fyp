@@ -1,7 +1,7 @@
 // fix contract address once contract is deployed
 // change: samsul will deploy contract to server, then we will use the contract address
 // 0x83c184bB27fed6001980E72F19F4f70bEe7a19cB //contract ada 3000 student
-export const contractAddress = '0x16b2E2AFc38919Fa3cF9332646a1BBFccB5580e5'
+export const contractAddress = '0x28c6F13B730DBCC62c2597De3112450a0a91cC18'
 export const contractAbi = [
 	{
 		"inputs": [

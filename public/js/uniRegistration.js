@@ -19,14 +19,14 @@ $(".save-data").click(function() {
         console.log(account)
         
         web3.eth
-        .getTransactionCount(walletAddress)
+        .getTransactionCount(account)
         .then((count) => {
             // alert(PK)
 
             var uniName = $("input[name=uniNameInput]").val();
             var uniAddress = $("input[name=uniAddressInput]").val();
             // alert(uniAddress)
-            insertUniversity(count, uniAddress, uniName, privateKey); //PK ni dia tak baca globally
+            insertUniversity(count, uniAddress, uniName, PK); //PK ni dia tak baca globally
         })
         .catch(function (e) {
             console.log(e);

@@ -5,7 +5,8 @@
 // change: prompt user mnemonic or PK
 // let mnemonic ="someone hour art similar civil attitude ostrich convince dumb cheap diary foil";
 // let mnemonic = 'lucky talent engine flavor essay update autumn worth tornado net wrong vacuum';
-var mnemonic = 'lucky talent engine flavor essay update autumn worth tornado net wrong vacuum';
+// var mnemonic = 'lucky talent engine flavor essay update autumn worth tornado net wrong vacuum';
+var mnemonic = "";
 var PK = "";
 var account;
 // let mnemonicWallet = ethers.Wallet.fromMnemonic(mnemonic);
@@ -13,9 +14,6 @@ var account;
 // account = mnemonicWallet.address;
 
 export async function setAccount () {
-    mnemonic = "";
-    PK = "";
-
     let MnemonicOrPK = $("#MnemonicOrPK").val();
     if (MnemonicOrPK == "mnemonicPhrases") {
         mnemonic = $("input[name=mnemonicPhrases]").val();
