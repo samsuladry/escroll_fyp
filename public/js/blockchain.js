@@ -139,9 +139,11 @@ const init = async (student_json, PK, uni_address) => {
 
 	// //Nak check student ada dalam blockchain ke tak
 	let i = 0
+	// uni_address = "0x92BE754c103EA2c7E3Ed29601e3116409C22B523";
 	while(i < student_json.length)
 	{
 		var matricNumber = uni_address + "/" + student_json[i].matric_number
+		// console.log(matricNumber)
 		var check = await checkStudentExistance(matricNumber)
 		// if(check == true)
 		// {
