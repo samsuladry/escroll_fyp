@@ -3,23 +3,11 @@
     <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <style type="text/css">
-        span.cls_002{font-family:Arial,serif;font-size:55.0px;color:rgb(75,75,75);font-weight:bold;font-style:normal;text-decoration: none}
-        div.cls_002{font-family:Arial,serif;font-size:55.0px;color:rgb(75,75,75);font-weight:bold;font-style:normal;text-decoration: none}
-        span.cls_003{font-family:Arial,serif;font-size:15.1px;color:rgb(75,75,75);font-weight:bold;font-style:normal;text-decoration: none}
-        div.cls_003{font-family:Arial,serif;font-size:15.1px;color:rgb(75,75,75);font-weight:bold;font-style:normal;text-decoration: none}
-        span.cls_004{font-family:Arial,serif;font-size:13.1px;color:rgb(182,134,70);font-weight:bold;font-style:normal;text-decoration: none}
-        div.cls_004{font-family:Arial,serif;font-size:13.1px;color:rgb(182,134,70);font-weight:bold;font-style:normal;text-decoration: none}
-        span.cls_005{font-family:Arial,serif;font-size:30.0px;color:rgb(75,75,75);font-weight:normal;font-style:normal;text-decoration: none}
-        div.cls_005{font-family:Arial,serif;font-size:60.0px;color:rgb(75,75,75);font-weight:normal;font-style:normal;text-decoration: none;text-align:middle}
-        span.cls_006{font-family:Arial,serif;font-size:11.1px;color:rgb(75,75,75);font-weight:normal;font-style:normal;text-decoration: none}
-        div.cls_006{font-family:Arial,serif;font-size:11.1px;color:rgb(75,75,75);font-weight:normal;font-style:normal;text-decoration: none}
-        span.cls_007{font-family:Arial,serif;font-size:18.2px;color:rgb(182,134,70);font-weight:bold;font-style:normal;text-decoration: none}
-        div.cls_007{font-family:Arial,serif;font-size:18.2px;color:rgb(182,134,70);font-weight:bold;font-style:normal;text-decoration: none}
-        span.cls_008{font-family:Arial,serif;font-size:12.3px;color:rgb(182,134,70);font-weight:bold;font-style:normal;text-decoration: none}
-        div.cls_008{font-family:Arial,serif;font-size:12.3px;color:rgb(182,134,70);font-weight:bold;font-style:normal;text-decoration: none}
-
         body, html {
-            min-height: 100vh;
+            /* min-height: 100vh; */
+            /* width: 100%;
+            height: 100%; */
+            /* margin: 0px; */
         }
         div.highlight{
             border-color: red !important;
@@ -28,6 +16,8 @@
             position: absolute;
             left: 0;
             top: 0;
+            margin: 0;
+            padding: 0;
             /* set these so Chrome doesn't return 'auto' from getComputedStyle */
             width: 50%;
             background: rgba(255, 255, 255, 1);
@@ -38,46 +28,87 @@
             overflow: auto;
             vertical-align: middle;
             border-radius: 4px;
-            padding: 8px;
+            /* padding: 8px; */
         }
+        @page { margin: 0px; }
     </style>
+    <style>
+        /* body {
+            background-image: url({{base_path().'/public/storage/'.$template->image_template}});
+            background-repeat: no-repeat;
+            background-size: 100%;
+        } */
+        img {
+            user-drag: none; 
+            user-select: none;
+            -moz-user-select: none;
+            -webkit-user-drag: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+        }
+        //
+    </style>
+    
 <script type="text/javascript" src="{{asset('example-escroll/wz_jsgraphics.js')}}"></script>
-<style>
-	.body{
-		background-image: "{{asset('storage/'.$template->image_template)}}";
-	}
-</style>
 <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
 
-<div class="body">
-    <img src="{{asset('storage/'.$template->image_template)}}" alt="">
+{{-- <div class="body"> --}}
+    @if ($downloaded == 1)
+        {{-- <img src="{{base_path().'/public/storage/'.$template->image_template}}"> --}}
+            
+        @if ($template->escrollSetup->name == 1)
+            <div draggable="true" id="name" class="ui-widget-content" style="{{$template->name_position}}position:absolute;text-align: CENTER;" data-item="0"><span>{{$student->name}}</span></div>
+        @endif
+        @if ($template->escrollSetup->bachelor == 1)
+            <div draggable="true" id="bachelor" class="ui-widget-content" style="{{$template->bachelor_position}}position:absolute;text-align: CENTER;" data-item="1"><span>{{$student->department->name}}</span></div>
+        @endif
+        @if ($template->escrollSetup->left_signature == 1)
+            <div draggable="true" id="left" class="ui-widget-content" style="{{$template->left_signature_position}}position:absolute;text-align: CENTER;" data-item="2"><img src="{{base_path().'/public/storage/'.$dean->signature}}" alt="dean" style="max-width:100%;max-height:100%;" unselectable="on"></div>
+        @endif
+        @if ($template->escrollSetup->right_signature == 1)
+            <div draggable="true" id="right" class="ui-widget-content" style="{{$template->right_signature_position}}position:absolute;text-align: CENTER;" data-item="3"><img src="{{base_path().'/public/storage/'.$rector->signature}}" alt="rector" style="max-width:100%;max-height:100%;" unselectable="on"></div>
+        @endif
+        @if ($template->escrollSetup->qr == 1)
+            <div draggable="true" id="qr" class="ui-widget-content" style="{{$template->qr_position}}position:absolute;text-align: CENTER;" data-item="4"><img src="{{base_path().'/public/'.$student->qr_code_path}}" alt="qr" style="max-width:100%;max-height:100%;" unselectable="on"></div>
+        @endif
+        @if ($template->escrollSetup->serial_no == 1)
+            <div draggable="true" id="serial_no" class="ui-widget-content" style="{{$template->serial_no_position}}position:absolute;text-align: CENTER;" data-item="4"><span>{{$student->serial_no}}</span></div>
+        @endif
+        @if ($template->escrollSetup->date_endorse == 1)
+            <div draggable="true" id="qr" class="ui-widget-content" style="{{$template->date_endorse_position}}position:absolute;text-align: CENTER;" data-item="4"><span>{{$student->date_endorse}}</span></div>
+        @endif
+    @else
+        <img src="{{asset('storage/'.$template->image_template)}}" width="{{$width}}px" height="{{$height}}px">
+        
+        @if ($template->escrollSetup->name == 1)
+            <div draggable="true" id="name" class="dragme ui-widget-content" style="{{$template->name_position}}" data-item="0"><span>{{$student->name}}</span></div>
+        @endif
+        @if ($template->escrollSetup->bachelor == 1)
+            <div draggable="true" id="bachelor" class="dragme ui-widget-content" style="{{$template->bachelor_position}}" data-item="1"><span>{{$student->department->name}}</span></div>
+        @endif
+        @if ($template->escrollSetup->left_signature == 1)
+            <div draggable="true" id="left" class="dragme ui-widget-content" style="{{$template->left_signature_position}}" data-item="2"><img src="{{asset('storage/'.$dean->signature)}}" alt="dean" style="max-width:100%;max-height:100%;" unselectable="on"></div>
+        @endif
+        @if ($template->escrollSetup->right_signature == 1)
+            <div draggable="true" id="right" class="dragme ui-widget-content" style="{{$template->right_signature_position}}" data-item="3"><img src="{{asset('storage/'.$rector->signature)}}" alt="rector" style="max-width:100%;max-height:100%;" unselectable="on"></div>
+        @endif
+        @if ($template->escrollSetup->qr == 1)
+            <div draggable="true" id="qr" class="dragme ui-widget-content" style="{{$template->qr_position}}" data-item="4"><img src="{{asset($student->qr_code_path)}}" alt="qr" style="max-width:100%;max-height:100%;" unselectable="on"></div>
+        @endif
+        @if ($template->escrollSetup->serial_no == 1)
+            <div draggable="true" id="serial_no" class="dragme ui-widget-content" style="{{$template->serial_no_position}}" data-item="5"><span>{{$student->serial_no}}</span></div>
+        @endif
+        @if ($template->escrollSetup->date_endorse == 1)
+            <div draggable="true" id="date_endorse" class="dragme ui-widget-content" style="{{$template->date_endorse_position}}" data-item="6"><span>{{$student->date_endorse}}</span></div>
+        @endif
+    @endif
     
-    @if ($template->escrollSetup->name == 1)
-        <div draggable="true" id="name" class="dragme ui-widget-content" style="{{$template->name_position}}" data-item="0"><span>{{$student->name}}</span></div>
-    @endif
-    @if ($template->escrollSetup->bachelor == 1)
-        <div draggable="true" id="bachelor" class="dragme ui-widget-content" style="{{$template->bachelor_position}}" data-item="1"><span>{{$student->department->name}}</span></div>
-    @endif
-    @if ($template->escrollSetup->left_signature == 1)
-        <div draggable="true" id="left" class="dragme ui-widget-content" style="{{$template->left_signature_position}}" data-item="2"><img src="{{asset('storage/'.$dean->signature)}}" alt="dean" style="max-width:100%;max-height:100%;" unselectable="on"></div>
-    @endif
-    @if ($template->escrollSetup->right_signature == 1)
-        <div draggable="true" id="right" class="dragme ui-widget-content" style="{{$template->right_signature_position}}" data-item="3"><img src="{{asset('storage/'.$rector->signature)}}" alt="rector" style="max-width:100%;max-height:100%;" unselectable="on"></div>
-    @endif
-    @if ($template->escrollSetup->qr == 1)
-        <div draggable="true" id="qr" class="dragme ui-widget-content" style="{{$template->qr_position}}" data-item="4"><img src="{{asset($student->qr_code_path)}}" alt="rector" style="max-width:100%;max-height:100%;" unselectable="on"></div>
-    @endif
-    @if ($template->escrollSetup->serial_no == 1)
-        <div draggable="true" id="serial_no" class="dragme ui-widget-content" style="{{$template->qr_position}}" data-item="4"><span>{{$student->serial_no}}</span></div>
-    @endif
-    @if ($template->escrollSetup->date_endorse == 1)
-        <div draggable="true" id="qr" class="dragme ui-widget-content" style="{{$template->qr_position}}" data-item="4"><span>{{$student->date_endorse}}</span></div>
-    @endif
 
-</div>
+{{-- </div> --}}
 
 <script>
     var modified = 0;
@@ -121,7 +152,10 @@
                 left_signature_position     : $('#left').css(["left", "top", "width", "height"]),
                 right_signature_position    : $('#right').css(["left", "top", "width", "height"]),
                 qr_position                 : $('#qr').css(["left", "top", "width", "height"]),
+                serial_no_position          : $('#serial_no').css(["left", "top", "width", "height"]),
+                date_endorse_position       : $('#date_endorse').css(["left", "top", "width", "height"]),
             };
+            console.log(data);
             $.ajax({
                 type: 'PUT',
                 url: "{{route('admin.update-template', $template->id)}}",
@@ -129,6 +163,29 @@
                 success:function(){
                     myfunction();
                 },
+            });
+            return false;
+        }
+
+        if (event.keyCode == 80 && event.ctrlKey){
+            $.ajax({
+                type: 'GET',
+                url: '{{route("admin.download-escroll", $template->id)}}',
+                // data: data,
+                cache:false,
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                success: function(response){
+                    var blob = new Blob([response]);
+                    var link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = "Sample.pdf";
+                    link.click();
+                },
+                error: function(blob){
+                    console.log(blob);
+                }
             });
             return false;
         }

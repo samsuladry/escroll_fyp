@@ -23,7 +23,11 @@ class CreateEscrollSetupsTable extends Migration
             $table->tinyInteger('qr')->default(1);
             $table->tinyInteger('serial_no')->default(1);
             $table->tinyInteger('date_endorse')->default(1);
+            $table->tinyInteger('landscape')->default(1);
             $table->string('other_variable')->nullable();
+            $table->string('text-align')->default('center');
+            $table->string('font-size')->default('16');
+            $table->string('font-family')->default("Times New Roman");
             $table->timestamps();
 
             $table->foreign('escroll_template_id')

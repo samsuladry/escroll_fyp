@@ -12,6 +12,7 @@ use App\Models\Certificate;
 use Illuminate\Support\Facades\DB;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use PDF;
+use App\Scopes\UniversityScope;
 use Carbon\Carbon;
 
 
@@ -29,22 +30,29 @@ class BlockchainStudentController extends Controller
     }
 
 
-    public function getStudents()
+    public function getStudents(Request $request, $faculty)
     {
-        $students = Student::where('students.university_id', auth()->user()->university->id)
+        // dd('test', $filter);
+        // $faculty = Faculty::where('name', ucwords(str_replace('-', ' ', $faculty)))
+		// 	->where('university_id', auth()->user()->university->id)
+        //     ->first();
+            // echo ($request);
+		$students = Student::where('students.university_id', auth()->user()->university->id)
                            ->leftJoin('faculty', 'faculty.id', '=', 'students.faculty_id')
                            ->leftJoin('department', 'department.id', '=', 'students.department_id')
-                           ->select('matric_number', 'students.name', 'faculty.name as faculty', 'department.name as bachelor', 'students.dean_id', 'students.rector_id', 'students.serial_no', 'students.date_endorse', 'students.citizenship')
-                           ->where('is_import', 0)
+                           ->select('students.matric_number', 'students.name', 'faculty.name as faculty', 'department.name as bachelor', 'students.dean_id', 'students.rector_id', 'students.serial_no', 'students.date_endorse', 'students.citizenship')
+						   ->where('faculty.id', $faculty)
+						   ->where('students.is_import', 0)
+						   ->withoutGlobalScope(UniversityScope::class)
                            ->get()->toArray();
-
+		// dd($students);
         return response()->json($students);
     }
 
     public function setStudentImport()
     {
 
-        $student = Student::where('university_id', auth()->user()->university->id)
+        $student = Student::where('students.university_id', auth()->user()->university->id)
                           ->whereIn('matric_number', json_decode($_POST['imported_students']))
                           ->update([
                                 'is_import'     => 1,

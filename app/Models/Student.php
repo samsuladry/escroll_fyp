@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Scopes\UniversityScope;
 
 class Student extends Model
 {
@@ -52,6 +53,13 @@ class Student extends Model
     public function rector()
     {
         return $this->belongsTo('App\Models\Rector');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope(new UniversityScope);
     }
 }
 

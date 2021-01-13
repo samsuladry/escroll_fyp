@@ -1,42 +1,55 @@
-import loadWeb3 from './blockchain/loadWeb3.js'
 import unixToDate from './blockchain/unixToDate.js'
 import { contractAbi, contractAddress } from './blockchain/contract.js'
-import { privateKey as PK, walletAddress as account } from './blockchain/getPrivateKey.js'
+import web3 from './blockchain/web3.js'
+// import { privateKey as PK, walletAddress as account } from './blockchain/getPrivateKey.js'
 // import IPFS from './ipfs';
+
 
 
 const contract_abi = contractAbi;
 const contract_address = contractAddress;
 
-const uni_address = account;
 
+const expectedBlockTime = 1000; 
+const sleep = (milliseconds) => 
+{
+    return new Promise(resolve => setTimeout(resolve, milliseconds))
+}
 
 // GET data from database phpmyadmin/mysql
 function reqListener() {
 	console.log(this.responseText);
 }
 
-function startBlockchain() {
+export function startBlockchain(PK, uni_address, facultyId, url) {
 	// var oReq = new XMLHttpRequest(); // New request object
 
 	// current change: cant access var student_json without passing the data through function
 	// oReq.onload = function () {
 	// student data
 	// console.log(this.responseText);
-	var xhttp = new XMLHttpRequest();
-	var student_json = '';
 
-	xhttp.open('get', 'student', true); //admin/student -> admin.php
+	
+	var xhttp = new XMLHttpRequest();
+	// var student_json = '';
+	url = url+'admin/student/'+facultyId;
+	xhttp.open('get', url, true); //admin/student -> admin.php
 	xhttp.send();
+	// xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xhttp.onload = (student_json) => {
 		if (xhttp.status == 200 && xhttp.readyState == 4) {
+			// console.log(xhttp.responseText)
+			// console.log(JSON.parse(xhttp.responseText))
 			student_json = JSON.parse(xhttp.responseText);
-			init(student_json)
+			// console.log(PK)
+			// console.log(uni_address)
+			console.log(student_json)
+			init(student_json, PK, uni_address)
+			
 		}
 	};
 	// };
 
-	// // current change: can't access this route through php artisan serve
 	// var url = "/e-scroll-lookup/app/Http/Controllers/Backend/Blockchain.php";
 
 	// oReq.open("get", url, true);
@@ -49,7 +62,7 @@ function startBlockchain() {
 
 // change: to new server
 // const web3 = new Web3(Web3.givenProvider || 'https://ropsten.infura.io/v3/6abc6ef995814f84950059729182f065');
-const web3 = new Web3(Web3.givenProvider || 'HTTP://127.0.0.1:7545')
+// const web3 = new Web3(Web3.givenProvider || 'HTTP://127.0.0.1:7545')
 
 
 try {
@@ -65,7 +78,6 @@ const contractEscroll = new web3.eth.Contract(
 );
 
 
-
 // insert new student
 $('#activateGraduateStudent').click(function (e) {
 	e.preventDefault();
@@ -75,50 +87,76 @@ $('#activateGraduateStudent').click(function (e) {
 			"please unlock it first and reload the page.");
 	}
 
+	
 	startBlockchain();
 });
 
 // display all student's details in table
-getAllStudentMatricNumberInTheUniversity().then(function (result) {
-	// displayStudent(result, uni_address);
-});
+// getAllStudentMatricNumberInTheUniversity()
+// 	.then(function (result) 
+// 	{
+// 		// alert(result)
+// 		displayStudent(result, uni_address);
+// 	});
 
 
 // change: get no. iteration, get data bachelor, display qrcode, not qrcode's path
-// async function displayStudent(input_matric, uniAddress) {
-// 	var printresult = "";
-// 	for (var i = 0; i < input_matric.length; i++) {
-// 		getStudentDetail(input_matric[i], uniAddress).then(function (result) {
-// 			// console.log(result)
-// 			result[4] = JSON.parse(result[4])
-// 			// console.log(result[4].matric_number)
+async function displayStudent(input_matric, uniAddress) {
+	var printresult = "";
+	// alert(uniAddress)
+	let count = 1
+	
+	for (var i = 0; i < input_matric.length; i++) 
+	{
+		// console.log(input_matric[i]);
+		getStudentDetail(uniAddress, input_matric[i])
+			.then(function (result) 
+			{
+				// console.log(result)
+				result[4] = JSON.parse(result[4])
+				// console.log(result[4].matric_number)
 
-// 			printresult += "<tr><th>" + i + "</th><td>" + result[2] + "</td><td>" + result[4].name + "</td><td>" + result[3] + "</td><td>" + result[4].qr_code_path + "</td><td></tr>";
-// 			document.getElementById("tablestudent").innerHTML = printresult;
-// 		});
-// 	}
-// }
+				printresult += "<tr><th>" + count + "</th><td>" + result[2] + "</td><td>" + result[4].name + "</td><td>" + result[3] + "</td><td>" + result[4].faculty + "</td><td></tr>";
+				document.getElementById("tablestudent").innerHTML = printresult;
+				count++
+			});
+
+		// result[4] = JSON.parse(result[4])
+		// printresult += "<tr><th>" + i + "</th><td>" + result[2] + "</td><td>" + result[4].name + "</td><td>" + result[3] + "</td><td>" + result[4].faculty + "</td><td></tr>";
+		// document.getElementById("tablestudent").innerHTML = printresult;
+	}
+}
+// getStudentDetail("1420242", uni_address).then( res =>
+// 	{
+// 		console.log('Test: ', res)
+// 	})
 
 
 //-------------- MAIN PART----------------
-const init = async (student_json) => {
+const init = async (student_json, PK, uni_address) => {
+	setDefaultAccount(uni_address);
+	// insertAllStudent(student_json, PK, uni_address);
 
+	// //Nak check student ada dalam blockchain ke tak
+	let i = 0
+	// uni_address = "0x92BE754c103EA2c7E3Ed29601e3116409C22B523";
+	while(i < student_json.length)
+	{
+		var matricNumber = uni_address + "/" + student_json[i].matric_number
+		// console.log(matricNumber)
+		var check = await checkStudentExistance(matricNumber)
+		// if(check == true)
+		// {
+		// 	console.log("Check: ", check)
 
-	// insertUniversity("0", "0xc767f4D79FF02cD087219524524B925943DC924b", "IIUM")
+		// }
+		console.log("Check: ", check)
+		i++
 
-	// console.log(student_json[0].matric_number)
-	// send(student_json);
-
-	// console.log(getAllStudentMatricNumberInTheUniversity())
-	insertAllStudent(student_json);
-
-	let pelajar = await getStudentDetail("1420242", uni_address)
-
-	console.log(pelajar)
-
+	}
 }
 
-setDefaultAccount();
+
 
 function send(student_json) {
 
@@ -137,25 +175,42 @@ function send(student_json) {
 
 }
 
-// current change: activate button on click
-function insertAllStudent(student_json) {
-	var imported_students = new Array();
-	web3.eth.getTransactionCount(uni_address)
-		.then(count => {
-			let i = 0
-			console.log(student_json[i])
-			
-			// insertStudent
-			while (i < 1) {
-				insertStudent(count, student_json[i].matric_number, "hash", JSON.stringify(student_json[i]));
-				imported_students.push(student_json[i].matric_number);
-				count++
-				i++
-			}
+// async function storeCheck(uniAddress, matricNumber)
+// {
+// 	let check = new Array()
+// 	let getCheck = await checkStudentExistance(uniAddress , matricNumber)
+// 	check.push(getCheck)
+// }
 
-			updateStudentDatabase(imported_students);
-		});
-}
+// current change: activate button on click
+
+async function insertAllStudent(student_json, PK, uni_address) {
+
+	var batch = 1000;
+	var a = _.chunk(student_json, batch);
+	console.log(student_json.length)
+
+	var imported_students = new Array();
+
+
+	
+	await web3.eth.getTransactionCount(uni_address)
+			.then(count => {
+				for (let i = 0; i < student_json.length; i++) 
+				{
+					console.log("Count: ", count)
+					console.log("i: ", i)
+					var matricNumber =  uni_address + "/" + student_json[i].matric_number;
+					insertStudent(PK, count, matricNumber, "hash", JSON.stringify(student_json[i]));
+					imported_students.push(student_json[i].matric_number);
+					count++
+				}
+				updateStudentDatabase(imported_students)
+			});
+	
+
+};
+
 
 function updateStudentDatabase(imported_students) {
 	var xhttp = new XMLHttpRequest();
@@ -164,7 +219,7 @@ function updateStudentDatabase(imported_students) {
 	formData.append('imported_students', JSON.stringify(imported_students));
 	// console.log(imported_students);
 	// console.log(JSON.stringify(imported_students))
-	xhttp.open('post', 'student', true);
+	xhttp.open('post', '../../student', true);
 	xhttp.withCredentials = true;
 	xhttp.setRequestHeader('X-CSRF-TOKEN', document.getElementsByTagName('meta')['csrf-token'].getAttribute('content'));
 	xhttp.send(formData)
@@ -174,11 +229,21 @@ function updateStudentDatabase(imported_students) {
 			console.log('imported students to db');
 		}
 	}
+
 }
 
+// verifyStudent(uni_address, "1710714");
+function verifyStudent(matricNumber) 
+{
+	checkStudentExistance(matricNumber).then(result => {
+		console.log(result)
+		// $('#verifyStudentImg').src="asset("img/backend/correct.png")";
+	});
+
+}
 
 //set default blockchain address
-async function setDefaultAccount() {
+async function setDefaultAccount(account) {
 	// const accounts = await ethereum.send('eth_requestAccounts');
 	// web3.eth.defaultAccount = accounts["result"]["0"];
 
@@ -186,29 +251,37 @@ async function setDefaultAccount() {
 };
 
 // get one student's detail
-export async function getStudentDetail(matricNumber, uniAddress) {
-	const result = await contractEscroll.methods.getStudent(matricNumber, uniAddress).call({
-		from: web3.eth.defaultAccount
-	});
+export async function getStudentDetail(matricNumber) 
+{
+	const result = await contractEscroll.methods.getStudent(matricNumber).call();
 	// 6 is the time in the student detail
+	// alert('result')
 	result[6] = unixToDate(result[6])
 	return result;
 }
 
-async function getAllStudentMatricNumberInTheUniversity() {
-	const result = await contractEscroll.methods.getAllStudentMatricNumberInTheUniversity().call({
-		from: web3.eth.defaultAccount
-	});
-	return result;
+async function checkStudentExistance(matricNumber)
+{
+	let result = await contractEscroll.methods.checkStudentExistance(matricNumber).call()
+	return result
 }
 
+// async function getAllStudentMatricNumberInTheUniversity() {
+// 	const result = await contractEscroll.methods.getAllStudentMatricNumberInTheUniversity().call({
+// 		from: web3.eth.defaultAccount
+// 	});
+// 	return result;
+// }
+
+
+
 // new*
-async function getUniversity(uniAddress) {
+async function getUniversity(PK, uniAddress) {
 	let getUniversity = await contractEscroll.methods.getStudent(uniAddress).call()
 	return getUniversity
 }
 
-async function insertUniversity(txCount, address, uniName) {
+export async function insertUniversity(txCount, address, uniName, PK) {
 	var privateKey = new ethereumjs.Buffer.Buffer(PK, 'hex');
 	let data = contractEscroll.methods.insertUniversity(address, uniName).encodeABI()
 
@@ -236,7 +309,9 @@ async function insertUniversity(txCount, address, uniName) {
 		})
 }
 
-async function deleteUniversity(txCount, address) {
+
+async function deleteUniversity(PK, txCount, address) 
+{
 	var privateKey = new ethereumjs.Buffer.Buffer(PK, 'hex');
 	let data = contractEscroll.methods.deleteUniversity(address).encodeABI()
 
@@ -268,11 +343,12 @@ async function deleteUniversity(txCount, address) {
 		})
 }
 
-async function insertStudent(txCount, matNo, dataHash, jsonData) {
+async function insertStudent(PK, txCount, matNo, dataHash, jsonData) 
+{
+	// console.log("Dalam insert Student: ", txCount)
 	var privateKey = new ethereumjs.Buffer.Buffer(PK, 'hex');
-	let data = contractEscroll.methods.insertStudent(matNo, dataHash, jsonData).encodeABI()
+	let data = await contractEscroll.methods.insertStudent(matNo, dataHash, jsonData).encodeABI()
 
-	// create transaction object
 	const txObject = {
 		nonce: web3.utils.toHex(txCount),
 		gasLimit: web3.utils.toHex(1000000),
@@ -290,25 +366,39 @@ async function insertStudent(txCount, matNo, dataHash, jsonData) {
 	const raw = '0x' + serializedTx.toString('hex')
 
 
-	var result = '';
 
-	// //Broadcast the transaction
+	//Broadcast the transaction
 	web3.eth.sendSignedTransaction(raw)
-		.on('error', (e) => {
-			// console.log(JSON.parse(e))
-			console.log('error');
-			console.log(e['message']);
-			// console.log(e->message);
+		.on('error', (e) => 
+		{
+					// console.log(JSON.parse(e))
+					// console.log('error');
+					// console.log(e['message']);
+					// console.log(e);
+					console.log("failed at matric no: " + matNo)
+		
+					// sendTx();
+				})
+		.then(async function(res)
+		{
+			
+			// console.log("Submitted transaction with hash: ", res.transactionHash)
+			let transactionReceipt = null
+			// console.log('Transaction receipt: ', transactionReceipt)
+			while (transactionReceipt == null) 
+			{ 	
+				// Waiting expectedBlockTime until the transaction is mined
+				transactionReceipt = await web3.eth.getTransactionReceipt(res.transactionHash);
+				await sleep(expectedBlockTime)
+			}
+			console.log("Got the transaction receipt: ", transactionReceipt)
 		})
-		.then(res => {
 
-			// console.log(res)
-			console.log("Student with matric number ", matNo, " has been added")
-		})
-	// return await result;
 }
 
-async function updateStudent(txCount, matNo, dataHash, jsonData) {
+
+async function updateStudent(PK, txCount, matNo, dataHash, jsonData) 
+{
 	var privateKey = new ethereumjs.Buffer.Buffer(PK, 'hex');
 	let data = contractEscroll.methods.updateStudent(matNo, dataHash, jsonData).encodeABI()
 
@@ -338,3 +428,5 @@ async function updateStudent(txCount, matNo, dataHash, jsonData) {
 		})
 
 }
+
+

@@ -7,13 +7,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Rector;
+use App\Models\Student;
 
 class RectorController extends Controller
 {
     public function view_rector(){
 
         $user_id = Auth::id();
-        $rectors = Rector::where('user_id', $user_id)->orderBy('active', 'desc')->orderBy('created_at', 'desc')->paginate(15);
+        $rectors = Rector::university()->orderBy('active', 'desc')->orderBy('created_at', 'desc')->paginate(15);
         return view('backend.university.rector.index')->with(compact('rectors'));
     }
 
@@ -36,14 +37,21 @@ class RectorController extends Controller
         $rector->update(['signature'=> $request->file('signature')->store('rector', 'public')]);
 
         $rectors = Rector::where('id', '!=', $rector->id)
-                         ->where('university_id', auth()->user()->university->id)
+                         ->university()
                          ->get();
-
+        
         foreach($rectors as $data){
             $data->active = 0;
             $data->save();
         }
 
+        $students = Student::where('is_import', 0)->get();
+
+        foreach($students as $student){
+            $student->rector_id = $rector->id;
+            $student->save();
+        }
+        
         return redirect('admin/rector')->with('flash_success', 'Rector created');
     }
 
@@ -65,7 +73,7 @@ class RectorController extends Controller
     public function activate_rector(Rector $rector){
         if($rector->active == 1) return redirect()->back()->with('flash_warning', 'Rector already active!');
         $rectors = Rector::where('id', '!=', $rector->id)
-                     ->where('university_id', auth()->user()->university->id)
+                     ->university()
                      ->get();
 
         foreach($rectors as $data){
@@ -76,6 +84,13 @@ class RectorController extends Controller
         $rector->active = !$rector->active;
         $rector->save();
 
+        $students = Student::where('is_import', 0)->get();
+
+        foreach($students as $student){
+            $student->rector_id = $rector->id;
+            $student->save();
+        }
+        
         return redirect()->back()->with('flash_success', 'Rector actived');
     }
 }

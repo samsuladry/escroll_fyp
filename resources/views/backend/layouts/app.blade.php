@@ -14,7 +14,7 @@
     {{-- See https://laravel.com/docs/5.5/blade#stacks for usage --}}
     @stack('before-styles')
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css">
-    <!-- Check if the language is set to RTL, so apply the RTL layouts -->
+<!-- Check if the language is set to RTL, so apply the RTL layouts -->
     <!-- Otherwise apply the normal LTR layouts -->
     {{ style(asset('css/backend.css')) }}
 
@@ -76,15 +76,6 @@
     {!! script(asset('js/manifest.js')) !!}
     {!! script(asset('js/vendor.js')) !!}
     {!! script(asset('js/backend.js')) !!}
-    <!-- change: put in specific page that use blockchain only -->
-    <script type="module" src="https://cdn.jsdelivr.net/npm/web3@1.3.0/dist/web3.min.js" defer></script>
-    <script type="module" src="https://cdn.jsdelivr.net/gh/ethereumjs/browser-builds/dist/ethereumjs-tx/ethereumjs-tx-1.3.3.min.js"></script>
-    <script type="module" src="https://cdn.jsdelivr.net/npm/ipfs-http-client@44.1.1/dist/index.min.js"></script>
-    <script type="module" src="https://cdn.jsdelivr.net/npm/ethers@5.0.19/dist/ethers.umd.min.js"></script>
-    <script type="module" src="https://unpkg.com/react@16/umd/react.production.min.js" crossorigin></script>
-    <!-- <script type="module" src="https://unpkg.com/ipfs/dist/index.min.js"></script> -->
-    <script type="module" src="{{ asset('js/blockchain.js') }}" defer></script>
-    <script type="module" src="{{ asset('js/ipfs.js') }}" defer></script>
     <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
     @stack('after-scripts')
 </body>

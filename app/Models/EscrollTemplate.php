@@ -17,15 +17,16 @@ class EscrollTemplate extends Model
         'right_signature_position',
         'image_template',
         'qr_position',
+        'active',
     ];
-
-    public function university()
-    {
-        return $this->belongsTo('App\Models\University');
-    }
 
     public function escrollSetup()
     {
         return $this->hasOne('App\Models\EscrollSetup');
+    }
+
+    public function scopeUniversity($query)
+    {
+        return $query->where('university_id', auth()->user()->university->id);
     }
 }
