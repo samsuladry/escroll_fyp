@@ -1,56 +1,35 @@
-import unixToDate from '/js/blockchain/unixToDate.js'
-  // import web3 from '/js/blockchain/web3.js'
+// import unixToDate from '/js/blockchain/unixToDate.js'
+import { contractAbi, contractAddress } from "./blockchain/contract.js";
+import web3 from "./blockchain/web3.js";
+import { setAccount } from "./blockchain/getPrivateKey.js";
+import { insertUniversity } from './blockchain.js';
 
-  $(".save-data").click(function(event)
-  {
-      event.preventDefault();
+const contractEscroll = new web3.eth.Contract(contractAbi, contractAddress);
 
-      // alert($(this).text());
 
-      var uniName = $("input[name=uniNameInput]").val();
-      var uniAddress = $("input[name=uniAddressInput]").val();
-      var uniAcronym = $("input[name=uniAcronym]").val();
-      // var mnemonicPhrase = $("input[name=mnemonicPhrases]").val();
-      // export mnemonicPhrase
-      // alert(mnemonicPhrase)
-      
-      // var message = $("input[name=message]").val();
-      var _token   = $('meta[name="csrf-token"]').attr('content');
 
-      $('#exampleModal').modal('hide')
-      
-      // alert(uniAddress);
-      $.ajax({
-        url: "{{ route('admin.moe.registration.store')}}",
-        type:"POST",
-        data:{
-          uniName:uniName,
-          uniAddress:uniAddress,
-          uniAcronym:uniAcronym,
-          _token: _token
-        },
-        success:function(response){
-          // console.log(response);
-          if(response) {
-            alert(response.success)
-            $('.success').text(response.success);
-            $("#ajaxform")[0].reset();
-          }
-          else
-          {
-            alert("Not successful")
-            $('.success').text(response.success);
-            $("#ajaxform")[0].reset();
-          }
-        },
-        error:function(res)
-        {
-          if(res)
-          {
-            alert("Not successful")
-            $('.success').text(response.success);
-            $("#ajaxform")[0].reset();
-          }
-        }
-       });
-  });
+$(".save-data").click(function() {
+    setAccount().then(function(result){
+        event.preventDefault()
+
+        let PK = result.privateKey;
+        PK = PK.replace("0x", "");
+        console.log(PK)
+        let account = result.address;
+        console.log(account)
+        
+        web3.eth
+        .getTransactionCount(account)
+        .then((count) => {
+            // alert(PK)
+
+            var uniName = $("input[name=uniNameInput]").val();
+            var uniAddress = $("input[name=uniAddressInput]").val();
+            // alert(uniAddress)
+            insertUniversity(count, uniAddress, uniName, PK); //PK ni dia tak baca globally
+        })
+        .catch(function (e) {
+            console.log(e);
+        });
+    });
+});

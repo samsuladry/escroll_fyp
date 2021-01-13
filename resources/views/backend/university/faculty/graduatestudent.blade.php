@@ -9,11 +9,12 @@
 			<div class="card-header">
 				<h3><strong>Gradute Student(s) for {{$faculty->name}}</strong></h3>
 
-				<button style="float: right;" class="btn btn-success btn-sm" data-toggle="modal" data-target="#generateQR">Activate</button>
+				<button style="float: right;" class="btn btn-success btn-sm" data-toggle="modal" data-target="#exampleModal">Activate</button>
 
 
 
 				<!-- Modal -->
+				<?php /* 
 				<div class="modal fade" id="generateQR" tabindex="-1" role="dialog" aria-labelledby="generateQRlable" aria-hidden="true">
 					<div class="modal-dialog" role="document">
 						<div class="modal-content">
@@ -40,12 +41,41 @@
 							<div class="modal-footer">
 								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
 								<!-- <a href="{{url('admin/faculty/'.$faculty->id.'/graduate/activate')}}"> -->
-								<a href="{{ url('admin/blockchainstudent') }}">
-									<button id="activateGraduateStudent" type="submit" class="btn btn-success">Activate Graduate Student</button>
-								</a>
+								<button class="save-data" type="submit" class="btn btn-success">Activate Graduate Student</button>
 							</div>
 
 							<!-- </form> -->
+						</div>
+					</div>
+				</div>
+				*/ ?>
+
+				<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="exampleModalLabel">Activate Confirmation</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								<p> Make sure you check all the record are correct before it is activated to blockchain. <br></p>
+
+								<hr>
+								<div class="form-group float-left">
+									<select class="form-control" id="MnemonicOrPK">
+										<option value="mnemonicPhrases">Mnemonic Phrases</option>
+										<option value="privateKeyPhrases">Private Key</option>
+									</select>
+								</div>
+								<input type="text" class="form-control" id="uniNameInput" Name="mnemonicPhrases">
+
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+								<button type="button" class="btn btn-primary save-data" id="submitButton">Activate</button>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -147,7 +177,206 @@
 <script type="module" src="https://cdn.jsdelivr.net/npm/ipfs-http-client@44.1.1/dist/index.min.js"></script>
 <script type="module" src="https://cdn.jsdelivr.net/npm/ethers@5.0.19/dist/ethers.umd.min.js"></script>
 <script type="module" src="https://unpkg.com/react@16/umd/react.production.min.js" crossorigin></script>
-<script type="module" src="{{ asset('js/blockchain.js') }}" defer></script>
-<script type="module" src="{{ asset('js/ipfs.js') }}" defer></script>
-<!--row-->
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- <script type="module" src="{{ asset('js/ipfs.js') }}" defer></script> -->
+{{-- <script type="module" src="{{ asset('js/uniRegistration.js') }}"></script>/ --}}
+
+<script type="module">
+	// import 'js/blockchain.js';
+	// MnemonicOrPK
+	import {
+		setAccount
+	} from "{{ asset('js/blockchain/getPrivateKey.js') }}";
+	import {
+		startBlockchain
+	} from "{{ asset('js/blockchain.js') }}";
+
+	var facultyId = <?php echo json_encode($faculty->id, JSON_HEX_TAG); ?>;
+	
+	$(".save-data").click(function() {
+		setAccount().then(function(result) {
+			// console.log(facultyName);
+			let PK = result.privateKey;
+			PK = PK.replace("0x", "");
+			// console.log(PK)
+			let account = result.address;
+			// console.log(account)
+			startBlockchain(PK, account, facultyId, "{{ asset('') }}");
+		});
+	});
+
+
+
+	// loading bar
+	var totalStudents = 0;
+	var counter = 0;
+	var minit = 0;
+	var second = 0;
+	$(document).ready(function() {
+		$('#zip-process').css('display', 'none');
+		$('#startup').css('display', 'none');
+		$.ajaxSetup({
+			headers: {
+				'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+			}
+		});
+
+		// $('.progress').atttr('display', 'none');
+		$("#generate").click(function() {
+			event.preventDefault();
+			remove_folder();
+		});
+
+		$("#download").click(function() {
+			event.preventDefault();
+			download_zip(true, $('#zip').val());
+		});
+		get_total_students()
+			.then(result => {
+				totalStudents = result.total;
+			})
+			.catch(err => {
+				alert('Error getting total students');
+			});
+	});
+
+	function get_total_students() {
+		return new Promise((resolve, reject) => {
+			$.ajax({
+				type: "POST",
+				url: '{{route("admin.escroll.total-students")}}',
+				success: resolve,
+				error: reject
+			});
+		});
+	}
+
+	function remove_folder() {
+		$('#startup').css('display', 'block');
+		$.ajax({
+			type: 'POST',
+			url: '{{route("admin.escroll.remove-folder")}}',
+			beforeSend: () => {
+				console.log('remove folder before');
+				$('#generate').attr('disabled', 'disabled');
+				$('#download').attr('disabled', 'disabled');
+			},
+			success: () => {
+				generate_pdf();
+			},
+			complete: () => {
+				console.log('remove folder complete');
+			},
+		});
+	}
+
+	function generate_pdf() {
+		$.ajax({
+			type: 'POST',
+			url: '{{route("admin.escroll.generate")}}',
+			data: {
+				batch: $('#batch').val(),
+				academic_level: $('#academic_level').val()
+			},
+			beforeSend: function() {
+				$('#generate').attr('disabled', 'disabled');
+				$('#download').attr('disabled', 'disabled');
+				$('#process').css('display', 'block');
+				$('.progress-bar').css('width', 0 + '%');
+				minit = 0;
+				second = 0;
+				counter = 0;
+				$('#display-time').html('');
+				$('#display-time').html(0 + ' second elapsed');
+				$('#display-percentage').html(0 + '/' + totalStudents + ' (' + 0 + '%)');
+				setTimeout(() => {
+					get_percentage(totalStudents);
+					$('#startup').css('display', 'none');
+					clearTimer = setInterval(() => {
+						get_percentage(totalStudents);
+					}, 2000);
+
+					myInterval = setInterval(function() {
+						minit = parseInt(counter / 60);
+						second = (counter - minit * 60);
+						if (minit == 0) {
+							if (second == 1 || second == 0) {
+								$('#display-time').html('');
+								$('#display-time').html(second + ' second elapsed');
+							} else {
+								$('#display-time').html('');
+								$('#display-time').html(second + ' seconds elapsed');
+							}
+						} else if (minit == 1) {
+							if (second == 1 || second == 0) {
+								$('#display-time').html('');
+								$('#display-time').html(minit + ' minute ' + second + ' second elapsed');
+							} else {
+								$('#display-time').html('');
+								$('#display-time').html(minit + ' minute ' + second + ' seconds elapsed');
+							}
+						} else {
+							if (second == 1 || second == 0) {
+								$('#display-time').html('');
+								$('#display-time').html(minit + ' minutes ' + second + ' second elapsed');
+							} else {
+								$('#display-time').html('');
+								$('#display-time').html(minit + ' minutes ' + second + ' seconds elapsed');
+							}
+						}
+
+						++counter;
+					}, 1000);
+				}, 5000);
+			},
+			success: (data) => {
+				setTimeout(() => {
+					$('#zip-process').css('display', 'block');
+					download_zip(false, '{{auth()->user()->university->acronym}}' + '_' + data.batch + '_' + data.academic_level);
+				}, 5000);
+			},
+			complete: (data) => {
+				$('#generate').attr('disabled', false);
+				$('#download').attr('disabled', false);
+			},
+			error: (error) => {
+				$('#zip-process').css('display', 'block');
+				clearInterval(clearTimer);
+				clearInterval(myInterval);
+				alert(error.responseJSON.msg);
+			},
+		});
+	}
+
+	function get_percentage(totalStudents) {
+		$.ajax({
+			type: 'POST',
+			url: '{{route("admin.escroll.check-percentage")}}',
+			data: {
+				totalStudents: totalStudents
+			},
+			success: (data) => {
+				$('.progress-bar').css('width', data.total + '%');
+				$('#display-percentage').html(data.total_files + '/' + data.totalStudents + ' (' + data.total + '%)');
+				if (data.total >= 100) {
+					$('.progress-bar').css('width', '100%');
+					$('#zip-process').css('display', 'block');
+					clearInterval(clearTimer);
+					clearInterval(myInterval);
+				}
+				// $('#display-percentage').html('');
+
+			},
+			complete: () => {},
+			error: (error) => {
+				alert('Failed to check percentage');
+				$('#zip-process').css('display', 'block');
+				clearInterval(clearTimer);
+				clearInterval(myInterval);
+			}
+		});
+	}
+</script>
 @endsection

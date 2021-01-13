@@ -20,7 +20,7 @@
 	<div class="container mt-2 mb-2">
 		<div class="row">
 			<div class="col-4">
-				<img src="{{ asset('img/frontend/iium-logo.png') }}" alt="" class="container">
+				<img src="{{ asset('img/IIUM.png') }}" alt="" class="container">
 			</div>
 			<div class="col-6">
 			</div>
@@ -31,7 +31,7 @@
 	</div>
 
 	<div class="container">
-		
+
 	</div>
 
 	<div class="container my-auto height">
@@ -64,7 +64,7 @@
 	</div>
 </body>
 
-
+</html>
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
@@ -75,45 +75,29 @@
 <script type="module" src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
 <script type="module" src="https://cdn.jsdelivr.net/gh/ethereumjs/browser-builds/dist/ethereumjs-tx/ethereumjs-tx-1.3.3.min.js"></script>
 <script src="https://cdn.ethers.io/lib/ethers-5.0.umd.min.js" type="application/javascript"></script>
+<script type="text/javascript" src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
 <script type="module" src="{{ asset('js/blockchain/unixTodate.js') }}"></script>
 <script type="module" src="{{ asset('js/blockchain.js') }}"></script>
-
-<script type="text/javascript" src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
-
-
-
-
-
 
 <script>
 	// let popUp = document.getElementById("popUp")
 	// let popUp2 = document.getElementById("popUp1")
-
 	popUp.addEventListener("click", togglePopup, true)
 	popUp1.addEventListener("click", toggleClose)
 	let scanner = new Instascan.Scanner({
 		video: document.getElementById('preview')
 	});
-
-
 	async function result(content) {
-
-		let realContent = content.split("/")
-		let address = realContent[0]
-		let matricNumber = realContent[1]
+		// let realContent = content.split("/")
+		// let address = realContent[0]
+		let matricNumber = content
 		// var _token = $("input[name='_token']").val();
-
-		$("#content").append('<input type="hidden" name="address" value="' + address + '">')
+		// $("#content").append('<input type="hidden" name="address" value="' + address + '">')
 		$("#content").append('<input type="hidden" name="matricNumber" value="' + matricNumber + '">')
 		$("#target").submit()
-
-
 		toggleClose()
-
 	}
-
 	scanner.addListener('scan', result);
-
 	function togglePopup() {
 		document.getElementById("popup-1").classList.toggle("active", true)
 		Instascan.Camera.getCameras().then(cameras => {
@@ -124,11 +108,9 @@
 			}
 		});
 	}
-
 	function toggleClose() {
 		document.getElementById("popup-1").classList.toggle("active", false)
 		scanner.stop()
 	}
 </script>
 
-</html>

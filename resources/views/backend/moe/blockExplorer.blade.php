@@ -31,6 +31,7 @@
 
 {{-- <script type="module" src={{asset('js/web3.js')}}></script> --}}
 {{-- <script type="module" src={{asset('js/blockchain/unixToDate.js')}}></script> --}}
+
 <script type="module">
     // import web3 from '/js/web3.js';
     import unixToDate from '/js/blockchain/unixToDate.js'

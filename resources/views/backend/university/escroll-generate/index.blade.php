@@ -267,11 +267,11 @@
                 $('#download').attr('disabled', 'disabled');
             },
             success: function(response){
-                // var blob = new Blob([response]);
-                // var link = document.createElement('a');
-                // link.href = window.URL.createObjectURL(blob);
-                // link.download = "{{auth()->user()->university->acronym}}.zip";
-                // link.click();
+                var blob = new Blob([response]);
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = "{{auth()->user()->university->acronym}}.zip";
+                link.click();
             },
             complete: () => {
                 $('#zip-process').css('display', 'none');

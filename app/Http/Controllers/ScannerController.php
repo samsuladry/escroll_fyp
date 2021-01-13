@@ -16,16 +16,14 @@ class ScannerController extends Controller
     {
         // dd($request->all());
         $request->validate([
-            'address' => 'required',
             'matricNumber' => 'required'
         ]);
 
         $matricNumber = $request->matricNumber;
-        $address = $request->address;
 
         // // return response()->json(['success'=>'QR code is valid']);
         // return redirect()-> route('display', compact('address', 'matricNumber'));
-        return view('display', compact('address', 'matricNumber'));
+        return view('display', compact('matricNumber'));
     }
 
     // public function viewDisplay($address, $matricNumber)
