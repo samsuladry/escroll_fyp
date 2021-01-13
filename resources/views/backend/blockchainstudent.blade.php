@@ -63,4 +63,4 @@
 			<script type="module" src="https://unpkg.com/react@16/umd/react.production.min.js" crossorigin></script>
 			<!-- <script type="module" src="https://unpkg.com/ipfs/dist/index.min.js"></script> -->
 			<script type="module" src="{{ asset('js/blockchain.js') }}" defer></script>
-			<script type="module" src="{{ asset('js/ipfs.js') }}" defer></script>
+			{{-- <script type="module" src="{{ asset('js/ipfs.js') }}" defer></script> --}}
