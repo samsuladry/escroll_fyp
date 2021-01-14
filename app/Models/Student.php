@@ -10,8 +10,10 @@ class Student extends Model
     //
 
     protected $table = 'students';
+    
 
-     protected $fillable = [
+     protected $fillable = 
+     [
         'hash',
         'matric_number',
         'name',

@@ -46,4 +46,22 @@ class CsvController extends Controller
         
     	return redirect('/admin/check');
     }
+
+    public function update_ipfs(Request $request)
+    {
+        $student = Student::where('matric_number', $request->matricNumber)->get();
+        foreach($student as $stu)
+        {
+            // dd($stu->name);
+            // dd($stu->hash);
+            // dd($request->myURL);
+            $stu->hash = $request->myURL;
+            $stu->save();
+        }
+        // dd($student);
+        // $student->hash = $request->myUrl;
+        // $student->save();
+        // return $request->input();
+        // return redirect('/admin/check');
+    }
 }

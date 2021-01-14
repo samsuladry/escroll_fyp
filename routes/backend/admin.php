@@ -96,6 +96,8 @@ Route::post('escroll/generate', [EscrollController::class, 'generate'])->name('e
 Route::post('escroll/download-zip', [EscrollController::class, 'download_zip'])->name('escroll.download-zip');
 Route::post('import-csv/store', [CsvController::class, 'store_csv'])->name('store-csv');
 Route::get('import-csv', [CsvController::class, 'import_csv'])->name('import-csv');
+Route::post('updateIpfs', [CsvController::class, 'update_ipfs'])->name('update-ipfs');
+
 
 Route::get('gradute-student', [DashboardController::class, 'graduate_student'])->name('graduate-student');
 Route::get('gradute-student/{student}/view-cert', [DashboardController::class, 'view_cert'])->name('view-cert');

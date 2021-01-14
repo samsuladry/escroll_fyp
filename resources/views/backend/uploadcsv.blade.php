@@ -120,6 +120,11 @@
                           <input id="ipfsFile" type="file" multiple />
                           <input id="ipfsSubmit2" type="submit" />
                       </form>
+
+                      <form id="target" method="post" action="{{ route('admin.update-ipfs') }}">
+                        @csrf
+                        <p id="content"></p>
+                      </form>
                   </div>
               </div>
           </div>

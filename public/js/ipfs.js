@@ -8,12 +8,17 @@ var bufferList = [];
 var hash = [];
 var myURL = [];
 var file = [];
+var matricNumber = [];
+var count = 0;
 
 var upload = document.getElementById('ipfsFile');
 
 /// Function to fetch and change file into buffer
-async function captureFile(file, count){
+async function captureFile(file, count)
+{
     console.log("File captured... (in function)", file)
+    matricNumber[count] = file.name.replace(".jpeg", "")
+    console.log("File name: ", matricNumber)
     const reader = new window.FileReader()
     reader.readAsArrayBuffer(file)
     reader.onloadend = async function () {
@@ -30,9 +35,12 @@ upload.onchange = async function(event) {
     //Process file for IPFS
     file = event.target.files
     console.log("File:", file)
+    
 
-    for(i=0; i<file.length; i++){
+    for(i=0; i<file.length; i++)
+    {   
         bufferList[i] = await captureFile(file[i], i)
+        count++
         // console.log("Buffer No:", [i+1], bufferList[i])
         // console.log("Buffer out...", bufferList)
     }
@@ -78,34 +86,19 @@ async function onSubmit(bufferList){
     console.log("Links: ", myURL)
 }
 
-//nak hantar ke db
-// var xhttp = new XMLHttpRequest();
-// // var student_json = '';
-// url = url+'admin/student/'+facultyId;
-// xhttp.open('get', url, true); //admin/student -> admin.php
-// xhttp.send();
-// // xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-// xhttp.onload = (student_json) => {
-// 	if (xhttp.status == 200 && xhttp.readyState == 4) {
-// 		// console.log(xhttp.responseText)
-// 		// console.log(JSON.parse(xhttp.responseText))
-// 		student_json = JSON.parse(xhttp.responseText);
-// 		// console.log(PK)
-// 		// console.log(uni_address)
-// 		console.log(student_json)
-// 		init(student_json, PK, uni_address)
-		
-// 	}
-// };
-
 /// Linking the function with html (button)
 submit.onclick = async function(event) {
     event.preventDefault()
     console.log("Click Sumbit!!")
     await onSubmit(bufferList);
-    console.log("Outside Function: ", myURL)
+    // console.log("Outside Function: ", myURL)
     // myURL = 'https://ipfs.io/ipfs/' + hash;
-    console.log("After send: ", myURL[1])
+    // console.log("After send: ", myURL[1])
+    
+    console.log("bawah ni: ", matricNumber)
+    $("#content").append('<input type="hidden" name="myURL" value="' + myURL + '">')
+    $("#content").append('<input type="hidden" name="matricNumber" value="' + matricNumber + '">')
+	$("#target").submit()
 
     for(var i=0; i<file.length; i++){
         // var row = table1.insertRow(i);
