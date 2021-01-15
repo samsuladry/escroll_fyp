@@ -103,13 +103,72 @@
   <!--col-->
 </div>
 <!--row-->
+
+<div class="row">
+  <div class="col">
+    <div class="card">
+      <div class="card-header">
+        <strong>Upload Your Academic Transacript</strong>
+      </div>
+      <!--card-header-->
+      <div class="card-body">
+        <div class="col-lg-12" style="margin-top: 1em;margin-bottom: 4em;">
+          <div class="d-flex p-2 justify-content-center">
+              <div class='card mt-2'>
+                  <div class="justify-content-center" style="margin-top: 1em;">
+                      <form id="ipfsSubmit">
+                          <input id="ipfsFile" type="file" multiple />
+                          <input id="ipfsSubmit2" type="submit" />
+                      </form>
+                      
+                      <form id="target" method="post" action="{{ route('admin.update-ipfs') }}">
+                        @csrf
+                        <p id="content"></p>
+                      </form>
+                  </div>
+                  <button id="updateDb" type="button" class="btn btn-success btn-sm" style="margin-top: 20px;">Update Student</button>
+              </div>
+          </div>
+
+          <div class="d-flex p-2 justify-content-center">
+              <table class="table">
+                  <thead>
+                      <tr>
+                          <th scope="col">No.</th>
+                          <th scope="col">Matric No.</th>
+                          <th scope="col">Link</th>
+                          <th scope="col">Date</th>
+                      </tr>
+                  </thead>
+                  <tbody id="uploadTable">
+                      
+                  </tbody>
+              </table>
+          </div>
+        </div>
+      </div>
+      <!--card-body-->
+
+    </div>
+    <!--card-->
+  </div>
+  <!--col-->
+</div>
+<!--row-->
 @endsection
+
 
 @push('before-scripts')
 <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
 @endpush
 @push('after-scripts')
+
+<script src="https://cdn.jsdelivr.net/npm/ipfs/dist/index.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ipfs/0.47.1-rc.19/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/ipfs-http-client/dist/index.min.js"></script>
+<script src="https://bundle.run/buffer@5.6.0"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+<script type="module" src="{{ asset('js/ipfs.js') }}"></script>
 <script>
     $(document).ready(function () {
         $('#academic').select2({

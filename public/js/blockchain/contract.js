@@ -2,62 +2,9 @@
 // change: samsul will deploy contract to server, then we will use the contract address
 // 0x83c184bB27fed6001980E72F19F4f70bEe7a19cB //contract ada 3000 student
 // contract server nazhan (development): 0xC65Bd5C9A7EC77ade023e1fcdC5417857713401b
-export const contractAddress = '0x02260eE742F0f56522A2788f0BB0dE2c278D32b4'
+// Contract dalam server Daya Bersih : 0x02260eE742F0f56522A2788f0BB0dE2c278D32b4
+export const contractAddress = '0x512db56894Ac6c9d1a7bf31c08D6647259851B12'
 export const contractAbi = [
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_uniAddress",
-				"type": "address"
-			}
-		],
-		"name": "deleteUniversity",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "_matricNumber",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_dataHash",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_jsonData",
-				"type": "string"
-			}
-		],
-		"name": "insertStudent",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_uniAddress",
-				"type": "address"
-			},
-			{
-				"internalType": "string",
-				"name": "_uniName",
-				"type": "string"
-			}
-		],
-		"name": "insertUniversity",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
 	{
 		"inputs": [],
 		"stateMutability": "nonpayable",
@@ -179,29 +126,6 @@ export const contractAbi = [
 				"internalType": "string",
 				"name": "_matricNumber",
 				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_dataHash",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_jsonData",
-				"type": "string"
-			}
-		],
-		"name": "updateStudent",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "_matricNumber",
-				"type": "string"
 			}
 		],
 		"name": "checkStudentExistance",
@@ -213,6 +137,19 @@ export const contractAbi = [
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_uniAddress",
+				"type": "address"
+			}
+		],
+		"name": "deleteUniversity",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -291,6 +228,47 @@ export const contractAbi = [
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_matricNumber",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_dataHash",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_jsonData",
+				"type": "string"
+			}
+		],
+		"name": "insertStudent",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_uniAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "_uniName",
+				"type": "string"
+			}
+		],
+		"name": "insertUniversity",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -426,6 +404,29 @@ export const contractAbi = [
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_matricNumber",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_dataHash",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_jsonData",
+				"type": "string"
+			}
+		],
+		"name": "updateStudent",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	}
 ]

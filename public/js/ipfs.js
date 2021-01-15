@@ -1,84 +1,197 @@
-// import React, { Component } from 'react';
-// import './App.css';
+const Buffer = window.Ipfs.Buffer
+var table1 = document.getElementById( 'uploadTable' );
 
-//  const ipfsClient = require('ipfs-http-client')
-// const ipfs = ipfsClient('http://localhost:5001')
-const Component = window.React.Component;
-const ipfs = window.IpfsHttpClient({ host: 'infura.ipfs.io', port: '5001', protocol: 'https' })
-// const ipfs = window.IpfsHttpClient({ host: 'localhost', port: '5001', protocol: 'https' })
-const Buffer = window.IpfsHttpClient.Buffer
+// const file = urlSource('https://ipfs.io/images/ipfs-logo.svg')
+  
+var buffer_;
+var bufferList = [];
+var hash = [];
+var myURL = [];
+var file = [];
+var matricNumber = [];
+var count = 0;
 
+var upload = document.getElementById('ipfsFile');
 
-class App extends Component {
+/// Function to fetch and change file into buffer
+async function captureFile(file, count)
+{
+    console.log("File captured... (in function)", file)
+    // if(file.name.includes(".png"))
+    // {
+    //     matricNumber[count] = file.name.replace(".png", "")
+    // }
+    // else if(file.name.includes(".PNG"))
+    // {
+    //     matricNumber[count] = file.name.replace(".PNG", "")
+    // }
+    // else if(file.name.includes(".jpeg"))
+    // {
+    //     matricNumber[count] = file.name.replace(".jpeg", "")
 
-	constructor(props) {
-		super(props);
-		this.state = {
-			buffer: null,
-			imageHash: 'QmNaziHqZ8zBS2vrYwd3bdXJHmeoHDsBm9cf4b6YUWZBcX'
-		};
-	}
+    // }
 
-	captureFile = (file) => {
-
-		const reader = new window.FileReader()
-		reader.readAsArrayBuffer(file)
-
-		reader.onloadend = () => {
-			this.setState({ buffer: Buffer(reader.result) })
-			console.log("Buffer: ", Buffer(reader.result))
-			console.log("IPFS File: ", ipfs)
-		}
-
-	}
-
-	// Example hash : QmYLBVXEFacCreH2ftxr58uK8ouZxtC9G8RZEwzVE4UPKN
-	// Example hash : QmPRFmKYXuuiybC54NyhvfHXHVWBAxw7TEaZoM8z4ZMP8R
-	// Example url: https://ipfs.infura.io/ipfs/QmPRFmKYXuuiybC54NyhvfHXHVWBAxw7TEaZoM8z4ZMP8R
-	onSubmit = async () => {
-		// await ipfs.ping(function (time){
-		// 	console.log(time + 'ms')
-		// 	ipfs.stop()
-		// })
-		console.log("Submitting...")
-		
-		await ipfs.add(this.state.buffer, (error, result) => {
-			console.log("Loading...")
-			console.log("IPFS Result:", result)
-			const imageHash = result[0].Hash
-			this.setState({ imageHash: imageHash })
-			console.log("Hash value:", result[0].Hash)
-			if (error) {
-				console.error("Error: ", error)
-				return
-			}
-			console.log("End")
-		})
-		return this.state.imageHash;
-	}
+    if(file.name.includes(".pdf"))
+    {
+        matricNumber[count] = file.name.replace(".pdf", "")
+    }
+    else
+    {
+        alert("There is a non pdf file.")
+    }
+    
+    // matricNumber[count] = file.name.replace(".png", "")
+    // matricNumber[count] = file.name.replace(".PNG", "")
+    
+    console.log("File name: ", matricNumber)
+    const reader = new window.FileReader()
+    reader.readAsArrayBuffer(file)
+    reader.onloadend = async function () {
+        buffer_ = await Buffer(reader.result)
+        console.log("IPFS File: ", buffer_)
+        bufferList[count] = buffer_;
+    }
 
 }
 
-var app1 = new App();
+/// Linking the function with html (button)
+upload.onchange = async function(event) {
+    console.log("File captured...")
+    //Process file for IPFS
+    file = event.target.files
+    console.log("File:", file)
+    
 
-$('#ipfsFile').change(function (event) {
-	event.preventDefault()
-	console.log("File captured...")
-	//Process file for IPFS
-	const file = event.target.files[0]
-	// console.log(file)
-	app1.captureFile(file);
-});
+    for(i=0; i<file.length; i++)
+    {   
+        bufferList[i] = await captureFile(file[i], i)
+        count++
+        // console.log("Buffer No:", [i+1], bufferList[i])
+        // console.log("Buffer out...", bufferList)
+    }
 
-var imageHash;
-$('#ipfsSubmit').submit(function (event) {
-	event.preventDefault()
-	console.log("test")
-	// imageHash = "Hello i am imagehash"
-	imageHash = app1.onSubmit()
-});
+    
 
-// exports.imageHash = imageHash;
+    for(var i=0; i<file.length; i++){
+        var row = table1.insertRow(i);
+        var cell1 = row.insertCell(0);
+        var cell2 = row.insertCell(1);
+        var cell3 = row.insertCell(2);
+        var cell4 = row.insertCell(3);
 
 
-export default App;
+        cell1.innerHTML = i+1;
+        cell2.innerHTML = file[i].name;
+        cell3.innerHTML = "-";
+        cell4.innerHTML = "-";
+    }
+    
+}
+
+/// Get the element by ID
+var submit = document.getElementById('ipfsSubmit2');
+
+
+/// Creating IPFS and sending file to IPFS
+async function onSubmit(bufferList){
+    console.log("Buffer out...", bufferList)
+    var node = await Ipfs.create();
+
+    for(let i=0; i<bufferList.length; i++){
+        let image = node.add(bufferList[i])
+        console.log("Apa dalam image", image)
+        console.log("Apa dalam node", node)
+        for await (const { cid } of image) {
+        // console.log(cid.toString())
+        hash[i] = cid.toString()
+        console.log("Inside Image: ", hash[i])
+        myURL[i] = "https://ipfs.io/ipfs/" + hash[i] //sini dapat balik IPFS hash
+        } 
+    }
+    console.log("Links: ", myURL)
+}
+
+/// Linking the function with html (button)
+submit.onclick = async function(event) {
+    event.preventDefault()
+    console.log("Click Sumbit!!")
+    await onSubmit(bufferList);
+    // $("#content").append('<input type="hidden" name="myURL" value="' + myURL + '">')
+    // $("#content").append('<input type="hidden" name="matricNumber" value="' + matricNumber + '">')
+    // $("#target").submit()
+    // location.reload();
+    // console.log("Outside Function: ", myURL)
+    // myURL = 'https://ipfs.io/ipfs/' + hash;
+    // console.log("After send: ", myURL[1])
+    
+    console.log("bawah ni: ", matricNumber)
+    
+    // setTimeout(function()
+    // { 
+    //     $("#content").append('<input type="hidden" name="myURL" value="' + myURL + '">')
+    //     $("#content").append('<input type="hidden" name="matricNumber" value="' + matricNumber + '">')
+    //     $("#target").submit()
+    // }, 5000);
+
+    for(var i=0; i<file.length; i++){
+        // var row = table1.insertRow(i);
+        // var cell3 = row.insertCell(2);
+        // var cell4 = row.insertCell(3);
+        var cell3 = table1.rows[i].cells[2];
+        var cell4 = table1.rows[i].cells[3];
+
+        cell3.innerHTML = '<a href=' + myURL[i] + '>' + myURL[i] + '/<a>';
+        cell4.innerHTML = new Date();;
+    }
+
+   
+
+}
+
+$('#updateDb').click(async function(e)
+{
+    if(matricNumber == "")
+    {
+        alert("Nothing to update")
+        location.reload();
+    }
+    else
+    {
+        $("#content").append('<input type="hidden" name="myURL" value="' + myURL + '">')
+        $("#content").append('<input type="hidden" name="matricNumber" value="' + matricNumber + '">')
+        $("#target").submit()
+    }
+})
+
+// /// Get the element by ID
+// var link = document.getElementById('ipfsLink');
+
+// /// Link IPFS
+// link.onclick = function (){
+//   document.getElementById("ipfsLink").setAttribute("href", myURL);
+// }
+
+
+// document.getElementById("myLink").onclick = function() {
+//   var link = document.getElementById("abc");
+//   link.setAttribute("href", "xyz.php");
+//   return false;
+// }
+
+////////////////
+
+// var table1 = document.getElementById( 'uploadTable' );
+
+// for(var i=0; i<file.length; i++){
+//     var row = table1.insertRow(i);
+//     var cell1 = row.insertCell(0);
+//     var cell2 = row.insertCell(1);
+//     var cell3 = row.insertCell(2);
+//     var cell4 = row.insertCell(3);
+
+
+//     cell1.innerHTML = i+1;
+//     cell2.innerHTML = file[i].name;
+//     cell3.innerHTML = [i].quantity;
+//     cell4.innerHTML = historyList[i].size + ' MB';
+// }
