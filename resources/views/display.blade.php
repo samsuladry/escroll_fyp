@@ -177,6 +177,8 @@
                     </table>
               </div>
             </div>
+            <button id="getTranscript" type="button" class="btn btn-secondary btn-sm" style="margin-top: 20px;">Download your Transcript</button>
+            <p id="url"></p>
         </div>
     </div>
 </body>
@@ -195,12 +197,17 @@
 
   // console.log(address)
   // console.log( matricNumber)
+  async function getData()
+  {
+    let pelajar = await getStudentDetail(matricNumber);
+    return pelajar
+  }
 
   async function displayData()
   {
     // let json = document.getElementById('jsonData')
     console.log(matricNumber)
-    let pelajar = await getStudentDetail(matricNumber)
+    let pelajar = await getStudentDetail(matricNumber);
     console.log(pelajar)
     let realContent = pelajar[2].split("/")
     let matricNo = realContent[1]
@@ -221,36 +228,18 @@
     // console.log(pelajar)
   }
   displayData()
-  
-  // getUniversity(uniAddress).then(e=> console.log(e))
-  // readFromTransactionhash();
-  
-  
-  
+
+  $('#getTranscript').click(async function(e)
+  {
+    e.preventDefault();
+    // let pelajar = getData();
+    let pelajar = await getStudentDetail(matricNumber);
+    console.log(pelajar[3])
+    // document.getElementById("url").innerHTML = window.location.replace(pelajar[3]);
+    document.getElementById("url").innerHTML = "<a href=" +window.location.replace(pelajar[3])+"></a>"
+  })
+
+
 </script>
 
-<!-- <script>
-
-  const web3 = new Web3('HTTP://127.0.0.1:8545') 
-  {{-- let address = {{$address}} --}}
-  {{-- let matricNumber = {{$matricNumber}} --}}
-  displayData(matricNumber, address)
-  
-
-  const contractEscroll = new web3.eth.Contract(contractAbi, contractAddress)
-  async function getStudent(matricNumber, uniAddress)
-  {
-    let getStudent =  await contractEscroll.methods.getStudent(matricNumber, uniAddress).call()
-    getStudent[6] = unixToDate(getStudent[6])
-    return getStudent
-
-  }
-
-  function displayData(matNo, address)
-  {
-      let result = getStudent(matNo, address)
-
-      console.log(result)
-  }
-</script> -->
 </html>

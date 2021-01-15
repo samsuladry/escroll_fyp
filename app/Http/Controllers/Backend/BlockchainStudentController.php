@@ -40,7 +40,7 @@ class BlockchainStudentController extends Controller
 		$students = Student::where('students.university_id', auth()->user()->university->id)
                            ->leftJoin('faculty', 'faculty.id', '=', 'students.faculty_id')
                            ->leftJoin('department', 'department.id', '=', 'students.department_id')
-                           ->select('students.matric_number', 'students.name', 'faculty.name as faculty', 'department.name as bachelor', 'students.dean_id', 'students.rector_id', 'students.serial_no', 'students.date_endorse', 'students.citizenship')
+                           ->select('students.matric_number', 'students.name', 'faculty.name as faculty', 'department.name as bachelor', 'students.dean_id', 'students.rector_id', 'students.serial_no', 'students.date_endorse', 'students.citizenship', 'students.hash')
 						   ->where('faculty.id', $faculty)
 						   ->where('students.is_import', 0)
 						   ->withoutGlobalScope(UniversityScope::class)

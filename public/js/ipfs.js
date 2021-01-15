@@ -17,7 +17,32 @@ var upload = document.getElementById('ipfsFile');
 async function captureFile(file, count)
 {
     console.log("File captured... (in function)", file)
-    matricNumber[count] = file.name.replace(".jpeg", "")
+    // if(file.name.includes(".png"))
+    // {
+    //     matricNumber[count] = file.name.replace(".png", "")
+    // }
+    // else if(file.name.includes(".PNG"))
+    // {
+    //     matricNumber[count] = file.name.replace(".PNG", "")
+    // }
+    // else if(file.name.includes(".jpeg"))
+    // {
+    //     matricNumber[count] = file.name.replace(".jpeg", "")
+
+    // }
+
+    if(file.name.includes(".pdf"))
+    {
+        matricNumber[count] = file.name.replace(".pdf", "")
+    }
+    else
+    {
+        alert("There is a non pdf file.")
+    }
+    
+    // matricNumber[count] = file.name.replace(".png", "")
+    // matricNumber[count] = file.name.replace(".PNG", "")
+    
     console.log("File name: ", matricNumber)
     const reader = new window.FileReader()
     reader.readAsArrayBuffer(file)
@@ -91,14 +116,22 @@ submit.onclick = async function(event) {
     event.preventDefault()
     console.log("Click Sumbit!!")
     await onSubmit(bufferList);
+    // $("#content").append('<input type="hidden" name="myURL" value="' + myURL + '">')
+    // $("#content").append('<input type="hidden" name="matricNumber" value="' + matricNumber + '">')
+    // $("#target").submit()
+    // location.reload();
     // console.log("Outside Function: ", myURL)
     // myURL = 'https://ipfs.io/ipfs/' + hash;
     // console.log("After send: ", myURL[1])
     
     console.log("bawah ni: ", matricNumber)
-    $("#content").append('<input type="hidden" name="myURL" value="' + myURL + '">')
-    $("#content").append('<input type="hidden" name="matricNumber" value="' + matricNumber + '">')
-	$("#target").submit()
+    
+    // setTimeout(function()
+    // { 
+    //     $("#content").append('<input type="hidden" name="myURL" value="' + myURL + '">')
+    //     $("#content").append('<input type="hidden" name="matricNumber" value="' + matricNumber + '">')
+    //     $("#target").submit()
+    // }, 5000);
 
     for(var i=0; i<file.length; i++){
         // var row = table1.insertRow(i);
@@ -114,6 +147,21 @@ submit.onclick = async function(event) {
    
 
 }
+
+$('#updateDb').click(async function(e)
+{
+    if(matricNumber == "")
+    {
+        alert("Nothing to update")
+        location.reload();
+    }
+    else
+    {
+        $("#content").append('<input type="hidden" name="myURL" value="' + myURL + '">')
+        $("#content").append('<input type="hidden" name="matricNumber" value="' + matricNumber + '">')
+        $("#target").submit()
+    }
+})
 
 // /// Get the element by ID
 // var link = document.getElementById('ipfsLink');

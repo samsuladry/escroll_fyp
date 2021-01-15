@@ -135,25 +135,25 @@ async function displayStudent(input_matric, uniAddress) {
 //-------------- MAIN PART----------------
 const init = async (student_json, PK, uni_address) => {
 	setDefaultAccount(uni_address);
-	// insertAllStudent(student_json, PK, uni_address);
+	insertAllStudent(student_json, PK, uni_address);
 
 	// //Nak check student ada dalam blockchain ke tak
 	let i = 0
 	// uni_address = "0x92BE754c103EA2c7E3Ed29601e3116409C22B523";
-	while(i < student_json.length)
-	{
-		var matricNumber = uni_address + "/" + student_json[i].matric_number
-		// console.log(matricNumber)
-		var check = await checkStudentExistance(matricNumber)
-		// if(check == true)
-		// {
-		// 	console.log("Check: ", check)
+	// while(i < student_json.length)
+	// {
+	// 	var matricNumber = uni_address + "/" + student_json[i].matric_number
+	// 	// console.log(matricNumber)
+	// 	var check = await checkStudentExistance(matricNumber)
+	// 	// if(check == true)
+	// 	// {
+	// 	// 	console.log("Check: ", check)
 
-		// }
-		console.log("Check: ", check)
-		i++
+	// 	// }
+	// 	console.log("Check: ", check)
+	// 	i++
 
-	}
+	// }
 }
 
 
@@ -193,7 +193,7 @@ async function insertAllStudent(student_json, PK, uni_address) {
 	var imported_students = new Array();
 
 
-	
+	// console.log(student_json)
 	await web3.eth.getTransactionCount(uni_address)
 			.then(count => {
 				for (let i = 0; i < student_json.length; i++) 
@@ -201,7 +201,7 @@ async function insertAllStudent(student_json, PK, uni_address) {
 					console.log("Count: ", count)
 					console.log("i: ", i)
 					var matricNumber =  uni_address + "/" + student_json[i].matric_number;
-					insertStudent(PK, count, matricNumber, "hash", JSON.stringify(student_json[i]));
+					insertStudent(PK, count, matricNumber, student_json[i].hash , JSON.stringify(student_json[i]));
 					imported_students.push(student_json[i].matric_number);
 					count++
 				}

@@ -115,17 +115,18 @@
         <div class="col-lg-12" style="margin-top: 1em;margin-bottom: 4em;">
           <div class="d-flex p-2 justify-content-center">
               <div class='card mt-2'>
-                  <div>
+                  <div class="justify-content-center" style="margin-top: 1em;">
                       <form id="ipfsSubmit">
                           <input id="ipfsFile" type="file" multiple />
                           <input id="ipfsSubmit2" type="submit" />
                       </form>
-
+                      
                       <form id="target" method="post" action="{{ route('admin.update-ipfs') }}">
                         @csrf
                         <p id="content"></p>
                       </form>
                   </div>
+                  <button id="updateDb" type="button" class="btn btn-success btn-sm" style="margin-top: 20px;">Update Student</button>
               </div>
           </div>
 
